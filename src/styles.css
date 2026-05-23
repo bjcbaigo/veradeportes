@@ -76,6 +76,27 @@
   --whatsapp-foreground: oklch(1 0 0);
 }
 
+.dark {
+  --background: oklch(0.12 0 0);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.18 0 0);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.95 0 0);
+
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(0.95 0 0);
+
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+
+  --border: oklch(0.25 0 0);
+  --input: oklch(0.25 0 0);
+
+  --ink: oklch(0.1 0 0);
+  --ink-foreground: oklch(1 0 0);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
