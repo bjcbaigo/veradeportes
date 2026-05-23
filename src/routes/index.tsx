@@ -5,8 +5,8 @@ import { Categories } from "@/components/landing/Categories";
 import { Products } from "@/components/landing/Products";
 import { Promo } from "@/components/landing/Promo";
 import { Trust } from "@/components/landing/Trust";
-import { Social } from "@/components/landing/Social";
 import { Contact } from "@/components/landing/Contact";
+import { Social } from "@/components/landing/Social";
 import { Footer } from "@/components/landing/Footer";
 import { BottomNav } from "@/components/landing/BottomNav";
 import { WhatsAppFab } from "@/components/landing/WhatsAppFab";
@@ -32,15 +32,15 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground pb-4">
       <Header />
       <Hero />
       <Categories />
       <Products />
       <Promo />
       <Trust />
-      <Social />
       <Contact />
+      <Social />
       <Footer />
       <BottomNav />
       <WhatsAppFab />

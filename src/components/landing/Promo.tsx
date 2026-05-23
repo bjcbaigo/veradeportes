@@ -1,53 +1,65 @@
-import { MessageCircle, Zap } from "lucide-react";
-import promo from "@/assets/promo.jpg";
+import zap from "@/assets/p-zapatillas-2.jpg";
+import rem from "@/assets/p-remera-1.jpg";
+import sho from "@/assets/p-short-1.jpg";
 import { waLink } from "@/lib/site";
+
+const PROMOS = [
+  { img: zap, off: "-20%" },
+  { img: rem, off: "-15%" },
+  { img: sho, off: "-20%" },
+];
 
 export function Promo() {
   return (
-    <section id="ofertas" className="py-12 md:py-16">
+    <section id="ofertas" className="py-6">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="relative overflow-hidden rounded-3xl bg-ink text-ink-foreground">
-          <img
-            src={promo}
-            alt="Promo deportiva"
-            loading="lazy"
-            width={1280}
-            height={800}
-            className="absolute inset-0 h-full w-full object-cover opacity-40"
+        <div className="relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-4 md:p-6">
+          {/* diagonal pattern */}
+          <div
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(135deg, transparent 0 14px, rgba(255,255,255,.4) 14px 16px)",
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/30" />
-          <div className="absolute -right-10 -bottom-10 h-56 w-56 rounded-full bg-primary/30 blur-3xl" />
-
-          <div className="relative p-6 md:p-12">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground">
-              <Zap className="h-3.5 w-3.5" />
-              Promo de la semana
-            </span>
-            <h2 className="mt-4 font-display font-extrabold text-3xl md:text-5xl leading-[1.05] max-w-2xl">
-              Hasta <span className="text-primary">25% OFF</span> en zapatillas
-              seleccionadas
-            </h2>
-            <p className="mt-3 text-white/80 max-w-md">
-              Promo válida esta semana. Consultá modelos y talles disponibles
-              antes de venir al local.
-            </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <a
-                href={waLink("Hola! Quiero ver la promo de la semana en zapatillas.")}
-                target="_blank"
-                rel="noopener"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-primary-foreground"
-              >
-                <MessageCircle className="h-5 w-5" />
-                Quiero la promo
-              </a>
-              <a
-                href="#productos"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 font-semibold text-white"
-              >
-                Ver productos
-              </a>
+          <div className="relative flex flex-col md:flex-row md:items-center gap-4">
+            <div className="md:w-1/3">
+              <h2 className="font-display font-extrabold text-2xl md:text-3xl leading-tight">
+                PROMOS<br />DE LA SEMANA
+              </h2>
+              <p className="mt-1 text-sm text-white/90">
+                Descuentos imperdibles en seleccionados
+              </p>
             </div>
+
+            <div className="flex items-center gap-3 md:flex-1 justify-center">
+              {PROMOS.map((p, i) => (
+                <div key={i} className="relative">
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-white p-1.5 shadow-md">
+                    <img
+                      src={p.img}
+                      alt="Promo"
+                      loading="lazy"
+                      width={160}
+                      height={160}
+                      className="h-full w-full object-contain rounded-full"
+                    />
+                  </div>
+                  <span className="absolute -top-1 -right-1 rounded-full bg-ink text-ink-foreground text-[10px] font-bold px-2 py-0.5">
+                    {p.off}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <a
+              href={waLink("Hola! Quiero ver las promos de la semana.")}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-ink px-5 text-sm font-bold text-ink-foreground hover:bg-black transition self-stretch md:self-auto"
+            >
+              Ver ofertas
+            </a>
           </div>
         </div>
       </div>
