@@ -56,8 +56,9 @@ export function Header() {
             onClick={() => setOpen((v) => !v)}
             aria-label="Menú"
           >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" strokeWidth={2.5} />}
-        </button>
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" strokeWidth={2.5} />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className="border-t border-border bg-background">
