@@ -18,8 +18,7 @@ export function Hero() {
         <div className="relative p-6 md:p-12 max-w-xl">
           <div className="h-1 w-10 bg-primary rounded-full mb-5" />
           <h1 className="font-display font-extrabold text-[2.4rem] sm:text-5xl md:text-6xl leading-[0.95]">
-            Zapatillas e<br />
-            indumentaria<br />
+            Tu indumentaria<br />
             deportiva<br />
             <span className="text-primary">en Vera</span>
           </h1>
