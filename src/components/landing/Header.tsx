@@ -41,6 +41,9 @@ export function Header() {
       <div className="mx-auto max-w-6xl flex items-center justify-between px-4 h-16">
         <a href="#top" className="flex items-center gap-2">
           <img src={logo} alt="Vera Deportes" className="h-14 w-auto" width={120} height={120} />
+          <span className="font-display font-extrabold text-lg tracking-tight leading-none">
+            Vera<span className="text-primary">Deportes</span>
+          </span>
         </a>
         <div className="flex items-center gap-1">
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium mr-3">
