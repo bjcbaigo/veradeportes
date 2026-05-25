@@ -18,10 +18,10 @@ export function Hero() {
         <div className="absolute inset-0 flex items-center">
           <div className="relative p-4 sm:p-6 md:p-12 max-w-xl">
             <div className="h-1 w-8 sm:w-10 bg-primary rounded-full mb-3 sm:mb-5" />
-            <h1 className="font-display font-extrabold text-2xl xs:text-3xl sm:text-5xl md:text-6xl leading-[1.1] sm:leading-[0.95] text-white drop-shadow-lg">
+            <h1 className="font-display font-extrabold text-xl sm:text-5xl md:text-6xl leading-[1.15] sm:leading-[0.95] text-white drop-shadow-lg">
               Tu indumentaria deportiva <span className="text-primary">en Vera</span>
             </h1>
-            <p className="mt-3 sm:mt-5 italic text-white/90 max-w-sm text-xs sm:text-sm md:text-base leading-relaxed drop-shadow">
+            <p className="mt-3 sm:mt-5 italic text-white/90 text-xs sm:text-sm md:text-base leading-relaxed drop-shadow">
               Zapatillas, shorts, remeras, buzos y accesorios para tu día a día y
               tu mejor rendimiento.
             </p>
@@ -31,15 +31,15 @@ export function Hero() {
                 href={waLink("Hola! Quiero hacer una consulta sobre productos.")}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-primary px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
+                className="inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 sm:px-5 text-sm sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
               >
-                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="sm:hidden">WhatsApp</span>
+                <MessageCircle className="h-5 w-5" />
+                <span className="sm:hidden">Consultar por WhatsApp</span>
                 <span className="hidden sm:inline">Consultar por WhatsApp</span>
               </a>
               <a
                 href="#productos"
-                className="inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 transition whitespace-nowrap"
+                className="hidden sm:inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 transition whitespace-nowrap"
               >
                 Ver productos
               </a>
