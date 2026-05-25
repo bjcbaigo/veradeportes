@@ -18,9 +18,8 @@ export function Hero() {
         <div className="absolute inset-0 flex items-center">
           <div className="relative p-4 sm:p-6 md:p-12 max-w-xl">
             <div className="h-1 w-8 sm:w-10 bg-primary rounded-full mb-3 sm:mb-5" />
-            <h1 className="font-display font-extrabold text-[1.6rem] xs:text-3xl sm:text-5xl md:text-6xl leading-[1] sm:leading-[0.95] text-white drop-shadow-lg">
-              Tu indumentaria<br />
-              deportiva <span className="text-primary">en Vera</span>
+            <h1 className="font-display font-extrabold text-[1.35rem] xs:text-3xl sm:text-5xl md:text-6xl leading-[1.05] sm:leading-[0.95] text-white drop-shadow-lg max-w-[10rem] xs:max-w-[14rem] sm:max-w-none">
+              Tu indumentaria deportiva <span className="text-primary">en Vera</span>
             </h1>
             <p className="mt-3 sm:mt-5 italic text-white/90 max-w-[16rem] sm:max-w-xs text-xs sm:text-sm md:text-base leading-relaxed drop-shadow">
               Zapatillas, shorts, remeras, buzos y accesorios para tu día a día y
