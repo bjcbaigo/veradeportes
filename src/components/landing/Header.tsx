@@ -20,9 +20,9 @@ function ThemeToggle() {
     <button
       onClick={() => setDark((v) => !v)}
       aria-label="Cambiar tema"
-      className="inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-secondary transition"
+      className="inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-lg hover:bg-secondary transition"
     >
-      {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {dark ? <Sun className="h-[18px] w-[18px] sm:h-5 sm:w-5" /> : <Moon className="h-[18px] w-[18px] sm:h-5 sm:w-5" />}
     </button>
   );
 }
