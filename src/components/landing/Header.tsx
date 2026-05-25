@@ -54,12 +54,22 @@ export function Header() {
             ))}
           </nav>
           <ThemeToggle />
+          <a
+            href={waLink("Hola! Quiero hacer una consulta.")}
+            target="_blank"
+            rel="noopener"
+            aria-label="WhatsApp"
+            className="inline-flex h-9 w-9 sm:h-10 sm:w-auto sm:px-3 items-center justify-center gap-1.5 rounded-lg bg-whatsapp text-whatsapp-foreground hover:scale-105 transition shrink-0"
+          >
+            <MessageCircle className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline text-sm font-semibold">WhatsApp</span>
+          </a>
           <button
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg hover:bg-secondary"
+            className="inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-lg hover:bg-secondary"
             onClick={() => setOpen((v) => !v)}
             aria-label="Menú"
           >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" strokeWidth={2.5} />}
+            {open ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />}
           </button>
         </div>
       </div>
