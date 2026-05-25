@@ -1,0 +1,1 @@
+drop policy if exists "Fotos productos publicas" on storage.objects;
