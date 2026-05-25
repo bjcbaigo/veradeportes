@@ -1,5 +1,5 @@
 import { ArrowRight, Percent } from "lucide-react";
-import zap from "@/assets/p-zapatillas-1.jpg";
+import zap from "@/assets/cat-zapatillas.png";
 import rem from "@/assets/p-remera-1.jpg";
 import sho from "@/assets/p-short-1.jpg";
 import buz from "@/assets/p-buzo-2.jpg";
