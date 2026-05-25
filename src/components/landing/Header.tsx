@@ -1,7 +1,7 @@
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import logo from "@/assets/logo-vera.png";
-import { SITE } from "@/lib/site";
+import { SITE, waLink } from "@/lib/site";
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
