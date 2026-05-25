@@ -40,9 +40,9 @@ export function Header() {
     <header className="sticky top-0 z-40 bg-background border-b border-border">
       <div className="mx-auto max-w-6xl flex items-center justify-between px-4 h-16">
         <a href="#top" className="flex items-center gap-2">
-          <img src={logo} alt="Vera Deportes" className="h-14 w-auto" width={120} height={120} />
+          <img src={logo} alt="Vera Deportes" className="h-10 w-auto" width={120} height={120} />
           <span className="font-display font-extrabold text-lg tracking-tight leading-none">
-            Vera<span className="text-primary">Deportes</span>
+            <span className="text-primary">VERA</span> DEPORTES
           </span>
         </a>
         <div className="flex items-center gap-1">
