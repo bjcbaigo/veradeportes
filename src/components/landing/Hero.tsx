@@ -26,19 +26,19 @@ export function Hero() {
               tu mejor rendimiento.
             </p>
 
-            <div className="mt-7 flex flex-col sm:flex-row gap-3">
+            <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <a
                 href={waLink("Hola! Quiero hacer una consulta sobre productos.")}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition"
+                className="inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-primary px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
               >
-                <MessageCircle className="h-5 w-5" />
+                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                 Consultar por WhatsApp
               </a>
               <a
                 href="#productos"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-5 text-[15px] font-semibold text-white hover:bg-white/20 transition"
+                className="inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 transition whitespace-nowrap"
               >
                 Ver productos
               </a>
