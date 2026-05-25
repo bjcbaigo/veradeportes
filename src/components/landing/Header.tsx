@@ -39,9 +39,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border">
       <div className="mx-auto max-w-6xl flex items-center justify-between px-4 h-16">
-        <a href="#top" className="flex items-center gap-2">
-          <img src={logo} alt="Vera Deportes" className="h-10 w-auto" width={120} height={120} />
-          <span className="font-display font-extrabold text-lg tracking-tight leading-none">
+        <a href="#top" className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <img src={logo} alt="Vera Deportes" className="h-8 sm:h-10 w-auto shrink-0" width={120} height={120} />
+          <span className="font-display font-extrabold text-sm sm:text-lg tracking-tight leading-none whitespace-nowrap">
             <span className="text-primary">VERA</span> DEPORTES
           </span>
         </a>
