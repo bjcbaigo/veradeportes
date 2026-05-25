@@ -24,7 +24,7 @@ export function Products() {
                 key={p.id}
                 className="flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-sm"
               >
-                <div className="aspect-square bg-secondary p-3">
+                <div className="aspect-square bg-[#e5e7eb] p-3">
                   <img
                     src={p.image}
                     alt={p.name}
