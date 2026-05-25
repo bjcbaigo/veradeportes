@@ -1,64 +1,42 @@
-import zap from "@/assets/p-zapatillas-2.jpg";
-import rem from "@/assets/p-remera-1.jpg";
-import sho from "@/assets/p-short-1.jpg";
+import { MessageCircle } from "lucide-react";
 import { waLink } from "@/lib/site";
-
-const PROMOS = [
-  { img: zap, off: "-20%" },
-  { img: rem, off: "-15%" },
-  { img: sho, off: "-20%" },
-];
 
 export function Promo() {
   return (
-    <section id="ofertas" className="py-6">
+    <section id="ofertas" className="py-8">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-4 md:p-6">
-          {/* diagonal pattern */}
+        <div className="relative overflow-hidden rounded-3xl bg-primary p-6 md:p-10">
           <div
-            className="absolute inset-0 opacity-20 pointer-events-none"
+            className="absolute inset-0 opacity-10 pointer-events-none"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(135deg, transparent 0 14px, rgba(255,255,255,.4) 14px 16px)",
+                "repeating-linear-gradient(135deg, transparent 0 22px, rgba(0,0,0,.3) 22px 24px)",
             }}
           />
-          <div className="relative flex flex-col md:flex-row md:items-center gap-4">
-            <div className="md:w-1/3">
-              <h2 className="font-display font-extrabold text-2xl md:text-3xl leading-tight">
-                PROMOS<br />DE LA SEMANA
+          <div className="relative flex flex-col md:flex-row items-center gap-6 md:gap-10">
+            <div className="flex-1 text-center md:text-left">
+              <span className="inline-block bg-ink text-ink-foreground text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+                Ofertas limitadas
+              </span>
+              <h2 className="font-display font-extrabold text-3xl md:text-5xl text-primary-foreground leading-tight">
+                Hasta 25% OFF
               </h2>
-              <p className="mt-1 text-sm text-white/90">
-                Descuentos imperdibles en seleccionados
+              <p className="mt-2 text-primary-foreground/90 text-sm md:text-base">
+                Zapatillas, remeras, shorts y buzos con descuento esta semana.
+                Consultá stock y talles por WhatsApp.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 md:flex-1 justify-center">
-              {PROMOS.map((p, i) => (
-                <div key={i} className="relative">
-                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-white p-1.5 shadow-md">
-                    <img
-                      src={p.img}
-                      alt="Promo"
-                      loading="lazy"
-                      width={160}
-                      height={160}
-                      className="h-full w-full object-contain rounded-full"
-                    />
-                  </div>
-                  <span className="absolute -top-1 -right-1 rounded-full bg-ink text-ink-foreground text-[10px] font-bold px-2 py-0.5">
-                    {p.off}
-                  </span>
-                </div>
-              ))}
-            </div>
-
             <a
-              href={waLink("Hola! Quiero ver las promos de la semana.")}
+              href={waLink(
+                "¡Hola! Vi las promociones de la semana y quiero aprovechar. ¿Qué productos tienen con descuento?"
+              )}
               target="_blank"
               rel="noopener"
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-ink px-5 text-sm font-bold text-ink-foreground hover:bg-black transition self-stretch md:self-auto"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-ink px-6 h-12 text-sm font-bold text-ink-foreground hover:bg-black transition shadow-xl whitespace-nowrap"
             >
-              Ver ofertas
+              <MessageCircle className="h-5 w-5" />
+              Pedir por WhatsApp
             </a>
           </div>
         </div>
