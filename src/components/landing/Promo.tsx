@@ -15,7 +15,7 @@ export function Promo() {
           />
           <div className="relative flex flex-col md:flex-row items-center gap-6 md:gap-10">
             <div className="flex-1 text-center md:text-left">
-              <span className="inline-block bg-ink text-ink-foreground text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+              <span className="inline-block bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
                 Ofertas limitadas
               </span>
               <h2 className="font-display font-extrabold text-3xl md:text-5xl text-primary-foreground leading-tight">
