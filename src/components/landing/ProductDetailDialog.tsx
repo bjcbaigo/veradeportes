@@ -28,7 +28,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         <div className="grid md:grid-cols-2 bg-card">
-          <div className="aspect-square bg-[#e5e7eb] p-6 flex items-center justify-center">
+          <div className="aspect-square bg-[#f3f4f6] p-6 flex items-center justify-center">
             <img
               src={product.image}
               alt={product.name}

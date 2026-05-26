@@ -22,7 +22,7 @@ export function Trust() {
   return (
     <section className="py-6">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="rounded-2xl bg-card border border-border shadow-sm divide-y md:divide-y-0 md:divide-x divide-border md:grid md:grid-cols-3">
+        <div className="rounded-3xl bg-card border border-border divide-y md:divide-y-0 md:divide-x divide-border md:grid md:grid-cols-3">
           {ITEMS.map(({ icon: Icon, title, text }) => (
             <div key={title} className="flex items-start gap-3 p-4">
               <span className="flex-none inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary text-primary">

@@ -36,7 +36,7 @@ export function Contact() {
               href={href}
               target="_blank"
               rel="noopener"
-              className="flex items-center gap-3 rounded-2xl bg-card border border-border shadow-sm p-3 hover:border-primary/50 transition"
+              className="flex items-center gap-3 rounded-3xl bg-card border border-border p-3 hover:border-primary hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition"
             >
               <span className={`flex-none inline-flex h-11 w-11 items-center justify-center rounded-full ${accent}`}>
                 <Icon className="h-5 w-5" />
