@@ -31,7 +31,7 @@ export function Products() {
             return (
               <article
                 key={p.id}
-                className="flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-md text-left cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:border-primary/50 transition-all duration-200"
+                className="flex flex-col rounded-3xl bg-card border border-border overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06)] text-left cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:border-primary/40 transition-all duration-300"
                 onClick={() => handleSelect(p)}
                 role="button"
                 tabIndex={0}
@@ -42,7 +42,7 @@ export function Products() {
                   }
                 }}
               >
-                <div className="aspect-square bg-[#e5e7eb] p-3">
+                <div className="aspect-square bg-[#f3f4f6] p-3">
                   <img
                     src={p.image}
                     alt={p.name}

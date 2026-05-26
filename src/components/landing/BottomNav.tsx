@@ -9,7 +9,7 @@ const ITEMS = [
 
 export function BottomNav() {
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-background border-t border-border">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-background border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
       <div className="grid grid-cols-4">
         {ITEMS.map(({ label, icon: Icon, href }) => (
           <a
