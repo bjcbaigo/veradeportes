@@ -4,14 +4,14 @@ import { waLink } from "@/lib/site";
 
 export function Hero() {
   return (
-    <section id="top" className="px-4 pt-4">
-      <div className="relative overflow-hidden rounded-3xl">
+    <section id="top" className="w-full">
+      <div className="relative overflow-hidden w-full">
         <img
           src={hero}
           alt="Portada Vera Deportes"
           width={1916}
           height={821}
-          className="w-full h-auto object-cover"
+          className="w-full h-[420px] sm:h-auto object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
 
