@@ -31,11 +31,10 @@ export function Hero() {
                 href={waLink("Hola! Quiero hacer una consulta sobre productos.")}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 sm:px-5 text-sm sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
+                className="inline-flex w-full sm:w-auto h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
               >
-                <MessageCircle className="h-5 w-5" />
-                <span className="sm:hidden">Consultar por WhatsApp</span>
-                <span className="hidden sm:inline">Consultar por WhatsApp</span>
+                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <span>Consultar por WhatsApp</span>
               </a>
               <a
                 href="#productos"
