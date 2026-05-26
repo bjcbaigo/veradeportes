@@ -33,7 +33,7 @@ export function Categories() {
               <a
                 key={c.label}
                 href="#productos"
-                className="flex flex-col items-center justify-between rounded-3xl bg-card border border-border/70 p-3 w-[110px] md:w-auto hover:border-primary/50 transition"
+                className="flex flex-col items-center justify-between rounded-3xl bg-[#e5e7eb] border border-border/70 p-3 w-[110px] md:w-auto hover:border-primary/50 transition"
               >
                 <div className="h-16 w-16 md:h-20 md:w-20 flex items-center justify-center">
                   {c.icon ? (
@@ -51,7 +51,7 @@ export function Categories() {
                     />
                   )}
                 </div>
-                <span className="mt-2 text-[13px] font-bold">{c.label}</span>
+                <span className="mt-2 text-[13px] font-bold text-neutral-900">{c.label}</span>
               </a>
             ))}
           </div>
