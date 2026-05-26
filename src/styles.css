@@ -43,7 +43,7 @@
   --font-sans: "Inter", system-ui, sans-serif;
 
   /* Vera Deportes palette */
-  --background: oklch(1 0 0);                 /* white */
+  --background: oklch(0.92 0.004 247);        /* #e5e7eb - gris unificado landing */
   --foreground: oklch(0.18 0 0);              /* near black #050505 */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0 0);
