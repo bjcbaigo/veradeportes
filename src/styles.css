@@ -33,6 +33,7 @@
   --color-ink-foreground: var(--ink-foreground);
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
+  --color-page: var(--page);
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 }
