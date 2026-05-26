@@ -51,7 +51,7 @@ export function Categories() {
                     />
                   )}
                 </div>
-                <span className="mt-2 text-[13px] font-bold">{c.label}</span>
+                <span className="mt-2 text-[13px] font-bold text-neutral-900">{c.label}</span>
               </a>
             ))}
           </div>
