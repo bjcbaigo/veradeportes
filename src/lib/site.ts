@@ -5,7 +5,7 @@ export const SITE = {
   address: "Av. Principal 123, Vera, Santa Fe",
   hours: "Lun a Sáb · 9 a 13 y 17 a 21 hs",
   whatsappNumber: "5493400000000", // formato internacional sin +
-  instagram: "https://instagram.com/veradeportes",
+  instagram: "https://www.instagram.com/vera_deportes/",
   maps: "https://maps.google.com/?q=Vera+Santa+Fe",
 };
 
