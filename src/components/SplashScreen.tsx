@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logo from "@/assets/logo-vera.png";
+import logo from "@/assets/splash-logo.png";
 
 export function SplashScreen() {
   const [visible, setVisible] = useState(true);
@@ -25,7 +25,7 @@ export function SplashScreen() {
       <img
         src={logo}
         alt="Vera Deportes"
-        className="h-32 w-32 sm:h-40 sm:w-40 object-contain animate-scale-in brightness-0 invert"
+        className="h-56 w-56 sm:h-72 sm:w-72 object-contain animate-scale-in"
       />
     </div>
   );
