@@ -18,10 +18,10 @@ export function Promo() {
               <span className="inline-block bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
                 Ofertas limitadas
               </span>
-              <h2 className="font-display font-extrabold text-3xl md:text-5xl text-primary-foreground leading-tight">
-                Hasta 25% OFF
+              <h2 className="font-display font-extrabold text-3xl md:text-5xl text-ink-foreground leading-tight">
+                Hasta <span className="text-primary">25% OFF</span>
               </h2>
-              <p className="mt-2 text-primary-foreground/90 text-sm md:text-base">
+              <p className="mt-2 text-ink-foreground/90 text-sm md:text-base">
                 Zapatillas, remeras, shorts y buzos con descuento esta semana.
                 Consultá stock y talles por WhatsApp.
               </p>
