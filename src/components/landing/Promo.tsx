@@ -5,7 +5,7 @@ export function Promo() {
   return (
     <section id="ofertas" className="py-8">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="relative overflow-hidden rounded-3xl bg-primary p-6 md:p-10">
+        <div className="relative overflow-hidden rounded-3xl bg-ink p-6 md:p-10 ring-1 ring-black/20 shadow-2xl">
           <div
             className="absolute inset-0 opacity-10 pointer-events-none"
             style={{
