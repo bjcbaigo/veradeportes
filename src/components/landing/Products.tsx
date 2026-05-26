@@ -31,7 +31,7 @@ export function Products() {
             return (
               <article
                 key={p.id}
-                className="flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-sm text-left cursor-pointer hover:shadow-md hover:border-primary/40 transition"
+                className="flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-md text-left cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:border-primary/50 transition-all duration-200"
                 onClick={() => handleSelect(p)}
                 role="button"
                 tabIndex={0}
