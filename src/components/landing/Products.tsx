@@ -1,8 +1,17 @@
-import { MessageCircle, Star, ArrowRight } from "lucide-react";
-import { PRODUCTS } from "@/lib/products";
-import { waLink } from "@/lib/site";
+import { useState } from "react";
+import { Star, ArrowRight } from "lucide-react";
+import { PRODUCTS, type Product } from "@/lib/products";
+import { ProductDetailDialog } from "./ProductDetailDialog";
 
 export function Products() {
+  const [selected, setSelected] = useState<Product | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const handleSelect = (p: Product) => {
+    setSelected(p);
+    setOpen(true);
+  };
+
   return (
     <section id="productos" className="py-8">
       <div className="mx-auto max-w-6xl px-4">
@@ -22,7 +31,16 @@ export function Products() {
             return (
               <article
                 key={p.id}
-                className="flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-sm"
+                className="flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-sm text-left cursor-pointer hover:shadow-md hover:border-primary/40 transition"
+                onClick={() => handleSelect(p)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleSelect(p);
+                  }
+                }}
               >
                 <div className="aspect-square bg-[#e5e7eb] p-3">
                   <img
@@ -49,21 +67,20 @@ export function Products() {
                     <Star className="h-3.5 w-3.5 fill-primary" />
                     <span className="text-muted-foreground ml-1">({reviews})</span>
                   </div>
-                  <a
-                    href={waLink(`Hola! Quiero consultar el talle de: ${p.name}.`)}
-                    target="_blank"
-                    rel="noopener"
-                    className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-primary text-primary h-9 text-[12px] font-bold hover:bg-primary hover:text-primary-foreground transition"
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                    Consultar talle
-                  </a>
+                  <p className="mt-1 font-display font-extrabold text-primary text-[15px]">
+                    {p.price}
+                  </p>
+                  <span className="mt-1 inline-flex items-center justify-center gap-1 rounded-lg bg-primary text-primary-foreground h-9 text-[12px] font-bold">
+                    Ver detalles
+                  </span>
                 </div>
               </article>
             );
           })}
         </div>
       </div>
+
+      <ProductDetailDialog product={selected} open={open} onOpenChange={setOpen} />
     </section>
   );
 }
