@@ -43,7 +43,7 @@
   --font-sans: "Inter", system-ui, sans-serif;
 
   /* Vera Deportes palette */
-  --background: oklch(0.92 0.004 247);        /* #e5e7eb - gris unificado landing */
+  --background: oklch(1 0 0);                 /* white surfaces (header, cards, footer) */
   --foreground: oklch(0.18 0 0);              /* near black #050505 */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0 0);
@@ -57,7 +57,7 @@
   --secondary-foreground: oklch(0.18 0 0);
 
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.45 0 0);        /* dark gray */
+  --muted-foreground: oklch(0.45 0 0);
 
   --accent: oklch(0.68 0.22 38);
   --accent-foreground: oklch(1 0 0);
@@ -65,7 +65,7 @@
   --destructive: oklch(0.58 0.24 27);
   --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.78 0 0);                  /* #c4c4c4 - visible sobre fondo gris */
+  --border: oklch(0.9 0 0);
   --input: oklch(0.92 0 0);
   --ring: oklch(0.68 0.22 38);
 
@@ -74,6 +74,9 @@
 
   --whatsapp: oklch(0.72 0.16 153);
   --whatsapp-foreground: oklch(1 0 0);
+
+  /* Page background (behind sections) */
+  --page: oklch(0.68 0.22 38);                /* orange #FF4B00 */
 }
 
 .dark {
@@ -107,7 +110,7 @@
   }
 
   body {
-    background-color: var(--color-background);
+    background-color: var(--page);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
