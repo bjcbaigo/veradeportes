@@ -10,6 +10,7 @@ import { Social } from "@/components/landing/Social";
 import { Footer } from "@/components/landing/Footer";
 import { BottomNav } from "@/components/landing/BottomNav";
 import { WhatsAppFab } from "@/components/landing/WhatsAppFab";
+import { SplashScreen } from "@/components/SplashScreen";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="min-h-screen bg-page text-foreground pb-4">
+      <SplashScreen />
       <Header />
       <Hero />
       <Categories />
