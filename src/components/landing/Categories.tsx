@@ -1,9 +1,9 @@
 import { ArrowRight, Percent } from "lucide-react";
 import zap from "@/assets/cat-zapatillas.png";
-import rem from "@/assets/p-remera-1.jpg";
-import sho from "@/assets/p-short-1.jpg";
-import buz from "@/assets/p-buzo-2.jpg";
-import acc from "@/assets/p-acc-1.jpg";
+import rem from "@/assets/cat-remeras.png";
+import sho from "@/assets/cat-shorts.png";
+import buz from "@/assets/cat-buzos.png";
+import acc from "@/assets/cat-accesorios.png";
 
 const CATS = [
   { label: "Zapatillas", image: zap },
