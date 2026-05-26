@@ -33,7 +33,7 @@ export function Promo() {
               )}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-ink px-6 h-12 text-sm font-bold text-ink-foreground hover:bg-black transition shadow-xl whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 h-12 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition shadow-xl whitespace-nowrap"
             >
               <MessageCircle className="h-5 w-5" />
               Pedir por WhatsApp
