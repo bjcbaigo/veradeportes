@@ -1,11 +1,52 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Star, ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { PRODUCTS, type Product } from "@/lib/products";
+import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { ProductDetailDialog } from "./ProductDetailDialog";
+
+const fmt = (raw: string) => {
+  const n = Number(String(raw).replace(/[^\d.-]/g, ""));
+  if (!Number.isFinite(n) || n <= 0) return raw || "";
+  return "$" + n.toLocaleString("es-AR", { maximumFractionDigits: 0 });
+};
+
+function sheetToProduct(s: SheetProduct): Product {
+  const parts = s.nombre.split(" ");
+  const brand = parts[0] || s.categoria;
+  return {
+    id: s.id || String(s.rowIndex),
+    sku: `SHEET-${s.id || s.rowIndex}`,
+    name: s.nombre,
+    brand,
+    category: s.categoria,
+    price: fmt(s.precio),
+    image: s.imagen_url || "",
+    badge: s.destacado ? "Destacado" : undefined,
+    description: s.descripcion,
+  };
+}
 
 export function Products() {
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
+
+  const fetchSheet = useServerFn(listSheetProducts);
+  const { data: sheetRows } = useQuery({
+    queryKey: ["sheet-products"],
+    queryFn: () => fetchSheet(),
+    staleTime: 5 * 60_000,
+  });
+
+  const products = useMemo<Product[]>(() => {
+    if (!sheetRows || sheetRows.length === 0) return PRODUCTS;
+    const active = sheetRows.filter((r) => r.activo && r.nombre);
+    if (active.length === 0) return PRODUCTS;
+    return active
+      .map(sheetToProduct)
+      .sort((a, b) => Number(b.badge === "Destacado") - Number(a.badge === "Destacado"));
+  }, [sheetRows]);
 
   const handleSelect = (p: Product) => {
     setSelected(p);
@@ -25,9 +66,9 @@ export function Products() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {PRODUCTS.map((p) => {
-            const rating = (4 + ((parseInt(p.id) * 7) % 9) / 10).toFixed(1);
-            const reviews = 12 + parseInt(p.id) * 4;
+          {products.map((p) => {
+            const idNum = parseInt(p.id) || 1;
+            const reviews = 12 + idNum * 4;
             return (
               <article
                 key={p.id}
@@ -42,15 +83,21 @@ export function Products() {
                   }
                 }}
               >
-                <div className="aspect-square bg-[#f3f4f6] p-3">
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    loading="lazy"
-                    width={400}
-                    height={400}
-                    className="h-full w-full object-contain"
-                  />
+                <div className="aspect-square bg-[#e5e7eb] p-3">
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      loading="lazy"
+                      width={400}
+                      height={400}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
+                      Sin imagen
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5 px-3 pb-3">
                   {p.badge && (
