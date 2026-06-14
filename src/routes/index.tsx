@@ -87,7 +87,7 @@ function Intriga() {
 
       {/* Center content */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-5 py-16">
-        <span className="inline-block bg-white/10 backdrop-blur text-white text-[11px] sm:text-xs font-bold tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/20">
+        <span className="inline-block bg-black/10 dark:bg-white/10 backdrop-blur text-[var(--color-foreground)] text-[11px] sm:text-xs font-bold tracking-[0.2em] px-3 py-1.5 rounded-full border border-black/20 dark:border-white/20">
           MUY PRONTO
         </span>
 
@@ -96,7 +96,7 @@ function Intriga() {
           está por llegar
         </h1>
 
-        <p className="mt-6 text-neutral-300 text-base sm:text-lg max-w-md">
+        <p className="mt-6 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-md">
           La comunidad deportiva de Vera y la región<br className="hidden sm:block" />
           tiene un nuevo punto de encuentro.
         </p>
@@ -110,7 +110,7 @@ function Intriga() {
         </Link>
       </section>
 
-      <footer className="relative z-10 text-center pb-6 text-xs text-neutral-500">
+      <footer className="relative z-10 text-center pb-6 text-xs text-neutral-400 dark:text-neutral-500">
         © {new Date().getFullYear()} Vera Deportes
       </footer>
     </main>
