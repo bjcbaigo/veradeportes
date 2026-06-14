@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { ArrowRight, Instagram, Facebook, MessageCircle, Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
 import logo from "@/assets/splash-logo.png";
 
@@ -23,8 +24,25 @@ export const Route = createFileRoute("/")({
 });
 
 function Intriga() {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = localStorage.getItem("vd-theme");
+    if (stored) return stored === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("vd-theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("vd-theme", "light");
+    }
+  }, [isDark]);
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black text-white font-sans flex flex-col">
+    <main className="relative min-h-screen overflow-hidden bg-[var(--page)] text-[var(--color-foreground)] font-sans flex flex-col">
       <SplashScreen />
 
       {/* Glow background */}
@@ -53,7 +71,14 @@ function Intriga() {
             VERA <span className="text-[#FF4B00]">DEPORTES</span>
           </span>
         </div>
-        <div className="hidden sm:flex items-center gap-4 text-sm text-neutral-400">
+        <div className="flex items-center gap-3 sm:gap-4 text-sm text-neutral-500 dark:text-neutral-400">
+          <button
+            onClick={() => setIsDark((d) => !d)}
+            aria-label={isDark ? "Modo claro" : "Modo oscuro"}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-black/10 dark:bg-white/10 backdrop-blur hover:text-[#FF4B00] transition"
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           <a href="#" aria-label="Instagram" className="hover:text-[#FF4B00]"><Instagram className="h-5 w-5" /></a>
           <a href="#" aria-label="Facebook" className="hover:text-[#FF4B00]"><Facebook className="h-5 w-5" /></a>
           <a href="#" aria-label="WhatsApp" className="hover:text-[#FF4B00]"><MessageCircle className="h-5 w-5" /></a>
@@ -62,7 +87,7 @@ function Intriga() {
 
       {/* Center content */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-5 py-16">
-        <span className="inline-block bg-white/10 backdrop-blur text-white text-[11px] sm:text-xs font-bold tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/20">
+        <span className="inline-block bg-black/10 dark:bg-white/10 backdrop-blur text-[var(--color-foreground)] text-[11px] sm:text-xs font-bold tracking-[0.2em] px-3 py-1.5 rounded-full border border-black/20 dark:border-white/20">
           MUY PRONTO
         </span>
 
@@ -71,7 +96,7 @@ function Intriga() {
           está por llegar
         </h1>
 
-        <p className="mt-6 text-neutral-300 text-base sm:text-lg max-w-md">
+        <p className="mt-6 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-md">
           La comunidad deportiva de Vera y la región<br className="hidden sm:block" />
           tiene un nuevo punto de encuentro.
         </p>
@@ -85,7 +110,7 @@ function Intriga() {
         </Link>
       </section>
 
-      <footer className="relative z-10 text-center pb-6 text-xs text-neutral-500">
+      <footer className="relative z-10 text-center pb-6 text-xs text-neutral-400 dark:text-neutral-500">
         © {new Date().getFullYear()} Vera Deportes
       </footer>
     </main>
