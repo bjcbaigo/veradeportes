@@ -2,8 +2,9 @@ import nike from "@/assets/brands/nike.png.asset.json";
 import adidas from "@/assets/brands/adidas.svg.asset.json";
 import puma from "@/assets/brands/puma.png.asset.json";
 import topper from "@/assets/brands/topper.svg.asset.json";
-import asics from "@/assets/brands/asics.png.asset.json";
-import skechers from "@/assets/brands/skechers.png.asset.json";
+import asics from "@/assets/brands/asics-black.png.asset.json";
+import skechers from "@/assets/brands/skechers-black.png.asset.json";
+import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
 
 const BRANDS = [
   { name: "Nike", src: nike.url },
@@ -12,6 +13,7 @@ const BRANDS = [
   { name: "Topper", src: topper.url },
   { name: "Asics", src: asics.url },
   { name: "Skechers", src: skechers.url },
+  { name: "New Balance", src: nbLogo.url },
 ];
 
 export function Brands() {
