@@ -8,7 +8,7 @@ import asicsGame from "@/assets/p-asics-gamefF.png";
 import asicsTask4 from "@/assets/p-asics-task4.png";
 import asicsSonoma7 from "@/assets/p-asics-sonoma7.png";
 import asicsExcite10 from "@/assets/p-asics-excite10.png";
-import asicsChallenger14 from "@/assets/p-asics-challenger14.png";
+import asicsChallenger14 from "@/assets/asics-challenger14.png.asset.json";
 
 export type Product = {
   id: string;
@@ -37,7 +37,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(159990),
     priceOld: fmt(189990),
-    image: asicsChallenger14,
+    image: asicsChallenger14.url,
     badge: "Oferta",
     description: "Confort y estabilidad para jugadores de pádel. Tecnología DYNAWING para movimientos laterales seguros, sistema GEL en el talón que absorbe impactos, puntera PGUARD y suela AHARPLUS para mayor durabilidad.",
     idealFor: "Pádel, tenis y deportes de cancha.",
