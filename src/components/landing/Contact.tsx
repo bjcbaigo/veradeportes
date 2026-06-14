@@ -31,7 +31,7 @@ export function Contact() {
     <section id="contacto" className="py-6">
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {CARDS.map(({ icon: Icon, title, text, href, accent }) => (
+          {CARDS.map(({ icon, image, title, text, href, accent }) => (
             <a
               key={title}
               href={href}
@@ -39,8 +39,12 @@ export function Contact() {
               rel="noopener"
               className="flex items-center gap-3 rounded-3xl bg-card border border-border p-3 hover:border-primary hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition"
             >
-              <span className={`flex-none inline-flex h-11 w-11 items-center justify-center rounded-full ${accent}`}>
-                <Icon className="h-5 w-5" />
+              <span className={`flex-none inline-flex h-11 w-11 items-center justify-center rounded-full overflow-hidden ${accent}`}>
+                {image ? (
+                  <img src={image} alt={title} className="h-full w-full object-cover" />
+                ) : (
+                  icon && <icon className="h-5 w-5" />
+                )}
               </span>
               <div>
                 <p className="font-display font-bold text-sm leading-tight">{title}</p>
