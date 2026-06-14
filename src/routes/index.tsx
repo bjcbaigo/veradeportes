@@ -26,6 +26,10 @@ import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/splash-logo.png";
 import athletes from "@/assets/coming-athletes.jpg";
 import kit from "@/assets/coming-kit.jpg";
+import adidasLogo from "@/assets/brands/adidas.svg.asset.json";
+import pumaLogo from "@/assets/brands/puma.png.asset.json";
+import topperLogo from "@/assets/brands/topper.svg.asset.json";
+import asicsLogo from "@/assets/brands/asics.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
