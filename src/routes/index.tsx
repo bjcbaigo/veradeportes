@@ -179,28 +179,30 @@ function Intriga() {
 
       {/* Center content */}
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-5 py-16">
-        <span className="inline-block bg-black/10 dark:bg-white/10 backdrop-blur text-[var(--color-foreground)] text-[11px] sm:text-xs font-bold tracking-[0.2em] px-3 py-1.5 rounded-full border border-black/20 dark:border-white/20">
-          MUY PRONTO
-        </span>
+        <div className="w-full max-w-2xl lg:max-w-xl">
+          <span className="inline-block bg-black/10 dark:bg-white/10 backdrop-blur text-[var(--color-foreground)] text-[11px] sm:text-xs font-bold tracking-[0.2em] px-3 py-1.5 rounded-full border border-black/20 dark:border-white/20">
+            MUY PRONTO
+          </span>
 
-        <h1 className="font-display font-extrabold italic uppercase mt-6 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight max-w-4xl">
-          Algo <span className="text-[#FF4B00]">nuevo</span><br />
-          está por llegar
-        </h1>
+          <h1 className="font-display font-extrabold italic uppercase mt-6 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight">
+            Algo <span className="text-[#FF4B00]">nuevo</span><br />
+            está por llegar
+          </h1>
 
-        <p className="mt-6 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-md">
-          La comunidad deportiva de Vera y la región<br className="hidden sm:block" />
-          tiene un nuevo punto de encuentro.
-        </p>
+          <p className="mt-6 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-md mx-auto">
+            La comunidad deportiva de Vera y la región<br className="hidden sm:block" />
+            tiene un nuevo punto de encuentro.
+          </p>
 
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#FF4B00] hover:bg-[#e54300] text-white font-bold text-sm sm:text-base px-7 py-4 tracking-wide transition shadow-[0_10px_40px_-10px_rgba(255,75,0,0.8)]"
-        >
-          QUIERO SABER MÁS
-          <ArrowRight className="h-4 w-4" />
-        </button>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#FF4B00] hover:bg-[#e54300] text-white font-bold text-sm sm:text-base px-7 py-4 tracking-wide transition shadow-[0_10px_40px_-10px_rgba(255,75,0,0.8)]"
+          >
+            QUIERO SABER MÁS
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
       </section>
 
       <footer className="relative z-10 text-center pb-6 text-xs text-neutral-400 dark:text-neutral-500">
