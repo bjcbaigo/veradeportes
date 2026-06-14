@@ -31,7 +31,7 @@ import pumaLogo from "@/assets/brands/puma.png.asset.json";
 import topperLogo from "@/assets/brands/topper.svg.asset.json";
 import asicsLogo from "@/assets/brands/asics.png.asset.json";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/registro")({
   head: () => ({
     meta: [
       { title: "Vera Deportes — Algo grande está por llegar" },
