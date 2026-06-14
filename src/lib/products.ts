@@ -36,7 +36,7 @@ export const PRODUCTS: Product[] = [
     priceOld: fmt(189990),
     image: zapFresh,
     badge: "Oferta",
-    description: "Amortiguación Fresh Foam, ideal running.",
+    description: "Amortiguación Fresh Foam y diseño versátil para correr, caminar o usar todos los días.",
   },
   {
     id: "2",
@@ -57,7 +57,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(119000),
     image: galaxy7,
-    description: "Running mujer, amortiguación cómoda para uso diario.",
+    description: "Comodidad y amortiguación suave para running recreativo, caminatas y uso diario.",
   },
   {
     id: "4",
@@ -67,7 +67,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(159000),
     image: downshifter13,
-    description: "Running con buena amortiguación y diseño liviano.",
+    description: "Ligera, respirable y segura para entrenamientos urbanos y actividades cotidianas.",
   },
   {
     id: "5",
@@ -77,7 +77,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(119000),
     image: nbArishi4,
-    description: "Fresh Foam para running y uso diario.",
+    description: "Amortiguación Fresh Foam y diseño versátil para correr, caminar o usar todos los días.",
   },
   {
     id: "6",
@@ -87,7 +87,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(129000),
     image: nb520Beige,
-    description: "Clásico lifestyle en tono beige.",
+    description: "Confort deportivo y estilo urbano en una zapatilla suave, flexible y combinable.",
   },
   {
     id: "7",
@@ -97,7 +97,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(219000),
     image: asicsGame,
-    description: "Tenis multipista, livianas y flexibles.",
+    description: "Estabilidad y agilidad para movimientos rápidos y cambios de dirección en la cancha.",
   },
   {
     id: "8",
@@ -107,7 +107,7 @@ export const PRODUCTS: Product[] = [
     category: "Zapatillas",
     price: fmt(219000),
     image: asicsTask4,
-    description: "Voley indoor con gran agarre y estabilidad.",
+    description: "Amortiguación y soporte para vóley, handball y deportes en superficies interiores.",
   },
   {
     id: "9",
@@ -119,7 +119,7 @@ export const PRODUCTS: Product[] = [
     priceOld: fmt(179000),
     image: asicsSonoma7,
     badge: "Oferta",
-    description: "Trail running, suela con tracción off-road.",
+    description: "Agarre, protección y comodidad para senderos y terrenos irregulares.",
   },
   {
     id: "10",
@@ -131,6 +131,6 @@ export const PRODUCTS: Product[] = [
     priceOld: fmt(199000),
     image: asicsExcite10,
     badge: "Oferta",
-    description: "Running con amortiguación GEL para uso diario.",
+    description: "Pisada cómoda y fluida para running, caminatas y entrenamientos diarios.",
   },
 ];
