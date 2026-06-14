@@ -20,6 +20,8 @@ export type Product = {
   image: string;
   badge?: string;
   description?: string;
+  idealFor?: string;
+  features?: string;
 };
 
 const fmt = (n: number) =>
@@ -37,6 +39,8 @@ export const PRODUCTS: Product[] = [
     image: zapFresh,
     badge: "Oferta",
     description: "Amortiguación Fresh Foam y diseño versátil para correr, caminar o usar todos los días.",
+    idealFor: "Running recreativo, caminatas y uso urbano.",
+    features: "Tecnología Fresh Foam, malla transpirable, construcción liviana y suela de goma.",
   },
   {
     id: "2",
@@ -58,6 +62,8 @@ export const PRODUCTS: Product[] = [
     price: fmt(119000),
     image: galaxy7,
     description: "Comodidad y amortiguación suave para running recreativo, caminatas y uso diario.",
+    idealFor: "Running recreativo, caminatas y uso diario.",
+    features: "Mediasuela Cloudfoam, capellada textil respirable, ajuste con cordones y suela resistente.",
   },
   {
     id: "4",
@@ -68,6 +74,8 @@ export const PRODUCTS: Product[] = [
     price: fmt(159000),
     image: downshifter13,
     description: "Ligera, respirable y segura para entrenamientos urbanos y actividades cotidianas.",
+    idealFor: "Running urbano, caminatas, gimnasio y uso diario.",
+    features: "Capellada de malla, espuma suave, banda de sujeción en el mediopié y suela de goma durable.",
   },
   {
     id: "5",
@@ -88,6 +96,8 @@ export const PRODUCTS: Product[] = [
     price: fmt(129000),
     image: nb520Beige,
     description: "Confort deportivo y estilo urbano en una zapatilla suave, flexible y combinable.",
+    idealFor: "Running inicial, caminatas, gimnasio y uso cotidiano.",
+    features: "Mediasuela Fresh Foam, capellada de malla, ajuste con cordones y diseño flexible.",
   },
   {
     id: "7",
@@ -98,6 +108,8 @@ export const PRODUCTS: Product[] = [
     price: fmt(219000),
     image: asicsGame,
     description: "Estabilidad y agilidad para movimientos rápidos y cambios de dirección en la cancha.",
+    idealFor: "Tenis, pádel o deportes de cancha, según la versión.",
+    features: "Mediasuela FLYTEFOAM, sistema TRUSSTIC, refuerzos laterales y capellada ventilada.",
   },
   {
     id: "8",
@@ -108,6 +120,8 @@ export const PRODUCTS: Product[] = [
     price: fmt(219000),
     image: asicsTask4,
     description: "Amortiguación y soporte para vóley, handball y deportes en superficies interiores.",
+    idealFor: "Vóley, handball, bádminton y deportes de salón.",
+    features: "Tecnología GEL, sistema TRUSSTIC, suela de buen agarre y refuerzo en el talón.",
   },
   {
     id: "9",
@@ -120,6 +134,8 @@ export const PRODUCTS: Product[] = [
     image: asicsSonoma7,
     badge: "Oferta",
     description: "Agarre, protección y comodidad para senderos y terrenos irregulares.",
+    idealFor: "Trail running, senderismo y actividades al aire libre.",
+    features: "Mediasuela AMPLIFOAM, tecnología GEL, suela con tacos y estructura protectora.",
   },
   {
     id: "10",
@@ -132,5 +148,7 @@ export const PRODUCTS: Product[] = [
     image: asicsExcite10,
     badge: "Oferta",
     description: "Pisada cómoda y fluida para running, caminatas y entrenamientos diarios.",
+    idealFor: "Running sobre asfalto, caminatas y fitness.",
+    features: "AMPLIFOAM PLUS, tecnología GEL en el talón, malla técnica y plantilla OrthoLite.",
   },
 ];
