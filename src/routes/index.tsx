@@ -6,6 +6,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
 import { appendLeadToSheet } from "@/lib/leads-sheet.functions";
 import logo from "@/assets/splash-logo.png";
+import heroAthletes from "@/assets/hero-athletes.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -126,6 +127,20 @@ function Intriga() {
             "radial-gradient(circle at 50% 35%, rgba(255,75,0,0.35) 0%, rgba(255,75,0,0.10) 30%, rgba(0,0,0,0) 65%)",
         }}
       />
+      {/* Athletes side image */}
+      <img
+        src={heroAthletes}
+        alt=""
+        aria-hidden
+        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-[90vh] w-auto opacity-80 dark:opacity-90 pointer-events-none select-none z-0"
+      />
+      <img
+        src={heroAthletes}
+        alt=""
+        aria-hidden
+        className="md:hidden absolute right-[-30%] top-1/2 -translate-y-1/2 h-[70vh] w-auto opacity-25 pointer-events-none select-none z-0"
+      />
+
       <div
         aria-hidden
         className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[120%] h-80 pointer-events-none"
@@ -169,7 +184,7 @@ function Intriga() {
         </span>
 
         <h1 className="font-display font-extrabold italic uppercase mt-6 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight max-w-4xl">
-          Algo <span className="text-[#FF4B00]">grande</span><br />
+          Algo <span className="text-[#FF4B00]">nuevo</span><br />
           está por llegar
         </h1>
 
