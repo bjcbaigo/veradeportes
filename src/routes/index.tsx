@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Instagram, Facebook, MessageCircle, Moon, Sun, X, Mail, Check } from "lucide-react";
+import { ArrowRight, Instagram, MessageCircle, Moon, Sun, X, Mail, Check } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { SplashScreen } from "@/components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
+import { appendLeadToSheet } from "@/lib/leads-sheet.functions";
 import logo from "@/assets/splash-logo.png";
 
 export const Route = createFileRoute("/")({
