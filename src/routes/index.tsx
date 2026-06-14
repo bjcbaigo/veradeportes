@@ -126,7 +126,20 @@ function Intriga() {
           background:
             "radial-gradient(circle at 50% 35%, rgba(255,75,0,0.35) 0%, rgba(255,75,0,0.10) 30%, rgba(0,0,0,0) 65%)",
         }}
+      {/* Athletes side image */}
+      <img
+        src={heroAthletes}
+        alt=""
+        aria-hidden
+        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-[90vh] w-auto opacity-80 dark:opacity-90 pointer-events-none select-none z-0"
       />
+      <img
+        src={heroAthletes}
+        alt=""
+        aria-hidden
+        className="md:hidden absolute right-[-30%] top-1/2 -translate-y-1/2 h-[70vh] w-auto opacity-25 pointer-events-none select-none z-0"
+      />
+
       <div
         aria-hidden
         className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[120%] h-80 pointer-events-none"
