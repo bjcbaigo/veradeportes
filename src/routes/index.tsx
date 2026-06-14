@@ -157,7 +157,7 @@ function Intriga() {
             src={logo}
             alt="Vera Deportes"
             suppressHydrationWarning
-            className={`h-14 sm:h-16 w-auto transition ${mounted && !isDark ? "invert" : ""}`}
+            className={`h-14 sm:h-16 w-auto transition ${mounted && isDark ? "invert" : ""}`}
           />
           <span className="font-display font-extrabold text-lg sm:text-2xl tracking-tight">
             VERA <span className="text-[#FF4B00]">DEPORTES</span>
