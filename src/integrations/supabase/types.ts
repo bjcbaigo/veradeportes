@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      leads: {
+        Row: {
+          created_at: string
+          id: string
+          nombre: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nombre: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nombre?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
