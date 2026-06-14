@@ -8,6 +8,7 @@ import asicsGame from "@/assets/p-asics-gamefF.png";
 import asicsTask4 from "@/assets/p-asics-task4.png";
 import asicsSonoma7 from "@/assets/p-asics-sonoma7.png";
 import asicsExcite10 from "@/assets/p-asics-excite10.png";
+import asicsChallenger14 from "@/assets/p-asics-challenger14.png";
 
 export type Product = {
   id: string;
@@ -30,17 +31,17 @@ const fmt = (n: number) =>
 export const PRODUCTS: Product[] = [
   {
     id: "1",
-    sku: "NB-FF-001",
-    name: "New Balance Fresh Foam",
-    brand: "New Balance",
+    sku: "AS-CH14-PADEL",
+    name: "Asics Gel-Challenger 14 Padel",
+    brand: "Asics",
     category: "Zapatillas",
     price: fmt(159990),
     priceOld: fmt(189990),
-    image: zapFresh,
+    image: asicsChallenger14,
     badge: "Oferta",
-    description: "Amortiguación Fresh Foam y diseño versátil para correr, caminar o usar todos los días.",
-    idealFor: "Running recreativo, caminatas y uso urbano.",
-    features: "Tecnología Fresh Foam, malla transpirable, construcción liviana y suela de goma.",
+    description: "Confort y estabilidad para jugadores de pádel. Tecnología DYNAWING para movimientos laterales seguros, sistema GEL en el talón que absorbe impactos, puntera PGUARD y suela AHARPLUS para mayor durabilidad.",
+    idealFor: "Pádel, tenis y deportes de cancha.",
+    features: "Tecnología DYNAWING, sistema GEL trasero, puntera PGUARD, suela AHARPLUS, plantilla OrthoLite.",
   },
   {
     id: "2",
