@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { ArrowRight, Instagram, Facebook, MessageCircle, Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
 import logo from "@/assets/splash-logo.png";
 
