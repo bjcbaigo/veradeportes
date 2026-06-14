@@ -5,6 +5,7 @@ const GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const SHEET_NAME = "clientes_online";
 
 const Input = z.object({
+  nombre: z.string().min(1).max(120),
   email: z.string().email().max(200),
   telefono: z.string().min(6).max(30),
 });
@@ -14,7 +15,7 @@ export const appendLeadToSheet = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const lovableKey = process.env.LOVABLE_API_KEY;
     const sheetsKey = process.env.GOOGLE_SHEETS_API_KEY;
-    const sheetId = process.env.PRODUCTS_SHEET_ID;
+    const sheetId = process.env.LEADS_SHEET_ID;
     if (!lovableKey || !sheetsKey || !sheetId) {
       throw new Error("Faltan credenciales de Google Sheets");
     }
@@ -35,7 +36,7 @@ export const appendLeadToSheet = createServerFn({ method: "POST" })
       hour12: false,
     }).format(now);
 
-    const range = `${SHEET_NAME}!A:D`;
+    const range = `${SHEET_NAME}!A:E`;
     const res = await fetch(
       `${GATEWAY}/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
       {
@@ -48,7 +49,7 @@ export const appendLeadToSheet = createServerFn({ method: "POST" })
         body: JSON.stringify({
           range,
           majorDimension: "ROWS",
-          values: [[fecha, hora, data.email, data.telefono]],
+          values: [[fecha, hora, data.nombre, data.email, data.telefono]],
         }),
       },
     );
@@ -57,3 +58,4 @@ export const appendLeadToSheet = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+

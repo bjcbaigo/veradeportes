@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Instagram, MessageCircle, Moon, Sun, X, Mail, Check } from "lucide-react";
+import { ArrowRight, Instagram, MessageCircle, Moon, Sun, X, Mail, Check, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -24,21 +24,27 @@ export const Route = createFileRoute("/")({
 });
 
 function Intriga() {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const stored = localStorage.getItem("vd-theme");
-    if (stored) return stored === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [mounted, setMounted] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   const [open, setOpen] = useState(false);
   const appendToSheet = useServerFn(appendLeadToSheet);
+  const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
+    setMounted(true);
+    const stored = typeof window !== "undefined" ? localStorage.getItem("vd-theme") : null;
+    if (stored) setIsDark(stored === "dark");
+    else if (typeof window !== "undefined")
+      setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (isDark) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("vd-theme", "dark");
@@ -46,7 +52,8 @@ function Intriga() {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("vd-theme", "light");
     }
-  }, [isDark]);
+  }, [isDark, mounted]);
+
 
   useEffect(() => {
     if (!open) return;
@@ -57,10 +64,10 @@ function Intriga() {
 
   function closeModal() {
     setOpen(false);
-    // reset after animation
     setTimeout(() => {
       setStatus("idle");
       setErrorMsg("");
+      setNombre("");
       setEmail("");
       setPhone("");
     }, 200);
@@ -69,8 +76,14 @@ function Intriga() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg("");
+    const nm = nombre.trim();
     const em = email.trim();
     const ph = phone.trim();
+    if (nm.length < 2) {
+      setErrorMsg("Ingresá tu nombre y apellido.");
+      setStatus("error");
+      return;
+    }
     const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em);
     if (!emailOk) {
       setErrorMsg("Ingresá un email válido.");
@@ -85,19 +98,20 @@ function Intriga() {
     setStatus("loading");
     const { error } = await supabase
       .from("leads")
-      .insert({ nombre: em, email: em, whatsapp: ph });
+      .insert({ nombre: nm, email: em, whatsapp: ph });
     if (error) {
       setStatus("error");
       setErrorMsg("No pudimos registrarte. Intentá de nuevo.");
       return;
     }
     try {
-      await appendToSheet({ data: { email: em, telefono: ph } });
+      await appendToSheet({ data: { nombre: nm, email: em, telefono: ph } });
     } catch (err) {
       console.error("Sheet append failed", err);
     }
     setStatus("ok");
   }
+
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--page)] text-[var(--color-foreground)] font-sans flex flex-col">
@@ -132,10 +146,11 @@ function Intriga() {
         <div className="flex items-center gap-3 sm:gap-4 text-sm text-neutral-500 dark:text-neutral-400">
           <button
             onClick={() => setIsDark((d) => !d)}
-            aria-label={isDark ? "Modo claro" : "Modo oscuro"}
+            aria-label="Cambiar tema"
+            suppressHydrationWarning
             className="flex h-9 w-9 items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-black/10 dark:bg-white/10 backdrop-blur hover:text-[#FF4B00] transition"
           >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {mounted ? (isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />) : <Sun className="h-4 w-4" />}
           </button>
           <a href="https://www.instagram.com/vera_deportes" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-[#FF4B00]"><Instagram className="h-5 w-5" /></a>
           <a href="#" aria-label="WhatsApp" className="hover:text-[#FF4B00]"><MessageCircle className="h-5 w-5" /></a>
@@ -218,10 +233,23 @@ function Intriga() {
                   <div className="text-[#FF4B00]">EN ENTERARTE</div>
                 </h3>
                 <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-2">
-                  Dejanos tu email y teléfono y te contamos antes que a nadie.
+                  Dejanos tus datos y te contamos antes que a nadie.
                 </p>
 
                 <form onSubmit={onSubmit} className="mt-5 space-y-3">
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <input
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      type="text"
+                      autoComplete="name"
+                      maxLength={120}
+                      required
+                      placeholder="Nombre y apellido"
+                      className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
+                    />
+                  </div>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                     <input
