@@ -185,8 +185,8 @@ function Intriga() {
           </span>
 
           <h1 className="font-display font-extrabold italic uppercase mt-6 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight">
-            Algo <span className="text-[#FF4B00]">nuevo</span><br />
-            está por llegar
+            ALGO <span className="text-[#FF4B00]">NUEVO</span><br />
+            ESTA POR VERSE
           </h1>
 
           <p className="mt-6 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-md mx-auto">
