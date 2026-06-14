@@ -232,10 +232,23 @@ function Intriga() {
                   <div className="text-[#FF4B00]">EN ENTERARTE</div>
                 </h3>
                 <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-2">
-                  Dejanos tu email y teléfono y te contamos antes que a nadie.
+                  Dejanos tus datos y te contamos antes que a nadie.
                 </p>
 
                 <form onSubmit={onSubmit} className="mt-5 space-y-3">
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <input
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      type="text"
+                      autoComplete="name"
+                      maxLength={120}
+                      required
+                      placeholder="Nombre y apellido"
+                      className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
+                    />
+                  </div>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                     <input
