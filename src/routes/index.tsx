@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Instagram, Facebook, MessageCircle, Moon, Sun } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { ArrowRight, Instagram, Facebook, MessageCircle, Moon, Sun, X, Mail, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/splash-logo.png";
 
 export const Route = createFileRoute("/")({
@@ -14,10 +15,7 @@ export const Route = createFileRoute("/")({
           "Algo grande está por llegar. Vera Deportes, la nueva experiencia deportiva de Vera y la región. Muy pronto.",
       },
       { property: "og:title", content: "Vera Deportes — Muy pronto" },
-      {
-        property: "og:description",
-        content: "Algo grande está por llegar.",
-      },
+      { property: "og:description", content: "Algo grande está por llegar." },
     ],
   }),
   component: Intriga,
@@ -31,6 +29,12 @@ function Intriga() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
   useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add("dark");
@@ -40,6 +44,52 @@ function Intriga() {
       localStorage.setItem("vd-theme", "light");
     }
   }, [isDark]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeModal();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  function closeModal() {
+    setOpen(false);
+    // reset after animation
+    setTimeout(() => {
+      setStatus("idle");
+      setErrorMsg("");
+      setEmail("");
+      setPhone("");
+    }, 200);
+  }
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErrorMsg("");
+    const em = email.trim();
+    const ph = phone.trim();
+    const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em);
+    if (!emailOk) {
+      setErrorMsg("Ingresá un email válido.");
+      setStatus("error");
+      return;
+    }
+    if (ph.length < 6) {
+      setErrorMsg("Ingresá un teléfono válido.");
+      setStatus("error");
+      return;
+    }
+    setStatus("loading");
+    const { error } = await supabase
+      .from("leads")
+      .insert({ nombre: em, email: em, whatsapp: ph });
+    if (error) {
+      setStatus("error");
+      setErrorMsg("No pudimos registrarte. Intentá de nuevo.");
+      return;
+    }
+    setStatus("ok");
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--page)] text-[var(--color-foreground)] font-sans flex flex-col">
@@ -101,18 +151,116 @@ function Intriga() {
           tiene un nuevo punto de encuentro.
         </p>
 
-        <Link
-          to="/registro"
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
           className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#FF4B00] hover:bg-[#e54300] text-white font-bold text-sm sm:text-base px-7 py-4 tracking-wide transition shadow-[0_10px_40px_-10px_rgba(255,75,0,0.8)]"
         >
           QUIERO SABER MÁS
           <ArrowRight className="h-4 w-4" />
-        </Link>
+        </button>
       </section>
 
       <footer className="relative z-10 text-center pb-6 text-xs text-neutral-400 dark:text-neutral-500">
         © {new Date().getFullYear()} Vera Deportes
       </footer>
+
+      {/* MODAL */}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={closeModal}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md rounded-2xl bg-white text-neutral-900 dark:bg-neutral-900 dark:text-white shadow-2xl border border-black/10 dark:border-white/10 p-6 sm:p-7"
+          >
+            <button
+              onClick={closeModal}
+              aria-label="Cerrar"
+              className="absolute right-3 top-3 h-9 w-9 rounded-full flex items-center justify-center text-neutral-500 hover:text-[#FF4B00] hover:bg-black/5 dark:hover:bg-white/10 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {status === "ok" ? (
+              <div className="text-center py-4">
+                <div className="mx-auto h-14 w-14 rounded-full bg-[#FF4B00]/15 flex items-center justify-center">
+                  <Check className="h-7 w-7 text-[#FF4B00]" />
+                </div>
+                <h3 className="mt-4 font-display font-extrabold text-2xl tracking-tight">
+                  ¡Gracias!
+                </h3>
+                <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                  En los próximos días vas a conocer más.<br />
+                  <span className="font-semibold text-neutral-900 dark:text-white">Te avisaremos.</span>
+                </p>
+                <button
+                  onClick={closeModal}
+                  className="mt-6 inline-flex items-center justify-center w-full h-11 rounded-lg bg-[#FF4B00] hover:bg-[#e54300] text-white font-bold text-sm tracking-wide transition"
+                >
+                  CERRAR
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-center font-extrabold text-xl sm:text-2xl tracking-tight">
+                  SÉ DE LOS PRIMEROS
+                  <div className="text-[#FF4B00]">EN ENTERARTE</div>
+                </h3>
+                <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-2">
+                  Dejanos tu email y teléfono y te contamos antes que a nadie.
+                </p>
+
+                <form onSubmit={onSubmit} className="mt-5 space-y-3">
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      maxLength={200}
+                      required
+                      placeholder="Tu email"
+                      className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
+                    />
+                  </div>
+                  <div className="relative">
+                    <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      maxLength={30}
+                      required
+                      placeholder="Tu teléfono"
+                      className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={status === "loading"}
+                    className="w-full h-12 rounded-lg bg-[#FF4B00] hover:bg-[#e54300] text-white font-bold text-sm tracking-wide transition disabled:opacity-60"
+                  >
+                    {status === "loading" ? "ENVIANDO..." : "OK, AVISAME"}
+                  </button>
+
+                  {status === "error" && errorMsg && (
+                    <p className="text-sm text-red-600 text-center">{errorMsg}</p>
+                  )}
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
