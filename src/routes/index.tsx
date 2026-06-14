@@ -282,20 +282,20 @@ function ComingSoon() {
         <h4 className="font-extrabold text-sm tracking-wider">TRABAJAMOS CON LAS MEJORES MARCAS</h4>
         <div className="mt-6 grid grid-cols-3 md:grid-cols-6 gap-6 items-center justify-items-center">
           {[
-            { name: "Adidas", slug: "adidas" },
-            { name: "Puma", slug: "puma" },
-            { name: "Topper", slug: null },
-            { name: "New Balance", slug: "newbalance" },
-            { name: "Skechers", slug: null },
-            { name: "Asics", slug: "asics" },
+            { name: "Adidas", src: adidasLogo.url },
+            { name: "Puma", src: pumaLogo.url },
+            { name: "Topper", src: topperLogo.url },
+            { name: "New Balance", src: `https://cdn.simpleicons.org/newbalance/000000` },
+            { name: "Skechers", src: null },
+            { name: "Asics", src: asicsLogo.url },
           ].map((m) => (
-            <div key={m.name} className="h-10 flex items-center justify-center opacity-60 hover:opacity-100 transition">
-              {m.slug ? (
+            <div key={m.name} className="h-10 flex items-center justify-center opacity-70 hover:opacity-100 transition">
+              {m.src ? (
                 <img
-                  src={`https://cdn.simpleicons.org/${m.slug}/000000`}
+                  src={m.src}
                   alt={m.name}
                   loading="lazy"
-                  className="max-h-8 w-auto object-contain"
+                  className="max-h-8 w-auto object-contain [filter:brightness(0)]"
                 />
               ) : (
                 <span className="font-extrabold uppercase tracking-wider text-base sm:text-lg text-neutral-900">
