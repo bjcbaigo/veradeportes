@@ -5,7 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { SplashScreen } from "@/components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
 import { appendLeadToSheet } from "@/lib/leads-sheet.functions";
-import logo from "@/assets/logo-icon.png";
+import logoAsset from "@/assets/logo-vera.png.asset.json";
+const logo = logoAsset.url;
 import heroAthletes from "@/assets/hero-athletes.png";
 
 export const Route = createFileRoute("/")({
@@ -157,7 +158,7 @@ function Intriga() {
             src={logo}
             alt="Vera Deportes"
             suppressHydrationWarning
-            className={`h-14 sm:h-16 w-auto transition ${mounted && isDark ? "invert" : ""}`}
+            className="h-14 sm:h-16 w-auto"
           />
           <span className="font-display font-extrabold text-lg sm:text-2xl tracking-tight">
             VERA <span className="text-[#FF4B00]">DEPORTES</span>
