@@ -64,10 +64,10 @@ function Intriga() {
 
   function closeModal() {
     setOpen(false);
-    // reset after animation
     setTimeout(() => {
       setStatus("idle");
       setErrorMsg("");
+      setNombre("");
       setEmail("");
       setPhone("");
     }, 200);
@@ -76,8 +76,14 @@ function Intriga() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg("");
+    const nm = nombre.trim();
     const em = email.trim();
     const ph = phone.trim();
+    if (nm.length < 2) {
+      setErrorMsg("Ingresá tu nombre y apellido.");
+      setStatus("error");
+      return;
+    }
     const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em);
     if (!emailOk) {
       setErrorMsg("Ingresá un email válido.");
@@ -92,19 +98,20 @@ function Intriga() {
     setStatus("loading");
     const { error } = await supabase
       .from("leads")
-      .insert({ nombre: em, email: em, whatsapp: ph });
+      .insert({ nombre: nm, email: em, whatsapp: ph });
     if (error) {
       setStatus("error");
       setErrorMsg("No pudimos registrarte. Intentá de nuevo.");
       return;
     }
     try {
-      await appendToSheet({ data: { email: em, telefono: ph } });
+      await appendToSheet({ data: { nombre: nm, email: em, telefono: ph } });
     } catch (err) {
       console.error("Sheet append failed", err);
     }
     setStatus("ok");
   }
+
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--page)] text-[var(--color-foreground)] font-sans flex flex-col">
