@@ -1,4 +1,5 @@
-import { MessageCircle, Instagram, MapPin } from "lucide-react";
+import { MessageCircle, MapPin } from "lucide-react";
+import igLogo from "@/assets/ig-logo.jpg.asset.json";
 import { SITE, waLink } from "@/lib/site";
 
 const CARDS = [
@@ -10,7 +11,7 @@ const CARDS = [
     accent: "bg-whatsapp text-whatsapp-foreground",
   },
   {
-    icon: Instagram,
+    image: igLogo.url,
     title: "Instagram",
     text: "@veradeportes",
     href: SITE.instagram,
