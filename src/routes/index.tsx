@@ -6,6 +6,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
 import { appendLeadToSheet } from "@/lib/leads-sheet.functions";
 import logo from "@/assets/splash-logo.png";
+import heroAthletes from "@/assets/hero-athletes.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
