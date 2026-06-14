@@ -24,8 +24,25 @@ export const Route = createFileRoute("/")({
 });
 
 function Intriga() {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = localStorage.getItem("vd-theme");
+    if (stored) return stored === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("vd-theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("vd-theme", "light");
+    }
+  }, [isDark]);
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black text-white font-sans flex flex-col">
+    <main className="relative min-h-screen overflow-hidden bg-[var(--page)] text-[var(--color-foreground)] font-sans flex flex-col">
       <SplashScreen />
 
       {/* Glow background */}
@@ -54,7 +71,14 @@ function Intriga() {
             VERA <span className="text-[#FF4B00]">DEPORTES</span>
           </span>
         </div>
-        <div className="hidden sm:flex items-center gap-4 text-sm text-neutral-400">
+        <div className="flex items-center gap-3 sm:gap-4 text-sm text-neutral-400">
+          <button
+            onClick={() => setIsDark((d) => !d)}
+            aria-label={isDark ? "Modo claro" : "Modo oscuro"}
+            className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur hover:text-[#FF4B00] transition"
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           <a href="#" aria-label="Instagram" className="hover:text-[#FF4B00]"><Instagram className="h-5 w-5" /></a>
           <a href="#" aria-label="Facebook" className="hover:text-[#FF4B00]"><Facebook className="h-5 w-5" /></a>
           <a href="#" aria-label="WhatsApp" className="hover:text-[#FF4B00]"><MessageCircle className="h-5 w-5" /></a>
