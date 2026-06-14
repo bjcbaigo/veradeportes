@@ -91,6 +91,11 @@ function Intriga() {
       setErrorMsg("No pudimos registrarte. Intentá de nuevo.");
       return;
     }
+    try {
+      await appendToSheet({ data: { email: em, telefono: ph } });
+    } catch (err) {
+      console.error("Sheet append failed", err);
+    }
     setStatus("ok");
   }
 
