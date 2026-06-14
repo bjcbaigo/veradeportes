@@ -100,7 +100,7 @@ function ComingSoon() {
           <span className="inline-block bg-black text-white text-xs font-bold tracking-wider px-3 py-1.5 rounded">
             MUY PRONTO
           </span>
-          <h1 className="font-display font-extrabold italic uppercase mt-4 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight">
+          <h1 className="font-display font-extrabold italic uppercase mt-4 leading-[0.95] text-2xl sm:text-5xl md:text-6xl tracking-tight">
             Algo <span className="text-[#FF4B00]">grande</span><br />está por llegar
           </h1>
           <p className="mt-5 text-neutral-600 text-base sm:text-lg max-w-md">
