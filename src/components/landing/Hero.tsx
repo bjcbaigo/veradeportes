@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, MapPin } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import { SITE, waLink } from "@/lib/site";
 
