@@ -131,8 +131,7 @@ function Intriga() {
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <a href="#" aria-label="Instagram" className="hover:text-[#FF4B00]"><Instagram className="h-5 w-5" /></a>
-          <a href="#" aria-label="Facebook" className="hover:text-[#FF4B00]"><Facebook className="h-5 w-5" /></a>
+          <a href="https://www.instagram.com/vera_deportes" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-[#FF4B00]"><Instagram className="h-5 w-5" /></a>
           <a href="#" aria-label="WhatsApp" className="hover:text-[#FF4B00]"><MessageCircle className="h-5 w-5" /></a>
         </div>
       </header>
