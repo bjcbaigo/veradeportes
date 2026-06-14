@@ -1,17 +1,15 @@
 import { ArrowRight, Percent } from "lucide-react";
 import zap from "@/assets/cat-zapatillas.png";
 import rem from "@/assets/cat-remeras.png";
-import sho from "@/assets/cat-shorts.png";
-import buz from "@/assets/cat-buzos.png";
 import acc from "@/assets/cat-accesorios.png";
+import buz from "@/assets/cat-buzos.png";
 
 const CATS = [
-  { label: "Zapatillas", image: zap },
-  { label: "Remeras", image: rem },
-  { label: "Shorts", image: sho },
-  { label: "Buzos", image: buz },
-  { label: "Accesorios", image: acc },
-  { label: "Ofertas", icon: true },
+  { label: "Zapatillas", subtitle: "Running · Urbano · Training", image: zap },
+  { label: "Indumentaria", subtitle: "Remeras · Buzos · Camperas", image: rem },
+  { label: "Accesorios", subtitle: "Mochilas · Gorras · Medias", image: acc },
+  { label: "Niños", subtitle: "Calzado infantil", image: buz },
+  { label: "Ofertas", subtitle: "Hasta 25% OFF", icon: true },
 ];
 
 export function Categories() {
@@ -28,7 +26,7 @@ export function Categories() {
         </div>
 
         <div className="-mx-4 px-4 overflow-x-auto">
-          <div className="flex gap-3 min-w-max md:min-w-0 md:grid md:grid-cols-6">
+          <div className="flex gap-3 min-w-max md:min-w-0 md:grid md:grid-cols-5">
             {CATS.map((c) => (
               <a
                 key={c.label}
