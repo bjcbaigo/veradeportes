@@ -8,7 +8,7 @@ import asicsGame from "@/assets/p-asics-gamefF.png";
 import asicsTask4 from "@/assets/p-asics-task4.png";
 import asicsSonoma7 from "@/assets/p-asics-sonoma7.png";
 import asicsExcite10 from "@/assets/p-asics-excite10.png";
-import asicsChallenger14 from "@/assets/p-asics-challenger14.png";
+import asicsChallenger14 from "@/assets/asics-challenger14.png.asset.json";
 
 export type Product = {
   id: string;
