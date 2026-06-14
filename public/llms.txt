@@ -1,0 +1,8 @@
+# Vera Deportes
+
+> Indumentaria y calzado deportivo en Vera, Santa Fe. Comunidad deportiva local con atención personalizada y novedades de las mejores marcas.
+
+## Pages
+
+- [Inicio](/): Próximamente — la nueva experiencia Vera Deportes. Sumate para enterarte antes que nadie.
+- [Registro](/registro): Registrate para recibir novedades, beneficios exclusivos y participar del sorteo del Kit Deportivo.

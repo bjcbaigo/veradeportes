@@ -12,14 +12,54 @@ import heroAthletes from "@/assets/hero-athletes.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vera Deportes — Algo grande está por llegar" },
+      { title: "Vera Deportes — Próximamente algo grande en la región" },
       {
         name: "description",
         content:
-          "Algo grande está por llegar. Vera Deportes, la nueva experiencia deportiva de Vera y la región. Muy pronto.",
+          "Algo grande está por llegar. Vera Deportes, la nueva experiencia deportiva de Vera, Santa Fe y la región. Registrate y enterate antes que nadie.",
       },
-      { property: "og:title", content: "Vera Deportes — Muy pronto" },
-      { property: "og:description", content: "Algo grande está por llegar." },
+      { property: "og:title", content: "Vera Deportes — Próximamente algo grande en la región" },
+      { property: "og:description", content: "Algo grande está por llegar. Sumate y enterate antes que nadie." },
+      { property: "og:url", content: "https://veradeportes.com/" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://veradeportes.com/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "Vera Deportes",
+              url: "https://veradeportes.com/",
+              sameAs: ["https://www.instagram.com/vera_deportes/"],
+            },
+            {
+              "@type": "WebSite",
+              name: "Vera Deportes",
+              url: "https://veradeportes.com/",
+            },
+            {
+              "@type": "LocalBusiness",
+              name: "Vera Deportes",
+              description: "Indumentaria y calzado deportivo en Vera, Santa Fe. Atención personalizada y comunidad deportiva local.",
+              url: "https://veradeportes.com/",
+              telephone: "+5493483640559",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Corrientes 1635",
+                addressLocality: "Vera",
+                addressRegion: "Santa Fe",
+                addressCountry: "AR",
+              },
+            },
+          ],
+        }),
+      },
     ],
   }),
   component: Intriga,
@@ -270,6 +310,7 @@ function Intriga() {
                       autoComplete="name"
                       maxLength={120}
                       required
+                      aria-label="Nombre y apellido"
                       placeholder="Nombre y apellido"
                       className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
                     />
@@ -284,6 +325,7 @@ function Intriga() {
                       autoComplete="email"
                       maxLength={200}
                       required
+                      aria-label="Email"
                       placeholder="Tu email"
                       className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
                     />
@@ -298,6 +340,7 @@ function Intriga() {
                       autoComplete="tel"
                       maxLength={30}
                       required
+                      aria-label="Teléfono"
                       placeholder="Tu teléfono"
                       className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
                     />

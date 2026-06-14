@@ -8,9 +8,11 @@ export function Hero() {
       <div className="relative overflow-hidden w-full">
         <img
           src={hero}
-          alt="Portada Vera Deportes"
+          alt="Portada Vera Deportes — indumentaria y calzado deportivo en Vera, Santa Fe"
           width={1916}
           height={821}
+          fetchPriority="high"
+          decoding="async"
           className="w-full h-[420px] sm:h-auto object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
@@ -20,6 +22,7 @@ export function Hero() {
             <div className="h-1 w-8 sm:w-10 bg-primary rounded-full mb-3 sm:mb-5" />
             <h1 className="font-display font-extrabold text-3xl sm:text-5xl md:text-6xl leading-[1.1] sm:leading-[0.95] text-white drop-shadow-lg">
               {SITE.heroTitle.split(" ")[0]} <span className="text-primary">{SITE.heroTitle.split(" ").slice(1).join(" ")}</span>
+              <span className="block text-base sm:text-lg md:text-xl font-semibold text-white/90 mt-2">Tu tienda de indumentaria y calzado deportivo en Vera, Santa Fe</span>
             </h1>
             <p className="mt-3 sm:mt-5 text-white/90 text-sm sm:text-base md:text-lg leading-relaxed drop-shadow">
               {SITE.heroSubtitle}. <span className="text-primary font-semibold">{SITE.shipping}.</span>
