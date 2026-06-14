@@ -100,7 +100,7 @@ function ComingSoon() {
           <span className="inline-block bg-black text-white text-xs font-bold tracking-wider px-3 py-1.5 rounded">
             MUY PRONTO
           </span>
-          <h1 className="font-display font-extrabold italic uppercase mt-4 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight">
+          <h1 className="font-display font-extrabold italic uppercase mt-4 leading-[0.95] text-2xl sm:text-5xl md:text-6xl tracking-tight">
             Algo <span className="text-[#FF4B00]">grande</span><br />está por llegar
           </h1>
           <p className="mt-5 text-neutral-600 text-base sm:text-lg max-w-md">
@@ -276,12 +276,33 @@ function ComingSoon() {
       {/* MARCAS */}
       <section className="mx-auto max-w-6xl px-5 mt-16 sm:mt-20 text-center">
         <h4 className="font-extrabold text-sm tracking-wider">TRABAJAMOS CON LAS MEJORES MARCAS</h4>
-        <div className="mt-6 grid grid-cols-3 md:grid-cols-6 gap-6 items-center text-neutral-500 font-bold text-base sm:text-lg">
-          {["adidas", "PUMA", "Topper", "new balance", "SKECHERS", "asics"].map((m) => (
-            <div key={m} className="opacity-70 hover:opacity-100 transition">{m}</div>
+        <div className="mt-6 grid grid-cols-3 md:grid-cols-6 gap-6 items-center justify-items-center">
+          {[
+            { name: "Adidas", slug: "adidas" },
+            { name: "Puma", slug: "puma" },
+            { name: "Topper", slug: null },
+            { name: "New Balance", slug: "newbalance" },
+            { name: "Skechers", slug: null },
+            { name: "Asics", slug: "asics" },
+          ].map((m) => (
+            <div key={m.name} className="h-10 flex items-center justify-center opacity-60 hover:opacity-100 transition">
+              {m.slug ? (
+                <img
+                  src={`https://cdn.simpleicons.org/${m.slug}/000000`}
+                  alt={m.name}
+                  loading="lazy"
+                  className="max-h-8 w-auto object-contain"
+                />
+              ) : (
+                <span className="font-extrabold uppercase tracking-wider text-base sm:text-lg text-neutral-900">
+                  {m.name}
+                </span>
+              )}
+            </div>
           ))}
         </div>
       </section>
+
 
       {/* TRUST */}
       <section className="mx-auto max-w-6xl px-5 mt-12 border-t border-neutral-200 pt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
