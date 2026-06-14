@@ -69,25 +69,45 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
 
             <div className="grid gap-2">
               {product.idealFor && (
-                <div className="rounded-lg bg-muted/50 p-2.5 space-y-1">
+                <div className="rounded-lg border border-border/60 p-2.5 space-y-1.5">
                   <p className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                    <Target className="h-3.5 w-3.5 text-primary" />
+                    <Target className="h-3.5 w-3.5 text-primary shrink-0" />
                     Ideal para
                   </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {product.idealFor}
-                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {product.idealFor.split(/,| y /).map((item, i) => {
+                      const clean = item.trim().replace(/\.$/, "");
+                      if (!clean) return null;
+                      return (
+                        <span
+                          key={i}
+                          className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[10px] px-2 py-0.5 font-medium"
+                        >
+                          {clean}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
               {product.features && (
-                <div className="rounded-lg bg-muted/50 p-2.5 space-y-1">
+                <div className="rounded-lg border border-border/60 p-2.5 space-y-1.5">
                   <p className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
-                    <ListChecks className="h-3.5 w-3.5 text-primary" />
+                    <ListChecks className="h-3.5 w-3.5 text-primary shrink-0" />
                     Características clave
                   </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {product.features}
-                  </p>
+                  <div className="flex flex-col gap-1">
+                    {product.features.split(",").map((item, i) => {
+                      const clean = item.trim().replace(/^( y )/, "").replace(/\.$/, "");
+                      if (!clean) return null;
+                      return (
+                        <span key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                          <span className="text-primary mt-0.5 shrink-0">•</span>
+                          {clean}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
