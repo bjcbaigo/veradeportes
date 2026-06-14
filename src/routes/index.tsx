@@ -71,11 +71,11 @@ function Intriga() {
             VERA <span className="text-[#FF4B00]">DEPORTES</span>
           </span>
         </div>
-        <div className="flex items-center gap-3 sm:gap-4 text-sm text-neutral-400">
+        <div className="flex items-center gap-3 sm:gap-4 text-sm text-neutral-500 dark:text-neutral-400">
           <button
             onClick={() => setIsDark((d) => !d)}
             aria-label={isDark ? "Modo claro" : "Modo oscuro"}
-            className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur hover:text-[#FF4B00] transition"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-black/10 dark:bg-white/10 backdrop-blur hover:text-[#FF4B00] transition"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
