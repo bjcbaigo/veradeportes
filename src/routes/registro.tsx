@@ -34,17 +34,22 @@ import asicsLogo from "@/assets/brands/asics.png.asset.json";
 export const Route = createFileRoute("/registro")({
   head: () => ({
     meta: [
-      { title: "Vera Deportes — Algo grande está por llegar" },
+      { title: "Registro — Vera Deportes | Sumate por beneficios" },
       {
         name: "description",
         content:
-          "Muy pronto: nueva experiencia Vera Deportes. Registrate y sé de los primeros en enterarte. Beneficios exclusivos, sorteos y promos de lanzamiento.",
+          "Registrate en Vera Deportes y sé de los primeros en enterarte. Beneficios exclusivos, sorteos y promos de lanzamiento en Vera, Santa Fe.",
       },
-      { property: "og:title", content: "Vera Deportes — Muy pronto" },
+      { property: "og:title", content: "Registro — Vera Deportes" },
       {
         property: "og:description",
-        content: "Algo grande está por llegar. Registrate y participá del sorteo del Kit Deportivo.",
+        content: "Registrate y participá del sorteo del Kit Deportivo Vera Deportes.",
       },
+      { property: "og:url", content: "https://veradeportes.com/registro" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://veradeportes.com/registro" },
     ],
   }),
   component: ComingSoon,
