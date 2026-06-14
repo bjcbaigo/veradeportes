@@ -49,7 +49,10 @@ export function Categories() {
                     />
                   )}
                 </div>
-                <span className="mt-2 text-[13px] font-bold text-neutral-900">{c.label}</span>
+                <span className="mt-2 text-[13px] font-bold text-neutral-900 text-center">{c.label}</span>
+                {c.subtitle && (
+                  <span className="mt-0.5 text-[10px] text-neutral-500 text-center leading-tight hidden md:block">{c.subtitle}</span>
+                )}
               </a>
             ))}
           </div>
