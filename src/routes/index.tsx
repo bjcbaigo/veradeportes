@@ -24,21 +24,27 @@ export const Route = createFileRoute("/")({
 });
 
 function Intriga() {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const stored = localStorage.getItem("vd-theme");
-    if (stored) return stored === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [mounted, setMounted] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   const [open, setOpen] = useState(false);
   const appendToSheet = useServerFn(appendLeadToSheet);
+  const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
+    setMounted(true);
+    const stored = typeof window !== "undefined" ? localStorage.getItem("vd-theme") : null;
+    if (stored) setIsDark(stored === "dark");
+    else if (typeof window !== "undefined")
+      setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (isDark) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("vd-theme", "dark");
@@ -46,7 +52,8 @@ function Intriga() {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("vd-theme", "light");
     }
-  }, [isDark]);
+  }, [isDark, mounted]);
+
 
   useEffect(() => {
     if (!open) return;
