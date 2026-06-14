@@ -1,6 +1,6 @@
 import { MessageCircle } from "lucide-react";
 import hero from "@/assets/hero.jpg";
-import { waLink } from "@/lib/site";
+import { SITE, waLink } from "@/lib/site";
 
 export function Hero() {
   return (
@@ -19,11 +19,10 @@ export function Hero() {
           <div className="relative p-4 sm:p-6 md:p-12 max-w-xl">
             <div className="h-1 w-8 sm:w-10 bg-primary rounded-full mb-3 sm:mb-5" />
             <h1 className="font-display font-extrabold text-3xl sm:text-5xl md:text-6xl leading-[1.1] sm:leading-[0.95] text-white drop-shadow-lg">
-              Tu indumentaria deportiva <span className="text-primary">en Vera</span>
+              {SITE.heroTitle.split(" ")[0]} <span className="text-primary">{SITE.heroTitle.split(" ").slice(1).join(" ")}</span>
             </h1>
-            <p className="mt-3 sm:mt-5 italic text-white/90 text-sm sm:text-sm md:text-base leading-relaxed drop-shadow">
-              Zapatillas, shorts, remeras, buzos y accesorios para tu día a día y
-              tu mejor rendimiento.
+            <p className="mt-3 sm:mt-5 text-white/90 text-sm sm:text-base md:text-lg leading-relaxed drop-shadow">
+              {SITE.heroSubtitle}. <span className="text-primary font-semibold">{SITE.shipping}.</span>
             </p>
 
             <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row gap-2 sm:gap-3">

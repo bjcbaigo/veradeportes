@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
 import { Categories } from "@/components/landing/Categories";
+import { Brands } from "@/components/landing/Brands";
 import { Products } from "@/components/landing/Products";
 import { Promo } from "@/components/landing/Promo";
 import { Trust } from "@/components/landing/Trust";
@@ -37,6 +38,7 @@ function PreviewPage() {
       <Header />
       <main>
         <Hero />
+        <Brands />
         <Categories />
         <Products />
         <Promo />

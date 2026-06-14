@@ -53,11 +53,16 @@ export function Products() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5 px-3 pb-3">
+                  {p.badge && (
+                    <span className="self-start inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      {p.badge}
+                    </span>
+                  )}
                   <h3 className="font-display font-bold text-[15px] leading-tight">
                     {p.name}
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
-                    {p.category} · Unisex
+                    {p.brand} · {p.category}
                   </p>
                   <div className="flex items-center gap-1 text-primary text-[12px] font-semibold">
                     <Star className="h-3.5 w-3.5 fill-primary" />
@@ -67,9 +72,16 @@ export function Products() {
                     <Star className="h-3.5 w-3.5 fill-primary" />
                     <span className="text-muted-foreground ml-1">({reviews})</span>
                   </div>
-                  <p className="mt-1 font-display font-extrabold text-primary text-[15px]">
-                    {p.price}
-                  </p>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <p className="font-display font-extrabold text-primary text-[15px]">
+                      {p.price}
+                    </p>
+                    {p.priceOld && (
+                      <p className="text-[11px] text-muted-foreground line-through">
+                        {p.priceOld}
+                      </p>
+                    )}
+                  </div>
                   <span className="mt-1 inline-flex items-center justify-center gap-1 rounded-lg bg-primary text-primary-foreground h-9 text-[12px] font-bold">
                     Ver detalles
                   </span>
