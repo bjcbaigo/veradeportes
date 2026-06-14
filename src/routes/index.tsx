@@ -126,6 +126,7 @@ function Intriga() {
           background:
             "radial-gradient(circle at 50% 35%, rgba(255,75,0,0.35) 0%, rgba(255,75,0,0.10) 30%, rgba(0,0,0,0) 65%)",
         }}
+      />
       {/* Athletes side image */}
       <img
         src={heroAthletes}
