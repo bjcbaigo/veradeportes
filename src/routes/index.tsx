@@ -1,30 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Header } from "@/components/landing/Header";
-import { Hero } from "@/components/landing/Hero";
-import { Categories } from "@/components/landing/Categories";
-import { Products } from "@/components/landing/Products";
-import { Promo } from "@/components/landing/Promo";
-import { Trust } from "@/components/landing/Trust";
-import { Contact } from "@/components/landing/Contact";
-import { Social } from "@/components/landing/Social";
-import { Footer } from "@/components/landing/Footer";
-import { BottomNav } from "@/components/landing/BottomNav";
-import { WhatsAppFab } from "@/components/landing/WhatsAppFab";
 import { SplashScreen } from "@/components/SplashScreen";
+import comingSoon from "@/assets/coming-soon.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vera Deportes — Zapatillas e indumentaria deportiva en Vera, Santa Fe" },
+      { title: "Vera Deportes — Algo grande está por llegar" },
       {
         name: "description",
         content:
-          "Tienda deportiva local en Vera, Santa Fe. Zapatillas, remeras, shorts, buzos y accesorios. Consultá talles, precios y promos por WhatsApp.",
+          "Muy pronto: nueva experiencia Vera Deportes. Registrate y sé de los primeros en enterarte.",
       },
-      { property: "og:title", content: "Vera Deportes — Tienda deportiva en Vera" },
+      { property: "og:title", content: "Vera Deportes — Muy pronto" },
       {
         property: "og:description",
-        content: "Productos deportivos, promos y atención cercana por WhatsApp.",
+        content: "Algo grande está por llegar. Registrate y participá del sorteo.",
       },
     ],
   }),
@@ -33,19 +23,13 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="min-h-screen bg-page text-foreground pb-4">
+    <main className="min-h-screen w-full bg-white flex items-start justify-center">
       <SplashScreen />
-      <Header />
-      <Hero />
-      <Categories />
-      <Products />
-      <Promo />
-      <Trust />
-      <Contact />
-      <Social />
-      <Footer />
-      <BottomNav />
-      <WhatsAppFab />
+      <img
+        src={comingSoon.url}
+        alt="Vera Deportes — Algo grande está por llegar"
+        className="w-full h-auto max-w-[1100px] block"
+      />
     </main>
   );
 }
