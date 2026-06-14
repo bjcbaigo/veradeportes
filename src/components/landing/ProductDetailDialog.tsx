@@ -62,9 +62,9 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
             </p>
 
             <p className="text-sm text-muted-foreground">
-              {isShoe
+              {product.description || (isShoe
                 ? "Zapatilla cómoda y resistente, ideal para uso diario, training y running. Consultá disponibilidad de talles por WhatsApp."
-                : "Producto deportivo de calidad. Consultá disponibilidad, talles y colores por WhatsApp."}
+                : "Producto deportivo de calidad. Consultá disponibilidad, talles y colores por WhatsApp.")}
             </p>
 
             {isShoe && (
