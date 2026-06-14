@@ -184,7 +184,7 @@ function Intriga() {
         </span>
 
         <h1 className="font-display font-extrabold italic uppercase mt-6 leading-[0.95] text-4xl sm:text-6xl md:text-7xl tracking-tight max-w-4xl">
-          Algo <span className="text-[#FF4B00]">grande</span><br />
+          Algo <span className="text-[#FF4B00]">nuevo</span><br />
           está por llegar
         </h1>
 
