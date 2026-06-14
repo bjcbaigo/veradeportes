@@ -154,12 +154,13 @@ function Intriga() {
       {/* Header */}
       <header className="relative z-10 mx-auto w-full max-w-6xl px-5 pt-6 sm:pt-8 flex items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3">
-          <img
-            src={logo}
-            alt="Vera Deportes"
-            suppressHydrationWarning
-            className="h-14 sm:h-16 w-auto"
-          />
+          <div className="rounded-lg dark:bg-white dark:p-1.5">
+            <img
+              src={logo}
+              alt="Vera Deportes"
+              className="h-14 sm:h-16 w-auto block"
+            />
+          </div>
           <span className="font-display font-extrabold text-lg sm:text-2xl tracking-tight">
             VERA <span className="text-[#FF4B00]">DEPORTES</span>
           </span>
