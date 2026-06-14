@@ -163,6 +163,7 @@ function ComingSoon() {
                 onChange={(e) => setNombre(e.target.value)}
                 maxLength={120}
                 required
+                aria-label="Tu nombre"
                 placeholder="Tu nombre"
                 className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white transition"
               />
@@ -175,6 +176,7 @@ function ComingSoon() {
                 inputMode="tel"
                 maxLength={30}
                 required
+                aria-label="Tu WhatsApp"
                 placeholder="Tu WhatsApp"
                 className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white transition"
               />

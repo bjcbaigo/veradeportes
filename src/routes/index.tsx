@@ -310,6 +310,7 @@ function Intriga() {
                       autoComplete="name"
                       maxLength={120}
                       required
+                      aria-label="Nombre y apellido"
                       placeholder="Nombre y apellido"
                       className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
                     />
@@ -324,6 +325,7 @@ function Intriga() {
                       autoComplete="email"
                       maxLength={200}
                       required
+                      aria-label="Email"
                       placeholder="Tu email"
                       className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
                     />
@@ -338,6 +340,7 @@ function Intriga() {
                       autoComplete="tel"
                       maxLength={30}
                       required
+                      aria-label="Teléfono"
                       placeholder="Tu teléfono"
                       className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white dark:focus:bg-white/10 transition"
                     />
