@@ -36,6 +36,15 @@ export function Hero() {
                 <span>Consultar por WhatsApp</span>
               </a>
               <a
+                href={SITE.maps}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex w-full sm:w-auto h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 active:scale-[0.98] transition whitespace-nowrap"
+              >
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <span>Cómo llegar</span>
+              </a>
+              <a
                 href="#productos"
                 className="hidden sm:inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 transition whitespace-nowrap"
               >

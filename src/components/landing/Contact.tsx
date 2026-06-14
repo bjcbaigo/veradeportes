@@ -20,7 +20,7 @@ const CARDS = [
   {
     icon: MapPin,
     title: "Cómo llegar",
-    text: SITE.city,
+    text: `${SITE.address} · ${SITE.city}`,
     href: SITE.maps,
     accent: "bg-primary text-primary-foreground",
   },
