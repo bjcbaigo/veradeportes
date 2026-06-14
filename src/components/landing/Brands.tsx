@@ -37,11 +37,6 @@ export function Brands() {
               />
             </div>
           ))}
-          <div className="flex items-center justify-center h-14 w-20 sm:h-16 sm:w-24 rounded-xl bg-white border border-border px-2">
-            <span className="font-display font-extrabold text-[11px] sm:text-xs tracking-tight text-black text-center leading-tight">
-              New<br />Balance
-            </span>
-          </div>
         </div>
       </div>
     </section>
