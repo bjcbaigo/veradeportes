@@ -132,7 +132,7 @@ function Intriga() {
         src={heroAthletes}
         alt=""
         aria-hidden
-        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-[90vh] w-auto opacity-80 dark:opacity-90 pointer-events-none select-none z-0"
+        className="hidden md:block absolute right-[-2%] top-1/2 -translate-y-1/2 h-[75vh] w-auto opacity-80 dark:opacity-90 pointer-events-none select-none z-0"
       />
       <img
         src={heroAthletes}
