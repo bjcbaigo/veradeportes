@@ -32,6 +32,7 @@ function Intriga() {
   });
 
   const [open, setOpen] = useState(false);
+  const appendToSheet = useServerFn(appendLeadToSheet);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
