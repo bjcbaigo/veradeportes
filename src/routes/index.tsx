@@ -5,7 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { SplashScreen } from "@/components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
 import { appendLeadToSheet } from "@/lib/leads-sheet.functions";
-import logo from "@/assets/logo-icon.png";
+import logoAsset from "@/assets/logo-vera.png.asset.json";
+const logo = logoAsset.url;
 import heroAthletes from "@/assets/hero-athletes.png";
 
 export const Route = createFileRoute("/")({
