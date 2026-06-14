@@ -146,10 +146,11 @@ function Intriga() {
         <div className="flex items-center gap-3 sm:gap-4 text-sm text-neutral-500 dark:text-neutral-400">
           <button
             onClick={() => setIsDark((d) => !d)}
-            aria-label={isDark ? "Modo claro" : "Modo oscuro"}
+            aria-label="Cambiar tema"
+            suppressHydrationWarning
             className="flex h-9 w-9 items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-black/10 dark:bg-white/10 backdrop-blur hover:text-[#FF4B00] transition"
           >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {mounted ? (isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />) : <Sun className="h-4 w-4" />}
           </button>
           <a href="https://www.instagram.com/vera_deportes" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-[#FF4B00]"><Instagram className="h-5 w-5" /></a>
           <a href="#" aria-label="WhatsApp" className="hover:text-[#FF4B00]"><MessageCircle className="h-5 w-5" /></a>
