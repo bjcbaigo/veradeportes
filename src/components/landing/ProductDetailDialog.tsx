@@ -1,4 +1,4 @@
-import { MessageCircle, Star, Truck, ShieldCheck, RefreshCcw } from "lucide-react";
+import { MessageCircle, Star, Truck, ShieldCheck, RefreshCcw, Target, ListChecks } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -61,11 +61,36 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               {product.price}
             </p>
 
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {product.description || (isShoe
                 ? "Zapatilla cómoda y resistente, ideal para uso diario, training y running. Consultá disponibilidad de talles por WhatsApp."
                 : "Producto deportivo de calidad. Consultá disponibilidad, talles y colores por WhatsApp.")}
             </p>
+
+            <div className="grid gap-2">
+              {product.idealFor && (
+                <div className="rounded-lg bg-muted/50 p-2.5 space-y-1">
+                  <p className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <Target className="h-3.5 w-3.5 text-primary" />
+                    Ideal para
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {product.idealFor}
+                  </p>
+                </div>
+              )}
+              {product.features && (
+                <div className="rounded-lg bg-muted/50 p-2.5 space-y-1">
+                  <p className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <ListChecks className="h-3.5 w-3.5 text-primary" />
+                    Características clave
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {product.features}
+                  </p>
+                </div>
+              )}
+            </div>
 
             {isShoe && (
               <div>
