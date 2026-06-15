@@ -55,7 +55,7 @@ export function Categories() {
                 {c.subtitle && (
                   <span className="mt-0.5 text-[10px] text-neutral-500 text-center leading-tight hidden md:block">{c.subtitle}</span>
                 )}
-              </a>
+              </button>
             ))}
           </div>
         </div>
