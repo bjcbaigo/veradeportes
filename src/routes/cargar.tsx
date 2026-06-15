@@ -116,7 +116,13 @@ function UploadForm({ pin }: { pin: string }) {
     setBusy(true);
     try {
       const buf = await file.arrayBuffer();
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const bytes = new Uint8Array(buf);
+      let bin = "";
+      const CHUNK = 0x8000;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + CHUNK)));
+      }
+      const b64 = btoa(bin);
       const mime = file.type || "image/jpeg";
       await submit({ data: {
         pin, usuario: usuario.trim(),
