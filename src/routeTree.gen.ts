@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as PreviewRouteImport } from './routes/preview'
+import { Route as CargarRouteImport } from './routes/cargar'
+import { Route as AdminCargasRouteImport } from './routes/admin-cargas'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +32,16 @@ const PreviewRoute = PreviewRouteImport.update({
   path: '/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CargarRoute = CargarRouteImport.update({
+  id: '/cargar',
+  path: '/cargar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCargasRoute = AdminCargasRouteImport.update({
+  id: '/admin-cargas',
+  path: '/admin-cargas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -44,6 +56,8 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/admin-cargas': typeof AdminCargasRoute
+  '/cargar': typeof CargarRoute
   '/preview': typeof PreviewRoute
   '/registro': typeof RegistroRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -51,6 +65,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/admin-cargas': typeof AdminCargasRoute
+  '/cargar': typeof CargarRoute
   '/preview': typeof PreviewRoute
   '/registro': typeof RegistroRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -59,21 +75,47 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/admin-cargas': typeof AdminCargasRoute
+  '/cargar': typeof CargarRoute
   '/preview': typeof PreviewRoute
   '/registro': typeof RegistroRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/preview' | '/registro' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/admin-cargas'
+    | '/cargar'
+    | '/preview'
+    | '/registro'
+    | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/preview' | '/registro' | '/sitemap.xml'
-  id: '__root__' | '/' | '/admin' | '/preview' | '/registro' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/admin'
+    | '/admin-cargas'
+    | '/cargar'
+    | '/preview'
+    | '/registro'
+    | '/sitemap.xml'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/admin-cargas'
+    | '/cargar'
+    | '/preview'
+    | '/registro'
+    | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AdminCargasRoute: typeof AdminCargasRoute
+  CargarRoute: typeof CargarRoute
   PreviewRoute: typeof PreviewRoute
   RegistroRoute: typeof RegistroRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -102,6 +144,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cargar': {
+      id: '/cargar'
+      path: '/cargar'
+      fullPath: '/cargar'
+      preLoaderRoute: typeof CargarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-cargas': {
+      id: '/admin-cargas'
+      path: '/admin-cargas'
+      fullPath: '/admin-cargas'
+      preLoaderRoute: typeof AdminCargasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -122,6 +178,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AdminCargasRoute: AdminCargasRoute,
+  CargarRoute: CargarRoute,
   PreviewRoute: PreviewRoute,
   RegistroRoute: RegistroRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -129,13 +187,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
