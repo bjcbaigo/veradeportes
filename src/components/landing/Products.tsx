@@ -78,11 +78,35 @@ export function Products() {
           <h2 className="font-display font-extrabold text-2xl md:text-3xl">
             Productos destacados
           </h2>
-          <a href="#productos" className="text-sm font-semibold text-primary inline-flex items-center gap-1">
+          <button type="button" onClick={() => setCat("Todos")} className="text-sm font-semibold text-primary inline-flex items-center gap-1">
             Ver todas <ArrowRight className="h-4 w-4" />
-          </a>
+          </button>
         </div>
 
+        <div className="mb-4 -mx-4 px-4 overflow-x-auto">
+          <div className="flex gap-2 min-w-max">
+            {CHIPS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCat(c)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${
+                  cat === c
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card text-foreground border-border hover:border-primary/50"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {products.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+            No hay productos en la categoría <span className="font-semibold text-foreground">{cat}</span> por el momento.
+          </div>
+        ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {products.map((p) => {
             const idNum = parseInt(p.id) || 1;
