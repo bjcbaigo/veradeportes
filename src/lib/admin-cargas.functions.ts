@@ -36,6 +36,7 @@ async function readRange(range: string) {
     `${GATEWAY}/spreadsheets/${sheetId}/values/${range}`,
     { headers: headers(lovableKey, sheetsKey) },
   );
+  if (res.status === 400 || res.status === 404) return [];
   if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
   const json = (await res.json()) as { values?: string[][] };
   return json.values ?? [];
