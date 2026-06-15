@@ -3,8 +3,9 @@ import zap from "@/assets/cat-zapatillas.png";
 import rem from "@/assets/cat-remeras.png";
 import acc from "@/assets/cat-accesorios.png";
 import buz from "@/assets/cat-buzos.png";
+import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
-const CATS = [
+const CATS: { label: CategoryKey; subtitle?: string; image?: string; icon?: boolean }[] = [
   { label: "Zapatillas", subtitle: "Running · Urbano · Training", image: zap },
   { label: "Indumentaria", subtitle: "Remeras · Buzos · Camperas", image: rem },
   { label: "Accesorios", subtitle: "Mochilas · Gorras · Medias", image: acc },
@@ -20,7 +21,7 @@ export function Categories() {
           <h2 className="font-display font-extrabold text-2xl md:text-3xl">
             Categorías rápidas
           </h2>
-          <a href="#productos" className="text-sm font-semibold text-primary inline-flex items-center gap-1">
+          <a href="#productos" onClick={() => emitCategory("Todos")} className="text-sm font-semibold text-primary inline-flex items-center gap-1">
             Ver todas <ArrowRight className="h-4 w-4" />
           </a>
         </div>
@@ -28,10 +29,11 @@ export function Categories() {
         <div className="-mx-4 px-4 overflow-x-auto">
           <div className="flex gap-3 min-w-max md:min-w-0 md:grid md:grid-cols-5">
             {CATS.map((c) => (
-              <a
+              <button
                 key={c.label}
-                href="#productos"
-                className="flex flex-col items-center justify-between rounded-3xl bg-[#e5e7eb] border border-border/70 p-3 w-[110px] md:w-auto hover:border-primary/50 transition"
+                type="button"
+                onClick={() => emitCategory(c.label)}
+                className="flex flex-col items-center justify-between rounded-3xl bg-[#e5e7eb] border border-border/70 p-3 w-[110px] md:w-auto hover:border-primary/50 transition text-left"
               >
                 <div className="h-16 w-16 md:h-20 md:w-20 flex items-center justify-center">
                   {c.icon ? (
@@ -53,7 +55,7 @@ export function Categories() {
                 {c.subtitle && (
                   <span className="mt-0.5 text-[10px] text-neutral-500 text-center leading-tight hidden md:block">{c.subtitle}</span>
                 )}
-              </a>
+              </button>
             ))}
           </div>
         </div>

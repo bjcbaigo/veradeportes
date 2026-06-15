@@ -1,10 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Star, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { PRODUCTS, type Product } from "@/lib/products";
 import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { ProductDetailDialog } from "./ProductDetailDialog";
+import { CATEGORY_EVENT, matchesCategory, type CategoryKey } from "@/lib/category-filter";
+
+const CHIPS: CategoryKey[] = ["Todos", "Zapatillas", "Indumentaria", "Accesorios", "Niños", "Ofertas"];
 
 const fmt = (raw: string) => {
   const n = Number(String(raw).replace(/[^\d.-]/g, ""));
@@ -31,6 +34,16 @@ function sheetToProduct(s: SheetProduct): Product {
 export function Products() {
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
+  const [cat, setCat] = useState<CategoryKey>("Todos");
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<CategoryKey>).detail;
+      if (detail) setCat(detail);
+    };
+    window.addEventListener(CATEGORY_EVENT, handler);
+    return () => window.removeEventListener(CATEGORY_EVENT, handler);
+  }, []);
 
   const fetchSheet = useServerFn(listSheetProducts);
   const { data: sheetRows } = useQuery({
@@ -39,7 +52,7 @@ export function Products() {
     staleTime: 5 * 60_000,
   });
 
-  const products = useMemo<Product[]>(() => {
+  const allProducts = useMemo<Product[]>(() => {
     if (!sheetRows || sheetRows.length === 0) return PRODUCTS;
     const active = sheetRows.filter((r) => r.activo && r.nombre);
     if (active.length === 0) return PRODUCTS;
@@ -47,6 +60,11 @@ export function Products() {
       .map(sheetToProduct)
       .sort((a, b) => Number(b.badge === "Destacado") - Number(a.badge === "Destacado"));
   }, [sheetRows]);
+
+  const products = useMemo(
+    () => allProducts.filter((p) => matchesCategory(p.category, p.name, p.badge, cat)),
+    [allProducts, cat],
+  );
 
   const handleSelect = (p: Product) => {
     setSelected(p);
@@ -60,11 +78,35 @@ export function Products() {
           <h2 className="font-display font-extrabold text-2xl md:text-3xl">
             Productos destacados
           </h2>
-          <a href="#productos" className="text-sm font-semibold text-primary inline-flex items-center gap-1">
+          <button type="button" onClick={() => setCat("Todos")} className="text-sm font-semibold text-primary inline-flex items-center gap-1">
             Ver todas <ArrowRight className="h-4 w-4" />
-          </a>
+          </button>
         </div>
 
+        <div className="mb-4 -mx-4 px-4 overflow-x-auto">
+          <div className="flex gap-2 min-w-max">
+            {CHIPS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCat(c)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${
+                  cat === c
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card text-foreground border-border hover:border-primary/50"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {products.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+            No hay productos en la categoría <span className="font-semibold text-foreground">{cat}</span> por el momento.
+          </div>
+        ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {products.map((p) => {
             const idNum = parseInt(p.id) || 1;
@@ -137,6 +179,7 @@ export function Products() {
             );
           })}
         </div>
+        )}
       </div>
 
       <ProductDetailDialog product={selected} open={open} onOpenChange={setOpen} />
