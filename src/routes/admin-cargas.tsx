@@ -14,6 +14,7 @@ import {
 } from "@/lib/admin-cargas.functions";
 
 export const Route = createFileRoute("/admin-cargas")({
+  ssr: false,
   head: () => ({ meta: [{ title: "Cargas — Vera Deportes" }, { name: "robots", content: "noindex" }] }),
   component: Page,
 });
@@ -23,23 +24,36 @@ function Page() {
   const [session, setSession] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
+  async function checkAdmin(userId: string) {
+    try {
+      const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+      setIsAdmin(!!data);
+    } catch (e) {
+      console.error("[admin-cargas] has_role error", e);
+      setIsAdmin(false);
+    }
+  }
+
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session);
-      if (data.session) {
-        const { data: r } = await supabase.rpc("has_role", { _user_id: data.session.user.id, _role: "admin" });
-        setIsAdmin(!!r);
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!mounted) return;
+        setSession(data.session);
+        if (data.session) await checkAdmin(data.session.user.id);
+      } catch (e) {
+        console.error("[admin-cargas] getSession error", e);
+      } finally {
+        if (mounted) setReady(true);
       }
-      setReady(true);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
+    })();
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
-      if (s) {
-        const { data: r } = await supabase.rpc("has_role", { _user_id: s.user.id, _role: "admin" });
-        setIsAdmin(!!r);
-      } else setIsAdmin(null);
+      if (s) checkAdmin(s.user.id);
+      else setIsAdmin(null);
     });
-    return () => sub.subscription.unsubscribe();
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
   }, []);
 
   return (
