@@ -161,6 +161,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
         {([
           ["cargas","Cargas",ImageIcon],
           ["productos","Productos",CheckCircle2],
+          ["landing","Landing",ShoppingBag],
           ["agenda","Calendario",Calendar],
         ] as const).map(([k, label, Icon]) => (
           <button key={k} onClick={() => setTab(k)}
@@ -174,6 +175,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
 
       {tab === "cargas" && <CargasView />}
       {tab === "productos" && <ProductosView />}
+      {tab === "landing" && <LandingView />}
       {tab === "agenda" && <AgendaView />}
     </div>
   );
