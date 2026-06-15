@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Camera, Upload, CheckCircle2, Loader2, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -19,9 +19,11 @@ export const Route = createFileRoute("/cargar")({
 const PIN_KEY = "vera_upload_pin_v1";
 
 function CargarPage() {
-  const [pin, setPin] = useState<string | null>(() =>
-    typeof window === "undefined" ? null : sessionStorage.getItem(PIN_KEY)
-  );
+  const [pin, setPin] = useState<string | null>(null);
+  useEffect(() => {
+    const v = sessionStorage.getItem(PIN_KEY);
+    if (v) setPin(v);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -114,7 +116,13 @@ function UploadForm({ pin }: { pin: string }) {
     setBusy(true);
     try {
       const buf = await file.arrayBuffer();
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const bytes = new Uint8Array(buf);
+      let bin = "";
+      const CHUNK = 0x8000;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + CHUNK)));
+      }
+      const b64 = btoa(bin);
       const mime = file.type || "image/jpeg";
       await submit({ data: {
         pin, usuario: usuario.trim(),
