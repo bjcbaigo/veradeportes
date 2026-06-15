@@ -582,3 +582,94 @@ function AgendaView() {
     </div>
   );
 }
+
+/* ============ Landing (pestaña Productos del Sheet) ============ */
+function LandingView() {
+  const qc = useQueryClient();
+  const fetchLanding = useServerFn(listSheetProducts);
+  const updLanding = useServerFn(updateSheetProduct);
+  const q = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLanding() });
+  const [editing, setEditing] = useState<SheetProduct | null>(null);
+
+  const mut = useMutation({
+    mutationFn: (v: SheetProduct) => updLanding({ data: {
+      rowIndex: v.rowIndex, nombre: v.nombre, categoria: v.categoria, precio: v.precio,
+      descripcion: v.descripcion, imagen_url: v.imagen_url, activo: v.activo, destacado: v.destacado,
+    }}),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success("Landing actualizada"); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center gap-2">
+        <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
+          <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
+        </button>
+        <span className="ml-auto text-xs text-neutral-500">{q.data?.length ?? 0} en el Sheet</span>
+      </div>
+      {q.isLoading ? <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
+        : !q.data?.length ? (
+          <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">La pestaña <span className="font-mono">Productos</span> está vacía.</div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {q.data.map(p => (
+              <div key={p.rowIndex} className={`overflow-hidden rounded-xl border bg-white shadow-sm ${p.activo ? "border-neutral-200" : "border-neutral-200 opacity-60"}`}>
+                <div className="aspect-square bg-[#e5e7eb]">
+                  {p.imagen_url && <img src={p.imagen_url} alt="" className="h-full w-full object-contain" loading="lazy" />}
+                </div>
+                <div className="space-y-1.5 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${p.activo ? "bg-emerald-100 text-emerald-800" : "bg-neutral-200 text-neutral-600"}`}>
+                      {p.activo ? "ACTIVO" : "OCULTO"}
+                    </span>
+                    {p.destacado && <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700"><Star className="h-3 w-3 fill-orange-500" />DESTACADO</span>}
+                  </div>
+                  <p className="text-sm font-semibold text-neutral-900">{p.nombre}</p>
+                  <p className="text-xs text-neutral-500">{p.categoria} · <span className="font-semibold text-neutral-700">{p.precio}</span></p>
+                  <div className="flex flex-wrap gap-1.5 pt-2">
+                    <button onClick={() => setEditing(p)} className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+                      <Edit3 className="h-3 w-3" /> Editar
+                    </button>
+                    <button onClick={() => mut.mutate({ ...p, activo: !p.activo })}
+                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] hover:bg-neutral-50">
+                      {p.activo ? "Ocultar" : "Activar"}
+                    </button>
+                    <button onClick={() => mut.mutate({ ...p, destacado: !p.destacado })}
+                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] hover:bg-neutral-50">
+                      {p.destacado ? "Quitar destacado" : "Destacar"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      {editing && <LandingEditor producto={editing} onClose={() => setEditing(null)} onSave={(v) => { mut.mutate(v); setEditing(null); }} />}
+    </div>
+  );
+}
+
+function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; onClose: () => void; onSave: (v: SheetProduct) => void }) {
+  const [v, setV] = useState<SheetProduct>(producto);
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl">
+        <h2 className="text-base font-bold">Editar producto de landing</h2>
+        <Inp label="Nombre" v={v.nombre} onC={x => setV(s => ({ ...s, nombre: x }))} />
+        <Inp label="Categoría" v={v.categoria} onC={x => setV(s => ({ ...s, categoria: x }))} />
+        <Inp label="Precio" v={v.precio} onC={x => setV(s => ({ ...s, precio: x }))} />
+        <Inp label="Imagen URL" v={v.imagen_url} onC={x => setV(s => ({ ...s, imagen_url: x }))} />
+        <TA label="Descripción" v={v.descripcion} onC={x => setV(s => ({ ...s, descripcion: x }))} rows={3} />
+        <div className="flex gap-4 text-sm">
+          <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={v.destacado} onChange={e => setV(s => ({ ...s, destacado: e.target.checked }))} />Destacado</label>
+        </div>
+        <div className="flex justify-end gap-2 pt-2">
+          <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm">Cancelar</button>
+          <button onClick={() => onSave(v)} className="rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">Guardar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
