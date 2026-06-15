@@ -392,6 +392,7 @@ function ProductosView() {
   const agendar = useServerFn(agendarPublicacion);
   const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch() });
   const [scheduling, setScheduling] = useState<Producto | null>(null);
+  const [publishing, setPublishing] = useState<Producto | null>(null);
 
   const mut = useMutation({
     mutationFn: (v: { rowIndex: number; estado: "APROBADO"|"PUBLICADO"|"DESCARTADO" }) => upd({ data: v }),
@@ -426,10 +427,13 @@ function ProductosView() {
                   <p className="text-xs text-neutral-500">{p.categoria} {p.subcategoria && `/ ${p.subcategoria}`}</p>
                   <p className="line-clamp-2 text-xs text-neutral-700">{p.descripcion}</p>
                   <div className="flex flex-wrap gap-1.5 pt-2">
+                    <button onClick={() => setPublishing(p)} disabled={p.estado === "PUBLICADO"}
+                      className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600 disabled:opacity-50">
+                      <Globe className="h-3 w-3" /> Publicar en landing
+                    </button>
                     <button onClick={() => setScheduling(p)} className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[11px] font-semibold text-white hover:bg-neutral-800">
                       <Calendar className="h-3 w-3" /> Agendar
                     </button>
-                    <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "PUBLICADO" })} className="rounded-md border border-green-300 bg-white px-2 py-1 text-[11px] text-green-700 hover:bg-green-50">Marcar publicado</button>
                     <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "DESCARTADO" })} className="rounded-md border border-red-300 bg-white px-2 py-1 text-[11px] text-red-700 hover:bg-red-50">Descartar</button>
                   </div>
                 </div>
@@ -438,6 +442,62 @@ function ProductosView() {
           </div>
         )}
       {scheduling && <ScheduleDialog producto={scheduling} onClose={() => setScheduling(null)} agendar={(v) => agendar({ data: v })} />}
+      {publishing && <PublishDialog producto={publishing} onClose={() => setPublishing(null)} />}
+    </div>
+  );
+}
+
+function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () => void }) {
+  const qc = useQueryClient();
+  const publicar = useServerFn(publicarEnLanding);
+  const [nombre, setNombre] = useState(`${producto.marca} ${producto.modelo}`.trim());
+  const [categoria, setCategoria] = useState(producto.categoria || "");
+  const [precio, setPrecio] = useState("");
+  const [descripcion, setDescripcion] = useState(producto.descripcion || "");
+  const [imagen, setImagen] = useState(producto.url_imagen || "");
+  const [destacado, setDestacado] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function save() {
+    if (!nombre.trim() || !categoria.trim() || !precio.trim() || !imagen.trim()) {
+      toast.error("Nombre, categoría, precio e imagen son obligatorios");
+      return;
+    }
+    setBusy(true);
+    try {
+      await publicar({ data: {
+        producto_rowIndex: producto.rowIndex,
+        nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
+      }});
+      toast.success("Publicado en la landing");
+      qc.invalidateQueries({ queryKey: ["productos"] });
+      qc.invalidateQueries({ queryKey: ["sheet-products"] });
+      onClose();
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl">
+        <h2 className="text-base font-bold">Publicar en landing</h2>
+        <p className="text-xs text-neutral-500">Se agrega como fila activa en la pestaña <span className="font-mono">Productos</span>.</p>
+        <Inp label="Nombre *" v={nombre} onC={setNombre} />
+        <Inp label="Categoría *" v={categoria} onC={setCategoria} />
+        <Inp label="Precio * (ej: 89000)" v={precio} onC={setPrecio} />
+        <Inp label="Imagen URL *" v={imagen} onC={setImagen} />
+        <TA label="Descripción" v={descripcion} onC={setDescripcion} rows={3} />
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={destacado} onChange={e => setDestacado(e.target.checked)} />
+          Marcar como destacado
+        </label>
+        <div className="flex justify-end gap-2 pt-2">
+          <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm">Cancelar</button>
+          <button onClick={save} disabled={busy} className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+            {busy && <Loader2 className="h-4 w-4 animate-spin" />} Publicar
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
