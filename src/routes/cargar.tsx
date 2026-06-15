@@ -19,9 +19,11 @@ export const Route = createFileRoute("/cargar")({
 const PIN_KEY = "vera_upload_pin_v1";
 
 function CargarPage() {
-  const [pin, setPin] = useState<string | null>(() =>
-    typeof window === "undefined" ? null : sessionStorage.getItem(PIN_KEY)
-  );
+  const [pin, setPin] = useState<string | null>(null);
+  useEffect(() => {
+    const v = sessionStorage.getItem(PIN_KEY);
+    if (v) setPin(v);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
