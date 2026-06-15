@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import {
   agendarPublicacion, listAgenda, publicarEnLanding,
   type Carga, type Producto,
 } from "@/lib/admin-cargas.functions";
+import { listSheetProducts, updateSheetProduct, type SheetProduct } from "@/lib/sheet-products.functions";
 
 export const Route = createFileRoute("/admin-cargas")({
   ssr: false,
