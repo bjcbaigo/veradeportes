@@ -34,6 +34,16 @@ function sheetToProduct(s: SheetProduct): Product {
 export function Products() {
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
+  const [cat, setCat] = useState<CategoryKey>("Todos");
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<CategoryKey>).detail;
+      if (detail) setCat(detail);
+    };
+    window.addEventListener(CATEGORY_EVENT, handler);
+    return () => window.removeEventListener(CATEGORY_EVENT, handler);
+  }, []);
 
   const fetchSheet = useServerFn(listSheetProducts);
   const { data: sheetRows } = useQuery({
@@ -42,7 +52,7 @@ export function Products() {
     staleTime: 5 * 60_000,
   });
 
-  const products = useMemo<Product[]>(() => {
+  const allProducts = useMemo<Product[]>(() => {
     if (!sheetRows || sheetRows.length === 0) return PRODUCTS;
     const active = sheetRows.filter((r) => r.activo && r.nombre);
     if (active.length === 0) return PRODUCTS;
@@ -50,6 +60,11 @@ export function Products() {
       .map(sheetToProduct)
       .sort((a, b) => Number(b.badge === "Destacado") - Number(a.badge === "Destacado"));
   }, [sheetRows]);
+
+  const products = useMemo(
+    () => allProducts.filter((p) => matchesCategory(p.category, p.name, p.badge, cat)),
+    [allProducts, cat],
+  );
 
   const handleSelect = (p: Product) => {
     setSelected(p);
