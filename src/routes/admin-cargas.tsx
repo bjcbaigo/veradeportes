@@ -123,7 +123,7 @@ function Login() {
 }
 
 const ESTADOS = ["PENDIENTE","EN_REVISION","ANALIZADO","APROBADO","PUBLICADO","DESCARTADO"] as const;
-type Tab = "cargas" | "productos" | "agenda";
+type Tab = "cargas" | "productos" | "landing" | "agenda";
 
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("cargas");
