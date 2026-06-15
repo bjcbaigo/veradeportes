@@ -276,3 +276,28 @@ export const listAgenda = createServerFn({ method: "GET" })
       canal: r[3] ?? "", tipo: r[4] ?? "", estado: (r[5] ?? "PROGRAMADO").toUpperCase(),
     }));
   });
+
+/* ============ Publicar en landing (pestaña Productos) ============ */
+const PublicarInput = z.object({
+  producto_rowIndex: z.number().int().min(2).max(2000),
+  nombre: z.string().min(1).max(200),
+  categoria: z.string().min(1).max(100),
+  precio: z.string().min(1).max(50),
+  descripcion: z.string().max(2000).default(""),
+  imagen_url: z.string().min(1).max(500),
+  destacado: z.boolean().default(false),
+});
+
+export const publicarEnLanding = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => PublicarInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as any);
+    const id = `L-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
+    await appendRow("Productos", "A:H", [
+      id, data.nombre, data.categoria, data.precio, data.descripcion,
+      data.imagen_url, "TRUE", data.destacado ? "TRUE" : "FALSE",
+    ]);
+    await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
+    return { ok: true, id };
+  });
