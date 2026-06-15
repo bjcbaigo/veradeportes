@@ -179,6 +179,7 @@ export function Products() {
             );
           })}
         </div>
+        )}
       </div>
 
       <ProductDetailDialog product={selected} open={open} onOpenChange={setOpen} />
