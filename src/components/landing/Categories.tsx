@@ -3,8 +3,9 @@ import zap from "@/assets/cat-zapatillas.png";
 import rem from "@/assets/cat-remeras.png";
 import acc from "@/assets/cat-accesorios.png";
 import buz from "@/assets/cat-buzos.png";
+import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
-const CATS = [
+const CATS: { label: CategoryKey; subtitle?: string; image?: string; icon?: boolean }[] = [
   { label: "Zapatillas", subtitle: "Running · Urbano · Training", image: zap },
   { label: "Indumentaria", subtitle: "Remeras · Buzos · Camperas", image: rem },
   { label: "Accesorios", subtitle: "Mochilas · Gorras · Medias", image: acc },
