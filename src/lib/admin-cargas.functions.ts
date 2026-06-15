@@ -107,18 +107,16 @@ export const initAdminSheets = createServerFn({ method: "POST" })
       const first = await readRange(`${name}!A1:A1`);
       if (!first[0] || !first[0][0]) {
         const endCol = String.fromCharCode("A".charCodeAt(0) + cols.length - 1);
-        await updateCell(name, `A1:${endCol}1`, "");
-        // updateCell solo escribe un valor; usamos PUT con array completo
-        const { lovableKey: lk, sheetsKey: sk, sheetId: sid } = env();
         const range = `${name}!A1:${endCol}1`;
-        await fetch(
-          `${GATEWAY}/spreadsheets/${sid}/values/${range}?valueInputOption=RAW`,
+        const res = await fetch(
+          `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
           {
             method: "PUT",
-            headers: headers(lk, sk),
-            body: JSON.stringify({ range, majorDimension: "ROWS", values: [cols] }),
+            headers: headers(lovableKey, sheetsKey),
+            body: JSON.stringify({ range, majorDimension: "ROWS", values: [cols as unknown as string[]] }),
           },
         );
+        if (!res.ok) throw new Error(`headers ${name} [${res.status}]: ${await res.text()}`);
       }
     }
 
