@@ -1,10 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Star, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { PRODUCTS, type Product } from "@/lib/products";
 import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { ProductDetailDialog } from "./ProductDetailDialog";
+import { CATEGORY_EVENT, matchesCategory, type CategoryKey } from "@/lib/category-filter";
+
+const CHIPS: CategoryKey[] = ["Todos", "Zapatillas", "Indumentaria", "Accesorios", "Niños", "Ofertas"];
 
 const fmt = (raw: string) => {
   const n = Number(String(raw).replace(/[^\d.-]/g, ""));
