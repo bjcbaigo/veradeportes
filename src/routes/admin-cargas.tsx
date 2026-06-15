@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   initAdminSheets, listCargas, updateCargaEstado,
   aprobarYCrearProducto, listProductosAdmin, updateProductoEstado,
-  agendarPublicacion, listAgenda,
+  agendarPublicacion, listAgenda, publicarEnLanding,
   type Carga, type Producto,
 } from "@/lib/admin-cargas.functions";
 
