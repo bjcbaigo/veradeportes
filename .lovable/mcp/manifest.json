@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://luuzibhmmxocchphvpqg.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "vera-deportes-mcp",
+      "version": "0.1.0",
+      "title": "Vera Deportes"
+    },
+    "tools": [
+      {
+        "name": "whoami",
+        "title": "Quién soy",
+        "description": "Devuelve el usuario autenticado y si tiene rol admin en Vera Deportes.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_pending_cargas",
+        "title": "Listar cargas pendientes",
+        "description": "Devuelve las cargas de fotos de productos con estado PENDIENTE (o todas si se indica). Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "incluir_todas": {
+              "description": "Si es true devuelve todas las cargas, no solo las PENDIENTE.",
+              "type": "boolean"
+            },
+            "limite": {
+              "description": "Máximo de filas a devolver.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_carga_estado",
+        "title": "Cambiar estado de una carga",
+        "description": "Actualiza el estado de una carga (aprobar, descartar, etc.) por rowIndex. Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "rowIndex": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 2000,
+              "description": "Fila de la carga en CARGAS_USUARIOS."
+            },
+            "estado": {
+              "type": "string",
+              "enum": [
+                "PENDIENTE",
+                "EN_REVISION",
+                "ANALIZADO",
+                "APROBADO",
+                "PUBLICADO",
+                "DESCARTADO"
+              ],
+              "description": "Nuevo estado."
+            }
+          },
+          "required": [
+            "rowIndex",
+            "estado"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_leads",
+        "title": "Listar leads",
+        "description": "Devuelve leads (potenciales clientes) capturados desde la web. Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limite": {
+              "description": "Máximo de leads a devolver (default 50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
