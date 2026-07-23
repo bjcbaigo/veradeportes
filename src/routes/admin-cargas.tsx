@@ -130,7 +130,10 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
   const [tab, setTab] = useState<Tab>("cargas");
 
   const initFn = useServerFn(initAdminSheets);
+  const resetFn = useServerFn(resetAllSheets);
+  const qc = useQueryClient();
   const [initBusy, setInitBusy] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
   async function doInit() {
     setInitBusy(true);
     try {
@@ -138,6 +141,19 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
       toast.success(res.created.length ? `Creadas: ${res.created.join(", ")}` : "Pestañas ya existían");
     } catch (e) { toast.error((e as Error).message); }
     finally { setInitBusy(false); }
+  }
+  async function doReset() {
+    const ok = window.confirm(
+      "Esto vaciará TODAS las cargas, productos internos y la landing pública.\n\nLas fotos en Drive NO se borran.\n\n¿Continuar?"
+    );
+    if (!ok) return;
+    setResetBusy(true);
+    try {
+      await resetFn({});
+      await qc.invalidateQueries();
+      toast.success("Todo limpio. Podés empezar de cero.");
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setResetBusy(false); }
   }
 
   return (
@@ -152,11 +168,16 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
             className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50 disabled:opacity-60">
             <Settings className="h-3.5 w-3.5" /> Inicializar
           </button>
+          <button onClick={doReset} disabled={resetBusy} title="Vaciar cargas, productos y landing"
+            className="inline-flex items-center gap-1.5 rounded-md border border-red-300 bg-white px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50 disabled:opacity-60">
+            <XCircle className="h-3.5 w-3.5" /> {resetBusy ? "Limpiando…" : "Reset total"}
+          </button>
           <button onClick={onLogout} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs text-neutral-500 hover:bg-neutral-100">
             <LogOut className="h-3.5 w-3.5" /> Salir
           </button>
         </div>
       </header>
+
 
       <nav className="mb-4 flex gap-1 overflow-x-auto border-b border-neutral-200">
         {([
