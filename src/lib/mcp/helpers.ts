@@ -48,20 +48,53 @@ export async function readRange(range: string): Promise<string[][]> {
   return json.values ?? [];
 }
 
+function sheetsHeaders() {
+  const { lovableKey, sheetsKey } = sheetsEnv();
+  return {
+    Authorization: `Bearer ${lovableKey}`,
+    "X-Connection-Api-Key": sheetsKey,
+    "Content-Type": "application/json",
+  };
+}
+
 export async function updateCell(sheetName: string, cell: string, value: string) {
-  const { lovableKey, sheetsKey, sheetId } = sheetsEnv();
+  const { sheetId } = sheetsEnv();
   const range = `${sheetName}!${cell}`;
   const res = await fetch(
     `${SHEETS_GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=USER_ENTERED`,
     {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": sheetsKey,
-        "Content-Type": "application/json",
-      },
+      headers: sheetsHeaders(),
       body: JSON.stringify({ range, majorDimension: "ROWS", values: [[value]] }),
     },
   );
   if (!res.ok) throw new Error(`Sheets update [${res.status}]: ${await res.text()}`);
+}
+
+export async function updateRow(sheetName: string, range: string, values: (string | number)[]) {
+  const { sheetId } = sheetsEnv();
+  const fullRange = `${sheetName}!${range}`;
+  const res = await fetch(
+    `${SHEETS_GATEWAY}/spreadsheets/${sheetId}/values/${fullRange}?valueInputOption=USER_ENTERED`,
+    {
+      method: "PUT",
+      headers: sheetsHeaders(),
+      body: JSON.stringify({ range: fullRange, majorDimension: "ROWS", values: [values] }),
+    },
+  );
+  if (!res.ok) throw new Error(`Sheets update [${res.status}]: ${await res.text()}`);
+}
+
+export async function appendRow(sheetName: string, cols: string, values: (string | number)[]) {
+  const { sheetId } = sheetsEnv();
+  const range = `${sheetName}!${cols}`;
+  const res = await fetch(
+    `${SHEETS_GATEWAY}/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
+    {
+      method: "POST",
+      headers: sheetsHeaders(),
+      body: JSON.stringify({ range, majorDimension: "ROWS", values: [values] }),
+    },
+  );
+  if (!res.ok) throw new Error(`Sheets append [${res.status}]: ${await res.text()}`);
 }

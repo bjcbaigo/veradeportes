@@ -118,6 +118,170 @@
           }
         },
         "outputSchema": null
+      },
+      {
+        "name": "list_landing_products",
+        "title": "Listar productos publicados",
+        "description": "Devuelve los productos de la pestaña Productos (los que ve la landing pública). Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "solo_activos": {
+              "description": "Si es true devuelve solo activos.",
+              "type": "boolean"
+            },
+            "limite": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "publish_landing_product",
+        "title": "Publicar producto en la landing",
+        "description": "Agrega un producto nuevo a la pestaña Productos (visible en la web). Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "categoria": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "precio": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Precio como texto, ej: $85.000"
+            },
+            "descripcion": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "imagen_url": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "activo": {
+              "description": "Default true",
+              "type": "boolean"
+            },
+            "destacado": {
+              "description": "Default false",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "nombre",
+            "categoria",
+            "precio",
+            "imagen_url"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_landing_product",
+        "title": "Editar producto de la landing",
+        "description": "Actualiza campos de un producto existente en la pestaña Productos por rowIndex. Solo se modifican los campos que envíes. Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "rowIndex": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 1001,
+              "description": "Fila del producto en Productos."
+            },
+            "nombre": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "categoria": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "precio": {
+              "type": "string",
+              "maxLength": 50
+            },
+            "descripcion": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "imagen_url": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "activo": {
+              "type": "boolean"
+            },
+            "destacado": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "rowIndex"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_productos_admin",
+        "title": "Listar productos internos (aprobados)",
+        "description": "Devuelve el catálogo interno de la pestaña PRODUCTOS_ADMIN (fichas aprobadas listas para publicar). Requiere rol admin.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "estado": {
+              "type": "string",
+              "enum": [
+                "APROBADO",
+                "PUBLICADO",
+                "DESCARTADO"
+              ]
+            },
+            "limite": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        },
+        "outputSchema": null
       }
     ]
   }
