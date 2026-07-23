@@ -9,9 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   initAdminSheets, listCargas, updateCargaEstado,
   aprobarYCrearProducto, listProductosAdmin, updateProductoEstado,
-  agendarPublicacion, listAgenda, publicarEnLanding,
+  agendarPublicacion, listAgenda, publicarEnLanding, resetAllSheets,
   type Carga, type Producto,
 } from "@/lib/admin-cargas.functions";
+
 import { listSheetProducts, updateSheetProduct, type SheetProduct } from "@/lib/sheet-products.functions";
 
 export const Route = createFileRoute("/admin-cargas")({
