@@ -301,3 +301,26 @@ export const publicarEnLanding = createServerFn({ method: "POST" })
     await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
     return { ok: true, id };
   });
+
+/* ============ Reset (vaciar hojas, conservando encabezados) ============ */
+async function clearRows(sheetName: string, endCol: string) {
+  const { lovableKey, sheetsKey, sheetId } = env();
+  const range = `${sheetName}!A2:${endCol}10000`;
+  const res = await fetch(
+    `${GATEWAY}/spreadsheets/${sheetId}/values/${range}:clear`,
+    { method: "POST", headers: headers(lovableKey, sheetsKey), body: "{}" },
+  );
+  if (!res.ok && res.status !== 400 && res.status !== 404) {
+    throw new Error(`Sheets clear ${sheetName} [${res.status}]: ${await res.text()}`);
+  }
+}
+
+export const resetAllSheets = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as any);
+    await clearRows("CARGAS_USUARIOS", "I");
+    await clearRows("PRODUCTOS_ADMIN", "O");
+    await clearRows("Productos", "H");
+    return { ok: true };
+  });
