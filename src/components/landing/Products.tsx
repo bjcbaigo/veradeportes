@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Star, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { PRODUCTS, type Product } from "@/lib/products";
