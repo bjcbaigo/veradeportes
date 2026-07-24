@@ -336,7 +336,7 @@ export const resetAllSheets = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context as any);
     await clearRows("CARGAS_USUARIOS", "I");
-    await clearRows("PRODUCTOS_ADMIN", "O");
-    await clearRows("Productos", "H");
+    await clearRows("PRODUCTOS_ADMIN", "P");
+    await clearRows("Productos", "I");
     return { ok: true };
   });
