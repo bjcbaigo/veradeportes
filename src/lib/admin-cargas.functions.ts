@@ -30,9 +30,20 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
   if (!data) throw new Error("No autorizado");
 }
 
+async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
+  const delays = [400, 900, 1800];
+  let res = await fetch(url, init);
+  for (const d of delays) {
+    if (res.status !== 429) return res;
+    await new Promise((r) => setTimeout(r, d + Math.floor(Math.random() * 250)));
+    res = await fetch(url, init);
+  }
+  return res;
+}
+
 async function readRange(range: string) {
   const { lovableKey, sheetsKey, sheetId } = env();
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${GATEWAY}/spreadsheets/${sheetId}/values/${range}`,
     { headers: headers(lovableKey, sheetsKey) },
   );
@@ -45,7 +56,7 @@ async function readRange(range: string) {
 async function appendRow(sheetName: string, cols: string, values: (string | number)[]) {
   const { lovableKey, sheetsKey, sheetId } = env();
   const range = `${sheetName}!${cols}`;
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${GATEWAY}/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
     {
       method: "POST",
@@ -59,7 +70,7 @@ async function appendRow(sheetName: string, cols: string, values: (string | numb
 async function updateCell(sheetName: string, cell: string, value: string) {
   const { lovableKey, sheetsKey, sheetId } = env();
   const range = `${sheetName}!${cell}`;
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=USER_ENTERED`,
     {
       method: "PUT",
