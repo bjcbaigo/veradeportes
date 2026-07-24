@@ -216,11 +216,12 @@ export const aprobarYCrearProducto = createServerFn({ method: "POST" })
       hour: "2-digit", minute: "2-digit", hour12: false,
     }).format(new Date());
 
-    await appendRow("PRODUCTOS_ADMIN", "A:O", [
+    await appendRow("PRODUCTOS_ADMIN", "A:P", [
       id, fecha, data.url_imagen, data.marca, data.modelo,
       data.categoria, data.subcategoria, data.descripcion,
       data.caracteristicas, data.uso, data.hashtags,
       data.texto_ig, data.texto_wsp, data.estado, data.carga_id,
+      data.imagenes_extra,
     ]);
 
     if (data.carga_rowIndex) {
@@ -233,7 +234,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<Producto[]> => {
     await assertAdmin(context as any);
-    const rows = await readRange("PRODUCTOS_ADMIN!A2:O2000");
+    const rows = await readRange("PRODUCTOS_ADMIN!A2:P2000");
     return rows.map((r, i) => ({
       rowIndex: i + 2,
       id: r[0] ?? "", fecha_revision: r[1] ?? "", url_imagen: r[2] ?? "",
@@ -242,6 +243,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
       caracteristicas: r[8] ?? "", uso: r[9] ?? "", hashtags: r[10] ?? "",
       texto_ig: r[11] ?? "", texto_wsp: r[12] ?? "",
       estado: (r[13] ?? "APROBADO").toUpperCase(), carga_id: r[14] ?? "",
+      imagenes_extra: r[15] ?? "",
     }));
   });
 
