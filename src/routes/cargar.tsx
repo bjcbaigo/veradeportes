@@ -195,10 +195,16 @@ function UploadForm({ pin }: { pin: string }) {
             <CheckCircle2 className="h-4 w-4" />
             {ok === 1 ? "¡Foto enviada!" : `¡${ok} fotos enviadas!`} Ya las puede revisar el admin.
           </div>
-          <button type="button" onClick={() => { setOk(0); fileRef.current?.click(); }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-700">
-            <Camera className="h-4 w-4" /> Subir más fotos
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => { setOk(0); fileRef.current?.click(); }}
+              className="flex items-center justify-center gap-2 rounded-lg bg-green-600 px-3 py-2.5 text-sm font-bold text-white hover:bg-green-700">
+              <Camera className="h-4 w-4" /> Subir más
+            </button>
+            <Link to="/admin-cargas"
+              className="flex items-center justify-center gap-2 rounded-lg bg-neutral-900 px-3 py-2.5 text-sm font-bold text-white hover:bg-neutral-800">
+              <ShieldCheck className="h-4 w-4" /> Ir a revisar
+            </Link>
+          </div>
         </div>
       )}
 
