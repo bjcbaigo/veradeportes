@@ -148,7 +148,7 @@ export type Producto = {
   marca: string; modelo: string; categoria: string; subcategoria: string;
   descripcion: string; caracteristicas: string; uso: string;
   hashtags: string; texto_ig: string; texto_wsp: string;
-  estado: string; carga_id: string;
+  estado: string; carga_id: string; imagenes_extra: string;
 };
 export type Agenda = {
   rowIndex: number;
