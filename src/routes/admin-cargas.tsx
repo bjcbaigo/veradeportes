@@ -362,12 +362,18 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
     if (!v.marca.trim()) { toast.error("Marca obligatoria"); return; }
     setBusy(true);
     try {
+      const extras = cargas
+        .filter((c) => c.rowIndex !== primary.rowIndex)
+        .map((c) => c.url_imagen)
+        .filter(Boolean)
+        .join("|");
       await aprobar({ data: {
         url_imagen: primary.url_imagen, marca: v.marca, modelo: v.modelo,
         categoria: v.categoria, subcategoria: v.subcategoria,
         descripcion: v.descripcion, caracteristicas: v.caracteristicas,
         uso: v.uso, hashtags: v.hashtags, texto_ig: v.texto_ig, texto_wsp: v.texto_wsp,
         estado: v.estado, carga_id: primary.id, carga_rowIndex: primary.rowIndex,
+        imagenes_extra: extras,
       }});
       // Marcar el resto del grupo con el mismo estado
       for (const c of cargas) {
