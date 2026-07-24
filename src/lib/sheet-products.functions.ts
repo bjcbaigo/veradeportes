@@ -36,16 +36,28 @@ export type SheetProduct = {
   rowIndex: number; // 1-based sheet row (header = 1)
 };
 
+async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
+  const delays = [500, 1200, 2500, 5000];
+  let res = await fetch(url, init);
+  for (const d of delays) {
+    if (res.status !== 429) return res;
+    await new Promise((r) => setTimeout(r, d + Math.floor(Math.random() * 300)));
+    res = await fetch(url, init);
+  }
+  return res;
+}
+
 export const listSheetProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<SheetProduct[]> => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) {
       throw new Error(`Sheets read failed [${res.status}]: ${await res.text()}`);
     }
+
     const json = (await res.json()) as { values?: string[][] };
     const rows = json.values ?? [];
     if (rows.length < 2) return [];
