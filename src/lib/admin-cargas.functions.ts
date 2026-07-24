@@ -300,6 +300,7 @@ const PublicarInput = z.object({
   descripcion: z.string().max(2000).default(""),
   imagen_url: z.string().min(1).max(500),
   destacado: z.boolean().default(false),
+  imagenes_extra: z.string().max(3000).default(""),
 });
 
 export const publicarEnLanding = createServerFn({ method: "POST" })
@@ -308,9 +309,10 @@ export const publicarEnLanding = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     const id = `L-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-    await appendRow("Productos", "A:H", [
+    await appendRow("Productos", "A:I", [
       id, data.nombre, data.categoria, data.precio, data.descripcion,
       data.imagen_url, "TRUE", data.destacado ? "TRUE" : "FALSE",
+      data.imagenes_extra,
     ]);
     await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
     return { ok: true, id };
