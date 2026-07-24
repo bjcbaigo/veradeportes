@@ -338,12 +338,18 @@ function badgeColor(e: string) {
 }
 
 /* ============ Editor / aprobador ============ */
-function ProductoEditor({ carga, onClose }: { carga: Carga; onClose: () => void }) {
+function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => void }) {
   const qc = useQueryClient();
   const aprobar = useServerFn(aprobarYCrearProducto);
+  const updEstado = useServerFn(updateCargaEstado);
+  const [primaryIdx, setPrimaryIdx] = useState(0);
+  const primary = cargas[primaryIdx] ?? cargas[0];
+  const isGroup = cargas.length > 1;
+
   const [v, setV] = useState({
-    marca: carga.marca, modelo: "", categoria: carga.categoria, subcategoria: "",
-    descripcion: carga.comentario, caracteristicas: "", uso: "",
+    marca: primary.marca, modelo: "", categoria: primary.categoria, subcategoria: "",
+    descripcion: (primary.comentario || "").replace(/\s*\[G-[^\]]+\]\s*/g, "").trim(),
+    caracteristicas: "", uso: "",
     hashtags: "", texto_ig: "", texto_wsp: "",
     estado: "APROBADO" as "APROBADO"|"PUBLICADO"|"DESCARTADO",
   });
@@ -354,13 +360,18 @@ function ProductoEditor({ carga, onClose }: { carga: Carga; onClose: () => void 
     setBusy(true);
     try {
       await aprobar({ data: {
-        url_imagen: carga.url_imagen, marca: v.marca, modelo: v.modelo,
+        url_imagen: primary.url_imagen, marca: v.marca, modelo: v.modelo,
         categoria: v.categoria, subcategoria: v.subcategoria,
         descripcion: v.descripcion, caracteristicas: v.caracteristicas,
         uso: v.uso, hashtags: v.hashtags, texto_ig: v.texto_ig, texto_wsp: v.texto_wsp,
-        estado: v.estado, carga_id: carga.id, carga_rowIndex: carga.rowIndex,
+        estado: v.estado, carga_id: primary.id, carga_rowIndex: primary.rowIndex,
       }});
-      toast.success("Producto creado");
+      // Marcar el resto del grupo con el mismo estado
+      for (const c of cargas) {
+        if (c.rowIndex === primary.rowIndex) continue;
+        await updEstado({ data: { rowIndex: c.rowIndex, estado: v.estado } });
+      }
+      toast.success(isGroup ? `Producto creado (${cargas.length} fotos agrupadas)` : "Producto creado");
       qc.invalidateQueries({ queryKey: ["cargas"] });
       qc.invalidateQueries({ queryKey: ["productos"] });
       onClose();
@@ -379,14 +390,31 @@ function ProductoEditor({ carga, onClose }: { carga: Carga; onClose: () => void 
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-xl">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-white px-5 py-3">
-          <h2 className="text-base font-bold text-neutral-900">Revisar y aprobar</h2>
+          <h2 className="text-base font-bold text-neutral-900">
+            {isGroup ? `Revisar y aprobar (${cargas.length} fotos)` : "Revisar y aprobar"}
+          </h2>
           <button onClick={onClose} className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100">✕</button>
         </div>
-        <div className="grid gap-4 p-5 md:grid-cols-[200px_1fr]">
+        <div className="grid gap-4 p-5 md:grid-cols-[220px_1fr]">
           <div className="space-y-2">
-            {carga.url_imagen && <img src={carga.url_imagen} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
-            <p className="text-[11px] text-neutral-500">{carga.fecha} · {carga.usuario}</p>
-            {carga.comentario && <p className="rounded-md bg-amber-50 p-2 text-xs text-amber-900">{carga.comentario}</p>}
+            {primary.url_imagen && <img src={primary.url_imagen} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
+            {isGroup && (
+              <>
+                <p className="text-[11px] font-semibold text-neutral-700">Elegí la foto principal:</p>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {cargas.map((c, i) => (
+                    <button key={c.id} type="button" onClick={() => setPrimaryIdx(i)}
+                      className={`aspect-square overflow-hidden rounded-md border-2 bg-neutral-100 ${
+                        i === primaryIdx ? "border-orange-500 ring-2 ring-orange-200" : "border-neutral-200 hover:border-neutral-400"
+                      }`}>
+                      <img src={c.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-neutral-500">Solo la principal aparece en la landing. Las demás quedan archivadas con el mismo estado.</p>
+              </>
+            )}
+            <p className="text-[11px] text-neutral-500">{primary.fecha} · {primary.usuario}</p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Inp label="Marca *" v={v.marca} onC={x => setV(s => ({ ...s, marca: x }))} />
