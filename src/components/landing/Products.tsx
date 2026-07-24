@@ -127,26 +127,28 @@ export function Products() {
                   }
                 }}
               >
-                <div className="relative aspect-square bg-[#e5e7eb] p-3">
-                  {p.image ? (
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      loading="lazy"
-                      width={400}
-                      height={400}
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
-                      Sin imagen
-                    </div>
-                  )}
-                  {extraCount > 0 && (
-                    <span className="absolute bottom-2 right-2 rounded-full bg-black/70 text-white text-[10px] font-bold px-2 py-0.5">
-                      +{extraCount} foto{extraCount > 1 ? "s" : ""}
-                    </span>
-                  )}
+                <div className="relative aspect-square bg-[#e5e7eb] p-2">
+                  <div className="relative h-full w-full rounded-2xl bg-white overflow-hidden ring-1 ring-black/5">
+                    {p.image ? (
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        loading="lazy"
+                        width={400}
+                        height={400}
+                        className="h-full w-full object-contain p-3"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
+                        Sin imagen
+                      </div>
+                    )}
+                    {extraCount > 0 && (
+                      <span className="absolute bottom-2 right-2 rounded-full bg-black/70 text-white text-[10px] font-bold px-2 py-0.5">
+                        +{extraCount} foto{extraCount > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-col gap-1.5 px-3 pb-3">
                   {p.badge && (
