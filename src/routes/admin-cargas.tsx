@@ -555,8 +555,11 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [precio, setPrecio] = useState("");
   const [descripcion, setDescripcion] = useState(producto.descripcion || "");
   const [imagen, setImagen] = useState(producto.url_imagen || "");
+  const [imagenesExtra, setImagenesExtra] = useState(producto.imagenes_extra || "");
   const [destacado, setDestacado] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const extraList = imagenesExtra.split("|").map((s) => s.trim()).filter(Boolean);
 
   async function save() {
     if (!nombre.trim() || !categoria.trim() || !precio.trim() || !imagen.trim()) {
@@ -568,6 +571,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
       await publicar({ data: {
         producto_rowIndex: producto.rowIndex,
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
+        imagenes_extra: extraList.join("|"),
       }});
       toast.success("Publicado en la landing");
       qc.invalidateQueries({ queryKey: ["productos"] });
@@ -579,13 +583,26 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl">
+      <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-md space-y-3 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl">
         <h2 className="text-base font-bold">Publicar en landing</h2>
         <p className="text-xs text-neutral-500">Se agrega como fila activa en la pestaña <span className="font-mono">Productos</span>.</p>
         <Inp label="Nombre *" v={nombre} onC={setNombre} />
         <Inp label="Categoría *" v={categoria} onC={setCategoria} />
         <Inp label="Precio * (ej: 89000)" v={precio} onC={setPrecio} />
-        <Inp label="Imagen URL *" v={imagen} onC={setImagen} />
+        <Inp label="Imagen principal *" v={imagen} onC={setImagen} />
+        <TA
+          label={`Imágenes extra (una por línea) — ${extraList.length}`}
+          v={imagenesExtra.replace(/\|/g, "\n")}
+          onC={(val) => setImagenesExtra(val.split(/\n+/).map((s) => s.trim()).filter(Boolean).join("|"))}
+          rows={3}
+        />
+        {extraList.length > 0 && (
+          <div className="flex gap-1.5 overflow-x-auto">
+            {[imagen, ...extraList].filter(Boolean).map((src, i) => (
+              <img key={i} src={src} alt="" className="h-14 w-14 shrink-0 rounded border border-neutral-200 bg-neutral-50 object-contain" />
+            ))}
+          </div>
+        )}
         <TA label="Descripción" v={descripcion} onC={setDescripcion} rows={3} />
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={destacado} onChange={e => setDestacado(e.target.checked)} />
