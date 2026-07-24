@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
-import { Camera, Upload, CheckCircle2, Loader2, LogOut, Sparkles } from "lucide-react";
+import { Camera, Upload, CheckCircle2, Loader2, LogOut, Sparkles, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { submitUpload, verifyUploadPin } from "@/lib/uploads.functions";
