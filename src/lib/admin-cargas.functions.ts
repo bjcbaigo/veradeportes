@@ -201,6 +201,7 @@ const ProductoInput = z.object({
   estado: z.enum(["APROBADO","PUBLICADO","DESCARTADO"]).default("APROBADO"),
   carga_id: z.string().max(80).default(""),
   carga_rowIndex: z.number().int().min(2).max(2000).optional(),
+  imagenes_extra: z.string().max(3000).default(""),
 });
 
 export const aprobarYCrearProducto = createServerFn({ method: "POST" })
