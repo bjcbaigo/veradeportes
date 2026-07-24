@@ -112,8 +112,7 @@ export function Products() {
         ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {products.map((p) => {
-            const idNum = parseInt(p.id) || 1;
-            const reviews = 12 + idNum * 4;
+            const extraCount = (p.images?.length ?? 0) > 1 ? (p.images!.length - 1) : 0;
             return (
               <article
                 key={p.id}
@@ -128,7 +127,7 @@ export function Products() {
                   }
                 }}
               >
-                <div className="aspect-square bg-[#e5e7eb] p-3">
+                <div className="relative aspect-square bg-[#e5e7eb] p-3">
                   {p.image ? (
                     <img
                       src={p.image}
@@ -143,6 +142,11 @@ export function Products() {
                       Sin imagen
                     </div>
                   )}
+                  {extraCount > 0 && (
+                    <span className="absolute bottom-2 right-2 rounded-full bg-black/70 text-white text-[10px] font-bold px-2 py-0.5">
+                      +{extraCount} foto{extraCount > 1 ? "s" : ""}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5 px-3 pb-3">
                   {p.badge && (
@@ -156,14 +160,6 @@ export function Products() {
                   <p className="text-[11px] text-muted-foreground">
                     {p.brand} · {p.category}
                   </p>
-                  <div className="flex items-center gap-1 text-primary text-[12px] font-semibold">
-                    <Star className="h-3.5 w-3.5 fill-primary" />
-                    <Star className="h-3.5 w-3.5 fill-primary" />
-                    <Star className="h-3.5 w-3.5 fill-primary" />
-                    <Star className="h-3.5 w-3.5 fill-primary" />
-                    <Star className="h-3.5 w-3.5 fill-primary" />
-                    <span className="text-muted-foreground ml-1">({reviews})</span>
-                  </div>
                   <div className="mt-1 flex items-baseline gap-2">
                     <p className="font-display font-extrabold text-primary text-[15px]">
                       {p.price}
