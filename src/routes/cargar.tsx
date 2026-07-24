@@ -161,9 +161,20 @@ function UploadForm({ pin }: { pin: string }) {
       )}
 
       <div className="rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50 p-4">
-        {preview ? (
+        {optimizing ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm text-neutral-600">
+            <Loader2 className="h-4 w-4 animate-spin" /> Optimizando imagen…
+          </div>
+        ) : opt ? (
           <div className="space-y-3">
-            <img src={preview} alt="" className="mx-auto max-h-72 w-auto rounded-lg object-contain" />
+            <img src={opt.previewUrl} alt="" className="mx-auto max-h-72 w-auto rounded-lg object-contain" />
+            <div className="flex items-center justify-center gap-1.5 text-xs text-neutral-600">
+              <Sparkles className="h-3.5 w-3.5 text-orange-500" />
+              <span>
+                {formatBytes(opt.originalBytes)} → <strong className="text-neutral-900">{formatBytes(opt.optimizedBytes)}</strong>
+                {" · "}{opt.width}×{opt.height}px
+              </span>
+            </div>
             <button type="button" onClick={() => fileRef.current?.click()}
               className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium hover:bg-neutral-50">
               Cambiar imagen
@@ -175,7 +186,7 @@ function UploadForm({ pin }: { pin: string }) {
               className="flex items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-4 text-sm font-semibold text-white">
               <Camera className="h-4 w-4" /> Tomar / elegir foto
             </button>
-            <p className="text-center text-xs text-neutral-500">JPG, PNG o WEBP — hasta 12 MB</p>
+            <p className="text-center text-xs text-neutral-500">JPG, PNG o WEBP — se optimiza automáticamente</p>
           </div>
         )}
         <input ref={fileRef} type="file" accept="image/*" capture="environment"
