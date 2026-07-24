@@ -1,4 +1,5 @@
-import { MessageCircle, Star, Truck, ShieldCheck, RefreshCcw, Target, ListChecks } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MessageCircle, Truck, ShieldCheck, RefreshCcw, Target, ListChecks } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,22 +19,56 @@ type Props = {
 };
 
 export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
+  const gallery = (product?.images && product.images.length > 0
+    ? product.images
+    : product?.image
+      ? [product.image]
+      : []
+  ).filter(Boolean);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    setActive(0);
+  }, [product?.id]);
+
   if (!product) return null;
 
   const isShoe = product.category === "Zapatillas";
-  const rating = (4 + ((parseInt(product.id) * 7) % 9) / 10).toFixed(1);
-  const reviews = 12 + parseInt(product.id) * 4;
+  const mainImage = gallery[active] || product.image;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         <div className="grid md:grid-cols-2 bg-card">
-          <div className="aspect-square bg-[#f3f4f6] p-6 flex items-center justify-center">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="h-full w-full object-contain"
-            />
+          <div className="flex flex-col gap-2 p-3 md:p-4">
+            <div className="aspect-square bg-[#f3f4f6] rounded-lg flex items-center justify-center overflow-hidden">
+              {mainImage ? (
+                <img
+                  src={mainImage}
+                  alt={product.name}
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <div className="text-xs text-muted-foreground">Sin imagen</div>
+              )}
+            </div>
+            {gallery.length > 1 && (
+              <div className="flex gap-1.5 overflow-x-auto">
+                {gallery.map((src, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActive(i)}
+                    className={`h-14 w-14 shrink-0 rounded-md overflow-hidden bg-[#f3f4f6] border-2 transition ${
+                      i === active ? "border-primary" : "border-transparent hover:border-border"
+                    }`}
+                    aria-label={`Ver foto ${i + 1}`}
+                  >
+                    <img src={src} alt="" className="h-full w-full object-contain" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="p-5 flex flex-col gap-3">
             <DialogHeader className="text-left space-y-1">
@@ -48,18 +83,10 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex items-center gap-1 text-primary text-sm font-semibold">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-primary" />
-              ))}
-              <span className="text-muted-foreground ml-1 text-xs">
-                {rating} ({reviews} reseñas)
-              </span>
-            </div>
-
             <p className="font-display font-extrabold text-2xl text-primary">
               {product.price}
             </p>
+
 
             <p className="text-sm text-muted-foreground leading-relaxed">
               {product.description || (isShoe
