@@ -84,7 +84,7 @@ async function updateCell(sheetName: string, cell: string, value: string) {
 /* ============ Inicializar pestañas ============ */
 const TAB_HEADERS = {
   CARGAS_USUARIOS: ["ID","Fecha","Usuario","URL_Imagen","Marca_Sugerida","Categoria_Sugerida","Comentario","Estado","URL_Drive"],
-  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID"],
+  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID","Imagenes_Extra"],
   CALENDARIO_PUBLICACIONES: ["ID","Producto_ID","Fecha_Publicacion","Canal","Tipo_Publicacion","Estado"],
 } as const;
 
@@ -148,7 +148,7 @@ export type Producto = {
   marca: string; modelo: string; categoria: string; subcategoria: string;
   descripcion: string; caracteristicas: string; uso: string;
   hashtags: string; texto_ig: string; texto_wsp: string;
-  estado: string; carga_id: string;
+  estado: string; carga_id: string; imagenes_extra: string;
 };
 export type Agenda = {
   rowIndex: number;
@@ -201,6 +201,7 @@ const ProductoInput = z.object({
   estado: z.enum(["APROBADO","PUBLICADO","DESCARTADO"]).default("APROBADO"),
   carga_id: z.string().max(80).default(""),
   carga_rowIndex: z.number().int().min(2).max(2000).optional(),
+  imagenes_extra: z.string().max(3000).default(""),
 });
 
 export const aprobarYCrearProducto = createServerFn({ method: "POST" })
@@ -215,11 +216,12 @@ export const aprobarYCrearProducto = createServerFn({ method: "POST" })
       hour: "2-digit", minute: "2-digit", hour12: false,
     }).format(new Date());
 
-    await appendRow("PRODUCTOS_ADMIN", "A:O", [
+    await appendRow("PRODUCTOS_ADMIN", "A:P", [
       id, fecha, data.url_imagen, data.marca, data.modelo,
       data.categoria, data.subcategoria, data.descripcion,
       data.caracteristicas, data.uso, data.hashtags,
       data.texto_ig, data.texto_wsp, data.estado, data.carga_id,
+      data.imagenes_extra,
     ]);
 
     if (data.carga_rowIndex) {
@@ -232,7 +234,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<Producto[]> => {
     await assertAdmin(context as any);
-    const rows = await readRange("PRODUCTOS_ADMIN!A2:O2000");
+    const rows = await readRange("PRODUCTOS_ADMIN!A2:P2000");
     return rows.map((r, i) => ({
       rowIndex: i + 2,
       id: r[0] ?? "", fecha_revision: r[1] ?? "", url_imagen: r[2] ?? "",
@@ -241,6 +243,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
       caracteristicas: r[8] ?? "", uso: r[9] ?? "", hashtags: r[10] ?? "",
       texto_ig: r[11] ?? "", texto_wsp: r[12] ?? "",
       estado: (r[13] ?? "APROBADO").toUpperCase(), carga_id: r[14] ?? "",
+      imagenes_extra: r[15] ?? "",
     }));
   });
 
@@ -297,6 +300,7 @@ const PublicarInput = z.object({
   descripcion: z.string().max(2000).default(""),
   imagen_url: z.string().min(1).max(500),
   destacado: z.boolean().default(false),
+  imagenes_extra: z.string().max(3000).default(""),
 });
 
 export const publicarEnLanding = createServerFn({ method: "POST" })
@@ -305,9 +309,10 @@ export const publicarEnLanding = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     const id = `L-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-    await appendRow("Productos", "A:H", [
+    await appendRow("Productos", "A:I", [
       id, data.nombre, data.categoria, data.precio, data.descripcion,
       data.imagen_url, "TRUE", data.destacado ? "TRUE" : "FALSE",
+      data.imagenes_extra,
     ]);
     await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
     return { ok: true, id };
@@ -331,7 +336,7 @@ export const resetAllSheets = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context as any);
     await clearRows("CARGAS_USUARIOS", "I");
-    await clearRows("PRODUCTOS_ADMIN", "O");
-    await clearRows("Productos", "H");
+    await clearRows("PRODUCTOS_ADMIN", "P");
+    await clearRows("Productos", "I");
     return { ok: true };
   });

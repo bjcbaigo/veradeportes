@@ -32,6 +32,7 @@ export type SheetProduct = {
   imagen_url: string;
   activo: boolean;
   destacado: boolean;
+  imagenes_extra: string; // pipe-separated URLs
   rowIndex: number; // 1-based sheet row (header = 1)
 };
 
@@ -39,7 +40,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<SheetProduct[]> => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     const res = await fetch(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:H1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) {
@@ -57,6 +58,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
       imagen_url: r[5] ?? "",
       activo: (r[6] ?? "").toUpperCase() === "TRUE",
       destacado: (r[7] ?? "").toUpperCase() === "TRUE",
+      imagenes_extra: r[8] ?? "",
       rowIndex: i + 2,
     }));
   },
@@ -71,6 +73,7 @@ const UpdateInput = z.object({
   imagen_url: z.string().max(500),
   activo: z.boolean(),
   destacado: z.boolean(),
+  imagenes_extra: z.string().max(3000).default(""),
 });
 
 export const updateSheetProduct = createServerFn({ method: "POST" })
@@ -78,7 +81,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => UpdateInput.parse(data))
   .handler(async ({ data }) => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
-    const range = `${SHEET_NAME}!B${data.rowIndex}:H${data.rowIndex}`;
+    const range = `${SHEET_NAME}!B${data.rowIndex}:I${data.rowIndex}`;
     const body = {
       range,
       majorDimension: "ROWS",
@@ -90,6 +93,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
         data.imagen_url,
         data.activo ? "TRUE" : "FALSE",
         data.destacado ? "TRUE" : "FALSE",
+        data.imagenes_extra,
       ]],
     };
     const res = await fetch(
