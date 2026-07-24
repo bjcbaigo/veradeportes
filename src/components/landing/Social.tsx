@@ -4,10 +4,9 @@ import ig2 from "@/assets/ig-2.jpg";
 import ig3 from "@/assets/ig-3.jpg";
 import ig4 from "@/assets/ig-4.jpg";
 import ig5 from "@/assets/ig-5.jpg";
-import ig6 from "@/assets/ig-6.jpg";
 import { SITE } from "@/lib/site";
 
-const IMGS = [ig1, ig2, ig3, ig4, ig5, ig6];
+const IMGS = [ig1, ig2, ig3, ig4, ig5];
 
 export function Social() {
   return (
@@ -33,7 +32,7 @@ export function Social() {
           </a>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
           {IMGS.map((src, i) => (
             <a
               key={i}
