@@ -155,8 +155,14 @@ function UploadForm({ pin }: { pin: string }) {
   return (
     <form onSubmit={send} className="space-y-5">
       {ok && (
-        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2.5 text-sm text-green-800">
-          <CheckCircle2 className="h-4 w-4" /> Cargada. Subí otra cuando quieras.
+        <div className="space-y-2 rounded-xl border border-green-200 bg-green-50 p-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-green-800">
+            <CheckCircle2 className="h-4 w-4" /> ¡Foto enviada! Ya la puede revisar el admin.
+          </div>
+          <button type="button" onClick={() => { setOk(false); fileRef.current?.click(); }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-700">
+            <Camera className="h-4 w-4" /> Subir otra foto
+          </button>
         </div>
       )}
 
