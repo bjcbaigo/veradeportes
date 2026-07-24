@@ -32,7 +32,7 @@ export function Social() {
           </a>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
           {IMGS.map((src, i) => (
             <a
               key={i}
