@@ -94,109 +94,159 @@ function PinGate({ onOk }: { onOk: (pin: string) => void }) {
 function UploadForm({ pin }: { pin: string }) {
   const submit = useServerFn(submitUpload);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [opt, setOpt] = useState<OptimizedImage | null>(null);
+  const [items, setItems] = useState<OptimizedImage[]>([]);
   const [optimizing, setOptimizing] = useState(false);
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
   const [categoria, setCategoria] = useState("");
   const [comentario, setComentario] = useState("");
   const [busy, setBusy] = useState(false);
-  const [ok, setOk] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [ok, setOk] = useState<number>(0);
 
-  async function onPick(f: File | null) {
-    setOk(false);
-    if (opt) URL.revokeObjectURL(opt.previewUrl);
-    if (!f) { setOpt(null); return; }
+  async function onPick(files: FileList | null) {
+    setOk(0);
+    if (!files || files.length === 0) return;
     setOptimizing(true);
     try {
-      const result = await optimizeImage(f);
-      setOpt(result);
-    } catch (err) {
-      toast.error("No se pudo procesar la imagen: " + (err as Error).message);
-      setOpt(null);
+      const results: OptimizedImage[] = [];
+      for (const f of Array.from(files)) {
+        try {
+          results.push(await optimizeImage(f));
+        } catch (err) {
+          toast.error(`No se pudo procesar ${f.name}: ${(err as Error).message}`);
+        }
+      }
+      setItems((prev) => [...prev, ...results]);
     } finally {
       setOptimizing(false);
+      if (fileRef.current) fileRef.current.value = "";
     }
+  }
+
+  function removeAt(i: number) {
+    setItems((prev) => {
+      const copy = [...prev];
+      const [gone] = copy.splice(i, 1);
+      if (gone) URL.revokeObjectURL(gone.previewUrl);
+      return copy;
+    });
+  }
+
+  async function toBase64(file: File) {
+    const buf = await file.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    let bin = "";
+    const CHUNK = 0x8000;
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + CHUNK)));
+    }
+    return btoa(bin);
   }
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
-    if (!opt) { toast.error("Elegí una imagen"); return; }
+    if (items.length === 0) { toast.error("Elegí al menos una imagen"); return; }
     if (!usuario.trim()) { toast.error("Decinos tu nombre o alias"); return; }
 
     setBusy(true);
+    setProgress({ done: 0, total: items.length });
+    const grupo = items.length > 1 ? `G-${Date.now().toString(36)}` : "";
+    const comBase = comentario.trim();
+    let enviadas = 0;
     try {
-      const buf = await opt.file.arrayBuffer();
-      const bytes = new Uint8Array(buf);
-      let bin = "";
-      const CHUNK = 0x8000;
-      for (let i = 0; i < bytes.length; i += CHUNK) {
-        bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + CHUNK)));
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        const b64 = await toBase64(it.file);
+        const com = grupo
+          ? `[${grupo} · ${i + 1}/${items.length}]${comBase ? " " + comBase : ""}`
+          : comBase;
+        await submit({ data: {
+          pin, usuario: usuario.trim(),
+          marca: marca.trim(), categoria: categoria.trim(),
+          comentario: com,
+          filename: it.file.name,
+          mime: "image/jpeg", dataBase64: b64,
+        }});
+        enviadas++;
+        setProgress({ done: enviadas, total: items.length });
       }
-      const b64 = btoa(bin);
-      await submit({ data: {
-        pin, usuario: usuario.trim(),
-        marca: marca.trim(), categoria: categoria.trim(),
-        comentario: comentario.trim(),
-        filename: opt.file.name,
-        mime: "image/jpeg", dataBase64: b64,
-      }});
       localStorage.setItem("vera_uploader", usuario.trim());
-      setOk(true);
-      URL.revokeObjectURL(opt.previewUrl);
-      setOpt(null); setMarca(""); setCategoria(""); setComentario("");
-      if (fileRef.current) fileRef.current.value = "";
-      toast.success("¡Imagen enviada!");
+      items.forEach((it) => URL.revokeObjectURL(it.previewUrl));
+      setItems([]); setMarca(""); setCategoria(""); setComentario("");
+      setOk(enviadas);
+      toast.success(enviadas === 1 ? "¡Foto enviada!" : `¡${enviadas} fotos enviadas!`);
     } catch (err) {
-      toast.error((err as Error).message);
-    } finally { setBusy(false); }
+      toast.error(`Falló en la foto ${enviadas + 1}: ${(err as Error).message}`);
+    } finally {
+      setBusy(false);
+      setProgress(null);
+    }
   }
+
+  const totalOriginal = items.reduce((a, b) => a + b.originalBytes, 0);
+  const totalOptimized = items.reduce((a, b) => a + b.optimizedBytes, 0);
 
   return (
     <form onSubmit={send} className="space-y-5">
-      {ok && (
+      {ok > 0 && (
         <div className="space-y-2 rounded-xl border border-green-200 bg-green-50 p-3">
           <div className="flex items-center gap-2 text-sm font-medium text-green-800">
-            <CheckCircle2 className="h-4 w-4" /> ¡Foto enviada! Ya la puede revisar el admin.
+            <CheckCircle2 className="h-4 w-4" />
+            {ok === 1 ? "¡Foto enviada!" : `¡${ok} fotos enviadas!`} Ya las puede revisar el admin.
           </div>
-          <button type="button" onClick={() => { setOk(false); fileRef.current?.click(); }}
+          <button type="button" onClick={() => { setOk(0); fileRef.current?.click(); }}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-700">
-            <Camera className="h-4 w-4" /> Subir otra foto
+            <Camera className="h-4 w-4" /> Subir más fotos
           </button>
         </div>
       )}
 
       <div className="rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50 p-4">
-        {optimizing ? (
-          <div className="flex items-center justify-center gap-2 py-10 text-sm text-neutral-600">
-            <Loader2 className="h-4 w-4 animate-spin" /> Optimizando imagen…
+        {optimizing && (
+          <div className="mb-3 flex items-center justify-center gap-2 py-3 text-sm text-neutral-600">
+            <Loader2 className="h-4 w-4 animate-spin" /> Optimizando…
           </div>
-        ) : opt ? (
+        )}
+
+        {items.length > 0 ? (
           <div className="space-y-3">
-            <img src={opt.previewUrl} alt="" className="mx-auto max-h-72 w-auto rounded-lg object-contain" />
+            <div className="grid grid-cols-3 gap-2">
+              {items.map((it, i) => (
+                <div key={i} className="relative">
+                  <img src={it.previewUrl} alt="" className="h-24 w-full rounded-lg object-cover" />
+                  <button type="button" onClick={() => removeAt(i)} disabled={busy}
+                    className="absolute right-1 top-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-bold text-white hover:bg-black">
+                    ✕
+                  </button>
+                  <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1 py-0.5 text-[10px] font-medium text-white">
+                    {i + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
             <div className="flex items-center justify-center gap-1.5 text-xs text-neutral-600">
               <Sparkles className="h-3.5 w-3.5 text-orange-500" />
               <span>
-                {formatBytes(opt.originalBytes)} → <strong className="text-neutral-900">{formatBytes(opt.optimizedBytes)}</strong>
-                {" · "}{opt.width}×{opt.height}px
+                {items.length} foto{items.length > 1 ? "s" : ""} · {formatBytes(totalOriginal)} → <strong className="text-neutral-900">{formatBytes(totalOptimized)}</strong>
               </span>
             </div>
-            <button type="button" onClick={() => fileRef.current?.click()}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium hover:bg-neutral-50">
-              Cambiar imagen
+            <button type="button" onClick={() => fileRef.current?.click()} disabled={busy}
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium hover:bg-neutral-50 disabled:opacity-60">
+              + Agregar más fotos
             </button>
           </div>
-        ) : (
+        ) : !optimizing && (
           <div className="grid gap-2">
             <button type="button" onClick={() => fileRef.current?.click()}
               className="flex items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-4 text-sm font-semibold text-white">
-              <Camera className="h-4 w-4" /> Tomar / elegir foto
+              <Camera className="h-4 w-4" /> Tomar / elegir fotos
             </button>
-            <p className="text-center text-xs text-neutral-500">JPG, PNG o WEBP — se optimiza automáticamente</p>
+            <p className="text-center text-xs text-neutral-500">Podés elegir varias a la vez. Se optimizan automáticamente.</p>
           </div>
         )}
-        <input ref={fileRef} type="file" accept="image/*" capture="environment"
-          className="hidden" onChange={(e) => onPick(e.target.files?.[0] ?? null)} />
+        <input ref={fileRef} type="file" accept="image/*" multiple
+          className="hidden" onChange={(e) => onPick(e.target.files)} />
       </div>
 
       <Field label="Tu nombre o alias" required>
@@ -223,9 +273,11 @@ function UploadForm({ pin }: { pin: string }) {
           className="w-full resize-none rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
       </Field>
 
-      <button type="submit" disabled={busy || !opt || optimizing}
+      <button type="submit" disabled={busy || items.length === 0 || optimizing}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-3.5 text-base font-bold text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-60">
-        {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Enviando…</> : <><Upload className="h-4 w-4" /> Enviar</>}
+        {busy
+          ? <><Loader2 className="h-4 w-4 animate-spin" /> Enviando {progress?.done ?? 0}/{progress?.total ?? items.length}…</>
+          : <><Upload className="h-4 w-4" /> Enviar {items.length > 0 ? `(${items.length})` : ""}</>}
       </button>
     </form>
   );
