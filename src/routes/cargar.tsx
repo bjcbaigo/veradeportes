@@ -94,8 +94,8 @@ function PinGate({ onOk }: { onOk: (pin: string) => void }) {
 function UploadForm({ pin }: { pin: string }) {
   const submit = useServerFn(submitUpload);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [opt, setOpt] = useState<OptimizedImage | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -103,20 +103,30 @@ function UploadForm({ pin }: { pin: string }) {
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
 
-  function onPick(f: File | null) {
-    setFile(f); setOk(false);
-    setPreview(f ? URL.createObjectURL(f) : "");
+  async function onPick(f: File | null) {
+    setOk(false);
+    if (opt) URL.revokeObjectURL(opt.previewUrl);
+    if (!f) { setOpt(null); return; }
+    setOptimizing(true);
+    try {
+      const result = await optimizeImage(f);
+      setOpt(result);
+    } catch (err) {
+      toast.error("No se pudo procesar la imagen: " + (err as Error).message);
+      setOpt(null);
+    } finally {
+      setOptimizing(false);
+    }
   }
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
-    if (!file) { toast.error("Elegí una imagen"); return; }
+    if (!opt) { toast.error("Elegí una imagen"); return; }
     if (!usuario.trim()) { toast.error("Decinos tu nombre o alias"); return; }
-    if (file.size > 12 * 1024 * 1024) { toast.error("Imagen demasiado grande (máx 12 MB)"); return; }
 
     setBusy(true);
     try {
-      const buf = await file.arrayBuffer();
+      const buf = await opt.file.arrayBuffer();
       const bytes = new Uint8Array(buf);
       let bin = "";
       const CHUNK = 0x8000;
@@ -124,17 +134,17 @@ function UploadForm({ pin }: { pin: string }) {
         bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + CHUNK)));
       }
       const b64 = btoa(bin);
-      const mime = file.type || "image/jpeg";
       await submit({ data: {
         pin, usuario: usuario.trim(),
         marca: marca.trim(), categoria: categoria.trim(),
         comentario: comentario.trim(),
-        filename: file.name || "foto.jpg",
-        mime, dataBase64: b64,
+        filename: opt.file.name,
+        mime: "image/jpeg", dataBase64: b64,
       }});
       localStorage.setItem("vera_uploader", usuario.trim());
       setOk(true);
-      setFile(null); setPreview(""); setMarca(""); setCategoria(""); setComentario("");
+      URL.revokeObjectURL(opt.previewUrl);
+      setOpt(null); setMarca(""); setCategoria(""); setComentario("");
       if (fileRef.current) fileRef.current.value = "";
       toast.success("¡Imagen enviada!");
     } catch (err) {
