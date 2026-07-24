@@ -18,6 +18,8 @@ const fmt = (raw: string) => {
 function sheetToProduct(s: SheetProduct): Product {
   const parts = s.nombre.split(" ");
   const brand = parts[0] || s.categoria;
+  const extras = (s.imagenes_extra || "").split("|").map((u) => u.trim()).filter(Boolean);
+  const images = [s.imagen_url, ...extras].filter(Boolean);
   return {
     id: s.id || String(s.rowIndex),
     sku: `SHEET-${s.id || s.rowIndex}`,
@@ -26,6 +28,7 @@ function sheetToProduct(s: SheetProduct): Product {
     category: s.categoria,
     price: fmt(s.precio),
     image: s.imagen_url || "",
+    images,
     badge: s.destacado ? "Destacado" : undefined,
     description: s.descripcion,
   };
