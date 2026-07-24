@@ -84,7 +84,7 @@ async function updateCell(sheetName: string, cell: string, value: string) {
 /* ============ Inicializar pestañas ============ */
 const TAB_HEADERS = {
   CARGAS_USUARIOS: ["ID","Fecha","Usuario","URL_Imagen","Marca_Sugerida","Categoria_Sugerida","Comentario","Estado","URL_Drive"],
-  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID"],
+  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID","Imagenes_Extra"],
   CALENDARIO_PUBLICACIONES: ["ID","Producto_ID","Fecha_Publicacion","Canal","Tipo_Publicacion","Estado"],
 } as const;
 
