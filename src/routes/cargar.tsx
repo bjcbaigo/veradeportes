@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
-import { Camera, Upload, CheckCircle2, Loader2, LogOut } from "lucide-react";
+import { Camera, Upload, CheckCircle2, Loader2, LogOut, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { submitUpload, verifyUploadPin } from "@/lib/uploads.functions";
+import { optimizeImage, formatBytes, type OptimizedImage } from "@/lib/image-optimize";
 
 export const Route = createFileRoute("/cargar")({
   head: () => ({
@@ -93,8 +94,8 @@ function PinGate({ onOk }: { onOk: (pin: string) => void }) {
 function UploadForm({ pin }: { pin: string }) {
   const submit = useServerFn(submitUpload);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [opt, setOpt] = useState<OptimizedImage | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -102,20 +103,30 @@ function UploadForm({ pin }: { pin: string }) {
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
 
-  function onPick(f: File | null) {
-    setFile(f); setOk(false);
-    setPreview(f ? URL.createObjectURL(f) : "");
+  async function onPick(f: File | null) {
+    setOk(false);
+    if (opt) URL.revokeObjectURL(opt.previewUrl);
+    if (!f) { setOpt(null); return; }
+    setOptimizing(true);
+    try {
+      const result = await optimizeImage(f);
+      setOpt(result);
+    } catch (err) {
+      toast.error("No se pudo procesar la imagen: " + (err as Error).message);
+      setOpt(null);
+    } finally {
+      setOptimizing(false);
+    }
   }
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
-    if (!file) { toast.error("Elegí una imagen"); return; }
+    if (!opt) { toast.error("Elegí una imagen"); return; }
     if (!usuario.trim()) { toast.error("Decinos tu nombre o alias"); return; }
-    if (file.size > 12 * 1024 * 1024) { toast.error("Imagen demasiado grande (máx 12 MB)"); return; }
 
     setBusy(true);
     try {
-      const buf = await file.arrayBuffer();
+      const buf = await opt.file.arrayBuffer();
       const bytes = new Uint8Array(buf);
       let bin = "";
       const CHUNK = 0x8000;
@@ -123,17 +134,17 @@ function UploadForm({ pin }: { pin: string }) {
         bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + CHUNK)));
       }
       const b64 = btoa(bin);
-      const mime = file.type || "image/jpeg";
       await submit({ data: {
         pin, usuario: usuario.trim(),
         marca: marca.trim(), categoria: categoria.trim(),
         comentario: comentario.trim(),
-        filename: file.name || "foto.jpg",
-        mime, dataBase64: b64,
+        filename: opt.file.name,
+        mime: "image/jpeg", dataBase64: b64,
       }});
       localStorage.setItem("vera_uploader", usuario.trim());
       setOk(true);
-      setFile(null); setPreview(""); setMarca(""); setCategoria(""); setComentario("");
+      URL.revokeObjectURL(opt.previewUrl);
+      setOpt(null); setMarca(""); setCategoria(""); setComentario("");
       if (fileRef.current) fileRef.current.value = "";
       toast.success("¡Imagen enviada!");
     } catch (err) {
@@ -150,9 +161,20 @@ function UploadForm({ pin }: { pin: string }) {
       )}
 
       <div className="rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50 p-4">
-        {preview ? (
+        {optimizing ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm text-neutral-600">
+            <Loader2 className="h-4 w-4 animate-spin" /> Optimizando imagen…
+          </div>
+        ) : opt ? (
           <div className="space-y-3">
-            <img src={preview} alt="" className="mx-auto max-h-72 w-auto rounded-lg object-contain" />
+            <img src={opt.previewUrl} alt="" className="mx-auto max-h-72 w-auto rounded-lg object-contain" />
+            <div className="flex items-center justify-center gap-1.5 text-xs text-neutral-600">
+              <Sparkles className="h-3.5 w-3.5 text-orange-500" />
+              <span>
+                {formatBytes(opt.originalBytes)} → <strong className="text-neutral-900">{formatBytes(opt.optimizedBytes)}</strong>
+                {" · "}{opt.width}×{opt.height}px
+              </span>
+            </div>
             <button type="button" onClick={() => fileRef.current?.click()}
               className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium hover:bg-neutral-50">
               Cambiar imagen
@@ -164,7 +186,7 @@ function UploadForm({ pin }: { pin: string }) {
               className="flex items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-4 text-sm font-semibold text-white">
               <Camera className="h-4 w-4" /> Tomar / elegir foto
             </button>
-            <p className="text-center text-xs text-neutral-500">JPG, PNG o WEBP — hasta 12 MB</p>
+            <p className="text-center text-xs text-neutral-500">JPG, PNG o WEBP — se optimiza automáticamente</p>
           </div>
         )}
         <input ref={fileRef} type="file" accept="image/*" capture="environment"
@@ -195,7 +217,7 @@ function UploadForm({ pin }: { pin: string }) {
           className="w-full resize-none rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
       </Field>
 
-      <button type="submit" disabled={busy || !file}
+      <button type="submit" disabled={busy || !opt || optimizing}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-3.5 text-base font-bold text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-60">
         {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Enviando…</> : <><Upload className="h-4 w-4" /> Enviar</>}
       </button>
