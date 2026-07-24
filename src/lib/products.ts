@@ -19,6 +19,7 @@ export type Product = {
   price: string;
   priceOld?: string;
   image: string;
+  images?: string[];
   badge?: string;
   description?: string;
   idealFor?: string;
