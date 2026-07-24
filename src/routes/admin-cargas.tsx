@@ -204,18 +204,38 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
 }
 
 /* ============ Cargas ============ */
+function parseGroupId(comment: string): string | null {
+  const m = /\[G-([A-Za-z0-9]+)/.exec(comment || "");
+  return m ? `G-${m[1]}` : null;
+}
+function parseGroupPos(comment: string): number {
+  const m = /·\s*(\d+)\s*\/\s*\d+\s*\]/.exec(comment || "");
+  return m ? parseInt(m[1], 10) : 999;
+}
+
 function CargasView() {
   const qc = useQueryClient();
   const fetchCargas = useServerFn(listCargas);
   const updEstado = useServerFn(updateCargaEstado);
   const [filter, setFilter] = useState<typeof ESTADOS[number] | "TODOS">("PENDIENTE");
-  const [editing, setEditing] = useState<Carga | null>(null);
+  const [editing, setEditing] = useState<Carga[] | null>(null);
 
   const q = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas() });
 
-  const cargas = useMemo(() => {
+  const groups = useMemo(() => {
     const all = q.data ?? [];
-    return filter === "TODOS" ? all : all.filter(c => c.estado === filter);
+    const filtered = filter === "TODOS" ? all : all.filter(c => c.estado === filter);
+    const map = new Map<string, Carga[]>();
+    for (const c of filtered) {
+      const key = parseGroupId(c.comentario) ?? `single:${c.id}`;
+      const arr = map.get(key) ?? [];
+      arr.push(c);
+      map.set(key, arr);
+    }
+    return Array.from(map.entries()).map(([key, items]) => ({
+      key,
+      items: items.sort((a, b) => parseGroupPos(a.comentario) - parseGroupPos(b.comentario)),
+    }));
   }, [q.data, filter]);
 
   const mut = useMutation({
@@ -223,6 +243,10 @@ function CargasView() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["cargas"] }); toast.success("Estado actualizado"); },
     onError: (e) => toast.error((e as Error).message),
   });
+
+  async function descartarGrupo(items: Carga[]) {
+    for (const c of items) await mut.mutateAsync({ rowIndex: c.rowIndex, estado: "DESCARTADO" });
+  }
 
   return (
     <div className="space-y-4">
@@ -238,51 +262,65 @@ function CargasView() {
               }`}>{e}</button>
           ))}
         </div>
-        <span className="ml-auto text-xs text-neutral-500">{cargas.length} ítem{cargas.length !== 1 ? "s" : ""}</span>
+        <span className="ml-auto text-xs text-neutral-500">{groups.length} producto{groups.length !== 1 ? "s" : ""}</span>
       </div>
 
       {q.isLoading ? (
         <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
-      ) : cargas.length === 0 ? (
+      ) : groups.length === 0 ? (
         <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">Sin cargas.</div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {cargas.map(c => (
-            <div key={c.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-              <div className="aspect-square bg-neutral-100">
-                {c.url_imagen ? (
-                  <a href={c.url_drive || c.url_imagen} target="_blank" rel="noreferrer">
-                    <img src={c.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
-                  </a>
-                ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
-              </div>
-              <div className="space-y-1.5 p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(c.estado)}`}>{c.estado}</span>
-                  <span className="text-[11px] text-neutral-500">{c.fecha}</span>
+          {groups.map(({ key, items }) => {
+            const primary = items[0];
+            const isGroup = items.length > 1;
+            return (
+              <div key={key} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
+                <div className="relative aspect-square bg-neutral-100">
+                  {primary.url_imagen ? (
+                    <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
+                      <img src={primary.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+                    </a>
+                  ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
+                  {isGroup && (
+                    <span className="absolute right-2 top-2 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[10px] font-bold text-white">
+                      {items.length} fotos
+                    </span>
+                  )}
                 </div>
-                <p className="text-sm font-semibold text-neutral-900">{c.marca || "—"} <span className="font-normal text-neutral-500">/ {c.categoria || "—"}</span></p>
-                <p className="text-xs text-neutral-500">por {c.usuario || "—"}</p>
-                {c.comentario && <p className="text-xs text-neutral-700 line-clamp-3">{c.comentario}</p>}
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  <button onClick={() => setEditing(c)}
-                    className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
-                    <Edit3 className="h-3 w-3" /> Editar / Aprobar
-                  </button>
-                  <button onClick={() => mut.mutate({ rowIndex: c.rowIndex, estado: "EN_REVISION" })}
-                    className="rounded-md border border-neutral-300 px-2 py-1 text-[11px] hover:bg-neutral-50">En revisión</button>
-                  <button onClick={() => mut.mutate({ rowIndex: c.rowIndex, estado: "DESCARTADO" })}
-                    className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[11px] text-red-600 hover:bg-red-50">
-                    <XCircle className="h-3 w-3" /> Descartar
-                  </button>
+                {isGroup && (
+                  <div className="flex gap-1 overflow-x-auto border-t border-neutral-100 bg-neutral-50 px-2 py-1.5">
+                    {items.map(c => (
+                      <img key={c.id} src={c.url_imagen} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
+                    ))}
+                  </div>
+                )}
+                <div className="space-y-1.5 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(primary.estado)}`}>{primary.estado}</span>
+                    <span className="text-[11px] text-neutral-500">{primary.fecha}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-neutral-900">{primary.marca || "—"} <span className="font-normal text-neutral-500">/ {primary.categoria || "—"}</span></p>
+                  <p className="text-xs text-neutral-500">por {primary.usuario || "—"}</p>
+                  {primary.comentario && <p className="text-xs text-neutral-700 line-clamp-2">{primary.comentario}</p>}
+                  <div className="flex flex-wrap gap-1.5 pt-2">
+                    <button onClick={() => setEditing(items)}
+                      className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+                      <Edit3 className="h-3 w-3" /> {isGroup ? "Aprobar grupo" : "Editar / Aprobar"}
+                    </button>
+                    <button onClick={() => isGroup ? descartarGrupo(items) : mut.mutate({ rowIndex: primary.rowIndex, estado: "DESCARTADO" })}
+                      className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[11px] text-red-600 hover:bg-red-50">
+                      <XCircle className="h-3 w-3" /> Descartar
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {editing && <ProductoEditor carga={editing} onClose={() => setEditing(null)} />}
+      {editing && <ProductoEditor cargas={editing} onClose={() => setEditing(null)} />}
     </div>
   );
 }
