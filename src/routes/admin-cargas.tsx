@@ -766,14 +766,21 @@ function LandingView() {
 
 function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; onClose: () => void; onSave: (v: SheetProduct) => void }) {
   const [v, setV] = useState<SheetProduct>(producto);
+  const extraText = (v.imagenes_extra || "").split("|").filter(Boolean).join("\n");
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl">
+      <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-md space-y-3 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl">
         <h2 className="text-base font-bold">Editar producto de landing</h2>
         <Inp label="Nombre" v={v.nombre} onC={x => setV(s => ({ ...s, nombre: x }))} />
         <Inp label="Categoría" v={v.categoria} onC={x => setV(s => ({ ...s, categoria: x }))} />
         <Inp label="Precio" v={v.precio} onC={x => setV(s => ({ ...s, precio: x }))} />
-        <Inp label="Imagen URL" v={v.imagen_url} onC={x => setV(s => ({ ...s, imagen_url: x }))} />
+        <Inp label="Imagen principal" v={v.imagen_url} onC={x => setV(s => ({ ...s, imagen_url: x }))} />
+        <TA
+          label="Imágenes extra (una por línea)"
+          v={extraText}
+          onC={(x) => setV((s) => ({ ...s, imagenes_extra: x.split(/\n+/).map((u) => u.trim()).filter(Boolean).join("|") }))}
+          rows={3}
+        />
         <TA label="Descripción" v={v.descripcion} onC={x => setV(s => ({ ...s, descripcion: x }))} rows={3} />
         <div className="flex gap-4 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>
