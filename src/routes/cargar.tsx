@@ -217,7 +217,7 @@ function UploadForm({ pin }: { pin: string }) {
           className="w-full resize-none rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
       </Field>
 
-      <button type="submit" disabled={busy || !file}
+      <button type="submit" disabled={busy || !opt || optimizing}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-3.5 text-base font-bold text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-60">
         {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Enviando…</> : <><Upload className="h-4 w-4" /> Enviar</>}
       </button>
