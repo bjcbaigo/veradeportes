@@ -13,7 +13,7 @@ import {
   type Carga, type Producto,
 } from "@/lib/admin-cargas.functions";
 
-import { listSheetProducts, updateSheetProduct, type SheetProduct } from "@/lib/sheet-products.functions";
+import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 
 export const Route = createFileRoute("/admin-cargas")({
   ssr: false,
