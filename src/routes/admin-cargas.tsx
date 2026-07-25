@@ -279,10 +279,10 @@ function CargasView() {
             const isGroup = items.length > 1;
             return (
               <div key={key} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-                <div className="relative aspect-square bg-neutral-100">
+                <div className="relative aspect-square bg-[#e5e7eb]">
                   {primary.url_imagen ? (
                     <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
-                      <img src={primary.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+                      <img src={primary.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
                     </a>
                   ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
                   {isGroup && (
@@ -515,8 +515,8 @@ function ProductosView() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {q.data.map(p => (
               <div key={p.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-                <div className="aspect-square bg-neutral-100">
-                  {p.url_imagen && <img src={p.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />}
+                <div className="relative aspect-square bg-[#e5e7eb]">
+                  {p.url_imagen && <img src={p.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between">
@@ -753,8 +753,8 @@ function LandingView() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {q.data.map(p => (
               <div key={p.rowIndex} className={`overflow-hidden rounded-xl border bg-white shadow-sm ${p.activo ? "border-neutral-200" : "border-neutral-200 opacity-60"}`}>
-                <div className="aspect-square bg-[#e5e7eb]">
-                  {p.imagen_url && <img src={p.imagen_url} alt="" className="h-full w-full object-contain" loading="lazy" />}
+                <div className="relative aspect-square bg-[#e5e7eb]">
+                  {p.imagen_url && <img src={p.imagen_url} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between gap-2">
