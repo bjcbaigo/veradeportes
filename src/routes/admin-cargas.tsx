@@ -14,6 +14,8 @@ import {
 } from "@/lib/admin-cargas.functions";
 
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
+import { uploadImageAdmin } from "@/lib/uploads.functions";
+import { optimizeImage } from "@/lib/image-optimize";
 
 export const Route = createFileRoute("/admin-cargas")({
   ssr: false,
