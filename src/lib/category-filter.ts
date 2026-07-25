@@ -26,7 +26,7 @@ export function matchesCategory(productCategory: string, productName: string, ba
   const c = (productCategory || "").toLowerCase();
   const n = (productName || "").toLowerCase();
   const haystack = `${c} ${n}`;
-  if (cat === "Ofertas") return (badge || "").toLowerCase().includes("oferta");
+  if (cat === "Ofertas") return (badge || "").toLowerCase().includes("oferta") || c.includes("oferta") || n.includes("oferta");
   if (cat === "Zapatillas") return c.includes("zapatilla") || c.includes("calzado");
   if (cat === "Indumentaria") return INDUMENTARIA.some((w) => haystack.includes(w));
   if (cat === "Accesorios") return ACCESORIOS.some((w) => haystack.includes(w));
