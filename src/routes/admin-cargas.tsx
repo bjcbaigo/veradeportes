@@ -515,8 +515,8 @@ function ProductosView() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {q.data.map(p => (
               <div key={p.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-                <div className="aspect-square bg-neutral-100">
-                  {p.url_imagen && <img src={p.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />}
+                <div className="relative aspect-square bg-[#e5e7eb]">
+                  {p.url_imagen && <img src={p.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between">
