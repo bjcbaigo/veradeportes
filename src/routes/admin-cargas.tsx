@@ -790,9 +790,45 @@ function LandingView() {
   );
 }
 
+function ImagePicker({ label, value, onChange }: { label: string; value: string; onChange: (url: string) => void }) {
+  const upload = useServerFn(uploadImageAdmin);
+  const [busy, setBusy] = useState(false);
+  async function onFile(f: File) {
+    setBusy(true);
+    try {
+      const opt = await optimizeImage(f);
+      const buf = await opt.file.arrayBuffer();
+      let bin = ""; const bytes = new Uint8Array(buf);
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      const b64 = btoa(bin);
+      const res = await upload({ data: { filename: opt.file.name, mime: "image/jpeg", dataBase64: b64 } });
+      onChange(res.url);
+      toast.success("Foto actualizada");
+    } catch (e: any) {
+      toast.error(e?.message || "Error al subir");
+    } finally { setBusy(false); }
+  }
+  return (
+    <div className="space-y-1">
+      <label className="text-xs font-medium text-neutral-600">{label}</label>
+      <div className="flex items-start gap-2">
+        {value && <img src={value} alt="" className="h-16 w-16 rounded border border-neutral-200 bg-neutral-100 object-contain" />}
+        <div className="flex-1 space-y-1">
+          <input value={value} onChange={(e) => onChange(e.target.value)} className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-xs" placeholder="URL..." />
+          <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs font-medium hover:bg-neutral-50">
+            <Camera className="h-3 w-3" />{busy ? "Subiendo…" : "Cambiar foto"}
+            <input type="file" accept="image/*" className="hidden" disabled={busy}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.currentTarget.value = ""; }} />
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; onClose: () => void; onSave: (v: SheetProduct) => void }) {
   const [v, setV] = useState<SheetProduct>(producto);
-  const extraText = (v.imagenes_extra || "").split("|").filter(Boolean).join("\n");
+  const extraList = (v.imagenes_extra || "").split("|").filter(Boolean);
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-md space-y-3 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl">
@@ -800,13 +836,20 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
         <Inp label="Nombre" v={v.nombre} onC={x => setV(s => ({ ...s, nombre: x }))} />
         <Inp label="Categoría" v={v.categoria} onC={x => setV(s => ({ ...s, categoria: x }))} />
         <Inp label="Precio" v={v.precio} onC={x => setV(s => ({ ...s, precio: x }))} />
-        <Inp label="Imagen principal" v={v.imagen_url} onC={x => setV(s => ({ ...s, imagen_url: x }))} />
-        <TA
-          label="Imágenes extra (una por línea)"
-          v={extraText}
-          onC={(x) => setV((s) => ({ ...s, imagenes_extra: x.split(/\n+/).map((u) => u.trim()).filter(Boolean).join("|") }))}
-          rows={3}
-        />
+        <ImagePicker label="Imagen principal" value={v.imagen_url} onChange={x => setV(s => ({ ...s, imagen_url: x }))} />
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-neutral-600">Imágenes extra</label>
+          {extraList.map((u, i) => (
+            <ImagePicker key={i} label={`Extra ${i + 1}`} value={u}
+              onChange={(nu) => setV(s => {
+                const arr = extraList.slice();
+                if (!nu) arr.splice(i, 1); else arr[i] = nu;
+                return { ...s, imagenes_extra: arr.join("|") };
+              })} />
+          ))}
+          <ImagePicker label="Agregar extra" value=""
+            onChange={(nu) => { if (nu) setV(s => ({ ...s, imagenes_extra: [...extraList, nu].join("|") })); }} />
+        </div>
         <TA label="Descripción" v={v.descripcion} onC={x => setV(s => ({ ...s, descripcion: x }))} rows={3} />
         <div className="flex gap-4 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>
@@ -820,3 +863,4 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
     </div>
   );
 }
+
