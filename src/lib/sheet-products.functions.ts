@@ -121,3 +121,44 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+const BulkDelInput = z.object({
+  categorias: z.array(z.string().min(1)).min(1).max(20),
+});
+
+export const bulkDeleteByCategories = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => BulkDelInput.parse(data))
+  .handler(async ({ data }) => {
+    const { lovableKey, sheetsKey, sheetId } = sheetEnv();
+    // Read all products
+    const res = await fetchWithRetry(
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
+      { headers: gwHeaders(lovableKey, sheetsKey) },
+    );
+    if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
+    const json = (await res.json()) as { values?: string[][] };
+    const rows = json.values ?? [];
+    const wanted = new Set(data.categorias.map((c) => c.toLowerCase().trim()));
+    const ranges: string[] = [];
+    for (let i = 1; i < rows.length; i++) {
+      const cat = (rows[i][2] ?? "").toLowerCase().trim();
+      const badge = (rows[i][7] ?? "").toLowerCase(); // destacado column, not used
+      const nameLower = (rows[i][1] ?? "").toLowerCase();
+      const isOferta = wanted.has("ofertas") && (cat.includes("oferta") || nameLower.includes("oferta"));
+      if (wanted.has(cat) || isOferta) {
+        ranges.push(`${SHEET_NAME}!A${i + 1}:I${i + 1}`);
+      }
+    }
+    if (ranges.length === 0) return { ok: true, cleared: 0 };
+    const clearRes = await fetchWithRetry(
+      `${GATEWAY}/spreadsheets/${sheetId}/values:batchClear`,
+      {
+        method: "POST",
+        headers: gwHeaders(lovableKey, sheetsKey),
+        body: JSON.stringify({ ranges }),
+      },
+    );
+    if (!clearRes.ok) throw new Error(`Sheets clear [${clearRes.status}]: ${await clearRes.text()}`);
+    return { ok: true, cleared: ranges.length };
+  });
