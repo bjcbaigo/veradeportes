@@ -26,6 +26,8 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
       : []
   ).filter(Boolean);
   const [active, setActive] = useState(0);
+  const [hovering, setHovering] = useState(false);
+  const [origin, setOrigin] = useState({ x: 50, y: 50 });
 
   useEffect(() => {
     setActive(0);
@@ -35,6 +37,14 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
 
   const isShoe = product.category === "Zapatillas";
   const mainImage = gallery[active] || product.image;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
