@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const DRIVE_UPLOAD = "https://connector-gateway.lovable.dev/google_drive/upload/drive/v3/files";
@@ -137,3 +138,73 @@ export const verifyUploadPin = createServerFn({ method: "POST" })
     if (!expected) throw new Error("PIN no configurado");
     return { ok: data.pin === expected };
   });
+
+// Reemplazar/subir imagen desde el panel admin (sin PIN, requiere auth).
+const AdminImgInput = z.object({
+  filename: z.string().min(1).max(120),
+  mime: z.string().regex(/^image\/(png|jpeg|jpg|webp|heic|heif)$/i),
+  dataBase64: z.string().min(100).max(15_000_000),
+});
+
+export const uploadImageAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => AdminImgInput.parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId, _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Requiere rol admin");
+
+    const lovableKey = process.env.LOVABLE_API_KEY;
+    const driveKey = process.env.GOOGLE_DRIVE_API_KEY;
+    const folderId = process.env.DRIVE_UPLOADS_FOLDER_ID;
+    if (!lovableKey || !driveKey || !folderId) throw new Error("Faltan credenciales");
+
+    const boundary = "veraboundary" + Math.random().toString(36).slice(2);
+    const metadata = {
+      name: `${Date.now()}-${data.filename}`.replace(/[^\w.\-]+/g, "_"),
+      parents: [folderId],
+    };
+    const head =
+      `--${boundary}\r\n` +
+      `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+      JSON.stringify(metadata) +
+      `\r\n--${boundary}\r\n` +
+      `Content-Type: ${data.mime}\r\n` +
+      `Content-Transfer-Encoding: base64\r\n\r\n`;
+    const tail = `\r\n--${boundary}--`;
+    const body = Buffer.concat([
+      Buffer.from(head, "utf8"),
+      Buffer.from(data.dataBase64, "utf8"),
+      Buffer.from(tail, "utf8"),
+    ]);
+
+    const upRes = await fetch(
+      `${DRIVE_UPLOAD}?uploadType=multipart&fields=id,name,webViewLink`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": driveKey,
+          "Content-Type": `multipart/related; boundary=${boundary}`,
+          "Content-Length": String(body.length),
+        },
+        body,
+      },
+    );
+    if (!upRes.ok) throw new Error(`Drive upload [${upRes.status}]: ${await upRes.text()}`);
+    const file = (await upRes.json()) as { id: string; webViewLink?: string };
+
+    await fetch(`${DRIVE_API}/files/${file.id}/permissions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": driveKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ role: "reader", type: "anyone" }),
+    });
+
+    return { ok: true, url: `https://lh3.googleusercontent.com/d/${file.id}` };
+  });
+
