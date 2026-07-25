@@ -103,6 +103,7 @@ async function updateCell(sheetName: string, cell: string, value: string) {
     },
   );
   if (!res.ok) throw new Error(`Sheets update [${res.status}]: ${await res.text()}`);
+  invalidateReadCache(sheetName);
 }
 
 /* ============ Inicializar pestañas ============ */
