@@ -136,7 +136,7 @@ export function Products() {
                         loading="lazy"
                         width={400}
                         height={400}
-                        className="h-full w-full object-contain p-3"
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
