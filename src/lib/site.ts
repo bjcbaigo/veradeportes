@@ -14,6 +14,5 @@ export const SITE = {
 };
 
 export function waLink(message: string) {
-  const base = `Hola! Quiero consultar por: ${message}`;
-  return `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(base)}`;
+  return `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
