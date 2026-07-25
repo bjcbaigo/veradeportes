@@ -354,6 +354,7 @@ async function clearRows(sheetName: string, endCol: string) {
   if (!res.ok && res.status !== 400 && res.status !== 404) {
     throw new Error(`Sheets clear ${sheetName} [${res.status}]: ${await res.text()}`);
   }
+  invalidateReadCache(sheetName);
 }
 
 export const resetAllSheets = createServerFn({ method: "POST" })
