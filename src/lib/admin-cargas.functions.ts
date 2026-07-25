@@ -31,26 +31,49 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
 }
 
 async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
-  const delays = [400, 900, 1800];
+  const delays = [500, 1200, 2500, 5000, 9000];
   let res = await fetch(url, init);
   for (const d of delays) {
-    if (res.status !== 429) return res;
-    await new Promise((r) => setTimeout(r, d + Math.floor(Math.random() * 250)));
+    if (res.status !== 429 && res.status < 500) return res;
+    await new Promise((r) => setTimeout(r, d + Math.floor(Math.random() * 400)));
     res = await fetch(url, init);
   }
   return res;
 }
 
-async function readRange(range: string) {
-  const { lovableKey, sheetsKey, sheetId } = env();
-  const res = await fetchWithRetry(
-    `${GATEWAY}/spreadsheets/${sheetId}/values/${range}`,
-    { headers: headers(lovableKey, sheetsKey) },
-  );
-  if (res.status === 400 || res.status === 404) return [];
-  if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
-  const json = (await res.json()) as { values?: string[][] };
-  return json.values ?? [];
+// TTL cache + in-flight dedupe to keep Sheets read quota under control.
+const READ_TTL_MS = 15_000;
+const readCache = new Map<string, { at: number; data: string[][] }>();
+const inFlight = new Map<string, Promise<string[][]>>();
+
+function invalidateReadCache(sheetName?: string) {
+  if (!sheetName) { readCache.clear(); return; }
+  for (const k of readCache.keys()) if (k.startsWith(`${sheetName}!`)) readCache.delete(k);
+}
+
+async function readRange(range: string): Promise<string[][]> {
+  const now = Date.now();
+  const hit = readCache.get(range);
+  if (hit && now - hit.at < READ_TTL_MS) return hit.data;
+  const existing = inFlight.get(range);
+  if (existing) return existing;
+
+  const p = (async () => {
+    const { lovableKey, sheetsKey, sheetId } = env();
+    const res = await fetchWithRetry(
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${range}`,
+      { headers: headers(lovableKey, sheetsKey) },
+    );
+    if (res.status === 400 || res.status === 404) return [];
+    if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
+    const json = (await res.json()) as { values?: string[][] };
+    const data = json.values ?? [];
+    readCache.set(range, { at: Date.now(), data });
+    return data;
+  })().finally(() => inFlight.delete(range));
+
+  inFlight.set(range, p);
+  return p;
 }
 
 async function appendRow(sheetName: string, cols: string, values: (string | number)[]) {
