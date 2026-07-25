@@ -753,8 +753,8 @@ function LandingView() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {q.data.map(p => (
               <div key={p.rowIndex} className={`overflow-hidden rounded-xl border bg-white shadow-sm ${p.activo ? "border-neutral-200" : "border-neutral-200 opacity-60"}`}>
-                <div className="aspect-square bg-[#e5e7eb]">
-                  {p.imagen_url && <img src={p.imagen_url} alt="" className="h-full w-full object-contain" loading="lazy" />}
+                <div className="relative aspect-square bg-[#e5e7eb]">
+                  {p.imagen_url && <img src={p.imagen_url} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between gap-2">
