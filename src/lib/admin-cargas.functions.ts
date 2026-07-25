@@ -88,6 +88,7 @@ async function appendRow(sheetName: string, cols: string, values: (string | numb
     },
   );
   if (!res.ok) throw new Error(`Sheets append [${res.status}]: ${await res.text()}`);
+  invalidateReadCache(sheetName);
 }
 
 async function updateCell(sheetName: string, cell: string, value: string) {
