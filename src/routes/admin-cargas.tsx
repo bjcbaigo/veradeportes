@@ -714,11 +714,35 @@ function LandingView() {
     onError: (e) => toast.error((e as Error).message),
   });
 
+  const delFn = useServerFn(bulkDeleteByCategories);
+  const delMut = useMutation({
+    mutationFn: (cats: string[]) => delFn({ data: { categorias: cats } }),
+    onSuccess: (r: any) => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success(`${r?.cleared ?? 0} filas eliminadas`); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  const bulkDelete = (cats: string[], label: string) => {
+    if (!confirm(`¿Eliminar TODOS los productos de "${label}" del Sheet? Esta acción no se puede deshacer.`)) return;
+    delMut.mutate(cats);
+  };
+
   return (
     <div>
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
         <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
           <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
+        </button>
+        <button onClick={() => bulkDelete(["Zapatillas"], "Zapatillas")} disabled={delMut.isPending}
+          className="inline-flex items-center gap-1.5 rounded-md border border-red-300 bg-white px-2.5 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-50">
+          Limpiar Zapatillas
+        </button>
+        <button onClick={() => bulkDelete(["Ofertas"], "Ofertas")} disabled={delMut.isPending}
+          className="inline-flex items-center gap-1.5 rounded-md border border-red-300 bg-white px-2.5 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:opacity-50">
+          Limpiar Ofertas
+        </button>
+        <button onClick={() => bulkDelete(["Zapatillas", "Ofertas"], "Zapatillas + Ofertas")} disabled={delMut.isPending}
+          className="inline-flex items-center gap-1.5 rounded-md border border-red-400 bg-red-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50">
+          Limpiar Zapatillas + Ofertas
         </button>
         <span className="ml-auto text-xs text-neutral-500">{q.data?.length ?? 0} en el Sheet</span>
       </div>
