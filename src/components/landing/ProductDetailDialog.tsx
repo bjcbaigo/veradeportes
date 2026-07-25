@@ -26,6 +26,8 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
       : []
   ).filter(Boolean);
   const [active, setActive] = useState(0);
+  const [hovering, setHovering] = useState(false);
+  const [origin, setOrigin] = useState({ x: 50, y: 50 });
 
   useEffect(() => {
     setActive(0);
@@ -36,22 +38,40 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   const isShoe = product.category === "Zapatillas";
   const mainImage = gallery[active] || product.image;
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
+  };
+
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         <div className="grid md:grid-cols-2 bg-card">
           <div className="flex flex-col gap-2 p-3 md:p-4">
-            <div className="aspect-square bg-[#f3f4f6] rounded-lg flex items-center justify-center overflow-hidden">
+            <div
+              className="aspect-square bg-[#f3f4f6] rounded-lg flex items-center justify-center overflow-hidden cursor-zoom-in"
+              onMouseEnter={() => setHovering(true)}
+              onMouseLeave={() => setHovering(false)}
+              onMouseMove={handleMouseMove}
+            >
               {mainImage ? (
                 <img
                   src={mainImage}
                   alt={product.name}
-                  className="h-full w-full object-contain"
+                  className="h-full w-full object-contain transition-transform duration-300 ease-out will-change-transform"
+                  style={{
+                    transform: hovering ? "scale(1.7)" : "scale(1)",
+                    transformOrigin: `${origin.x}% ${origin.y}%`,
+                  }}
                 />
               ) : (
                 <div className="text-xs text-muted-foreground">Sin imagen</div>
               )}
             </div>
+
             {gallery.length > 1 && (
               <div className="flex gap-1.5 overflow-x-auto">
                 {gallery.map((src, i) => (
