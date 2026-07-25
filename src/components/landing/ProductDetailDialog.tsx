@@ -51,17 +51,27 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
       <DialogContent className="max-w-2xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         <div className="grid md:grid-cols-2 bg-card">
           <div className="flex flex-col gap-2 p-3 md:p-4">
-            <div className="aspect-square bg-[#f3f4f6] rounded-lg flex items-center justify-center overflow-hidden">
+            <div
+              className="aspect-square bg-[#f3f4f6] rounded-lg flex items-center justify-center overflow-hidden cursor-zoom-in"
+              onMouseEnter={() => setHovering(true)}
+              onMouseLeave={() => setHovering(false)}
+              onMouseMove={handleMouseMove}
+            >
               {mainImage ? (
                 <img
                   src={mainImage}
                   alt={product.name}
-                  className="h-full w-full object-contain"
+                  className="h-full w-full object-contain transition-transform duration-300 ease-out will-change-transform"
+                  style={{
+                    transform: hovering ? "scale(1.7)" : "scale(1)",
+                    transformOrigin: `${origin.x}% ${origin.y}%`,
+                  }}
                 />
               ) : (
                 <div className="text-xs text-muted-foreground">Sin imagen</div>
               )}
             </div>
+
             {gallery.length > 1 && (
               <div className="flex gap-1.5 overflow-x-auto">
                 {gallery.map((src, i) => (
