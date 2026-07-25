@@ -279,10 +279,10 @@ function CargasView() {
             const isGroup = items.length > 1;
             return (
               <div key={key} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-                <div className="relative aspect-square bg-neutral-100">
+                <div className="relative aspect-square bg-[#e5e7eb]">
                   {primary.url_imagen ? (
                     <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
-                      <img src={primary.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+                      <img src={primary.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
                     </a>
                   ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
                   {isGroup && (
