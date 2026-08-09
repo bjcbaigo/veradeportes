@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Instagram, MessageCircle, Moon, Sun } from "lucide-react";
+import { Instagram, MessageCircle, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
 import logoAsset from "@/assets/logo-vera.png.asset.json";
@@ -147,13 +147,6 @@ function ComingSoonPage() {
             Muy pronto vas a descubrir productos, ofertas y novedades.
           </p>
 
-          <a
-            href="/tienda"
-            className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#FF4B00] px-7 py-4 text-sm font-bold tracking-wide text-white shadow-[0_10px_40px_-10px_rgba(255,75,0,0.8)] transition hover:bg-[#e54300] sm:text-base"
-          >
-            VER TIENDA
-            <ArrowRight className="h-4 w-4" />
-          </a>
         </div>
       </section>
 
