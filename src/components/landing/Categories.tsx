@@ -6,26 +6,27 @@ import buz from "@/assets/cat-buzos.png";
 import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const CATS: {
-  label: CategoryKey | "Futbol";
+  label: CategoryKey | "Calzado" | "Futbol";
   filter: CategoryKey;
-  subtitle?: string;
   image?: string;
   icon?: "offer" | "sport";
 }[] = [
-  { label: "Zapatillas", filter: "Zapatillas", subtitle: "Running y urbano", image: zap },
-  { label: "Indumentaria", filter: "Indumentaria", subtitle: "Remeras y buzos", image: rem },
-  { label: "Futbol", filter: "Indumentaria", subtitle: "Entrenamiento", icon: "sport" },
-  { label: "Accesorios", filter: "Accesorios", subtitle: "Medias y gorras", image: acc },
-  { label: "Ninos", filter: "Ninos", subtitle: "Calzado infantil", image: buz },
-  { label: "Ofertas", filter: "Ofertas", subtitle: "Promos activas", icon: "offer" },
+  { label: "Calzado", filter: "Zapatillas", image: zap },
+  { label: "Indumentaria", filter: "Indumentaria", image: rem },
+  { label: "Futbol", filter: "Indumentaria", icon: "sport" },
+  { label: "Accesorios", filter: "Accesorios", image: acc },
+  { label: "Ninos", filter: "Ninos", image: buz },
+  { label: "Ofertas", filter: "Ofertas", icon: "offer" },
 ];
 
 export function Categories() {
   return (
-    <section id="categorias" className="py-4">
+    <section id="categorias" className="py-3">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-xl font-black uppercase tracking-normal">Categorias</h2>
+          <h2 className="font-display text-[19px] font-black uppercase tracking-normal">
+            Categorias
+          </h2>
           <a
             href="#productos"
             onClick={() => emitCategory("Todos")}
@@ -42,9 +43,9 @@ export function Categories() {
                 key={c.label}
                 type="button"
                 onClick={() => emitCategory(c.filter)}
-                className="flex w-[104px] shrink-0 flex-col items-center rounded-2xl border border-border bg-card p-2.5 transition hover:border-primary/60 md:w-auto"
+                className="flex w-[82px] shrink-0 flex-col items-center transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 md:w-auto"
               >
-                <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white ring-1 ring-black/5">
+                <div className="flex h-[74px] w-[74px] items-center justify-center rounded-full bg-white p-2 shadow-[0_8px_20px_rgba(0,0,0,0.07)] ring-1 ring-black/5">
                   {c.icon === "offer" ? (
                     <Percent className="h-7 w-7 text-primary" strokeWidth={3} />
                   ) : c.icon === "sport" ? (
@@ -62,9 +63,6 @@ export function Categories() {
                 </div>
                 <span className="mt-2 text-center text-[12px] font-extrabold leading-tight text-foreground">
                   {c.label}
-                </span>
-                <span className="mt-0.5 text-center text-[10px] leading-tight text-muted-foreground">
-                  {c.subtitle}
                 </span>
               </button>
             ))}

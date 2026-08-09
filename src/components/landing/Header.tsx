@@ -63,11 +63,11 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-white/96 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-3 sm:h-16 sm:px-4">
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-secondary"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary/80 hover:bg-secondary"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
@@ -80,7 +80,7 @@ export function Header() {
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-10 w-auto shrink-0 sm:h-12"
+            className="h-9 w-auto shrink-0 sm:h-12"
             width={160}
             height={160}
           />
@@ -104,7 +104,7 @@ export function Header() {
           <a
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-secondary"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary/80 hover:bg-secondary"
           >
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
@@ -194,7 +194,7 @@ export function Header() {
               </a>
             </div>
             <p className="pt-4 text-xs text-muted-foreground">
-              {SITE.address} � {SITE.city}
+              {SITE.address} - {SITE.city}
             </p>
           </aside>
         </div>

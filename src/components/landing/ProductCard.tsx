@@ -20,8 +20,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-background text-left shadow-[0_1px_8px_rgba(0,0,0,0.05)] transition hover:border-primary/50 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] ${
-        compact ? "w-[154px] sm:w-[180px]" : ""
+      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[22px] border border-border/80 bg-white text-left shadow-[0_8px_22px_rgba(0,0,0,0.06)] transition hover:border-primary/50 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] ${
+        compact ? "w-[148px] sm:w-[180px]" : ""
       }`}
       onClick={() => onSelect(product)}
       role="button"
@@ -33,8 +33,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative aspect-square bg-secondary p-2">
-        <div className="relative h-full w-full overflow-hidden rounded-xl bg-white ring-1 ring-black/5">
+      <div className="relative bg-secondary/80 p-2">
+        <div className="relative h-[126px] w-full overflow-hidden rounded-[18px] bg-white ring-1 ring-black/5 sm:h-[154px]">
           {product.image ? (
             <img
               src={product.image}
@@ -56,7 +56,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
           )}
         </div>
         {discount && (
-          <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-extrabold uppercase text-primary-foreground">
+          <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-extrabold uppercase text-primary-foreground shadow-sm">
             {discount}
           </span>
         )}
@@ -75,7 +75,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
           {product.name}
         </h3>
         <p className="truncate text-[11px] text-muted-foreground">
-          {product.brand} · {product.category}
+          {product.brand} - {product.category}
         </p>
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <p className="font-display text-[15px] font-extrabold text-primary">{product.price}</p>

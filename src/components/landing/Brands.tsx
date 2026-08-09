@@ -17,10 +17,10 @@ const BRANDS = [
 
 export function Brands() {
   return (
-    <section id="marcas" className="py-4">
+    <section id="marcas" className="py-3">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-xl font-black uppercase tracking-normal">
+          <h2 className="font-display text-[19px] font-black uppercase tracking-normal">
             Marcas destacadas
           </h2>
           <a
@@ -35,8 +35,8 @@ export function Brands() {
             {BRANDS.map((b) => (
               <a
                 key={b.name}
-                href={`#productos`}
-                className="flex h-16 w-[104px] shrink-0 items-center justify-center rounded-2xl border border-border bg-white p-3 transition hover:border-primary/60"
+                href="#productos"
+                className="flex h-14 w-[96px] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-white p-3 shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition hover:border-primary/60"
                 aria-label={`Ver productos ${b.name}`}
               >
                 <img

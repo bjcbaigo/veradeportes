@@ -17,10 +17,10 @@ export function FeaturedOffers() {
   }
 
   return (
-    <section id="ofertas" className="py-4">
+    <section id="ofertas" className="py-3">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-xl font-black uppercase tracking-normal">
+          <h2 className="font-display text-[19px] font-black uppercase tracking-normal">
             Ofertas destacadas
           </h2>
           <a
@@ -37,7 +37,7 @@ export function FeaturedOffers() {
           </div>
         ) : (
           <div className="-mx-4 overflow-x-auto px-4">
-            <div className="flex gap-3 pb-2">
+            <div className="flex gap-2.5 pb-2">
               {offers.map((product) => (
                 <ProductCard key={product.id} product={product} onSelect={handleSelect} compact />
               ))}
