@@ -1,43 +1,25 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { PRODUCTS, type Product } from "@/lib/products";
-import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { ProductDetailDialog } from "./ProductDetailDialog";
-import { CATEGORY_EVENT, matchesCategory, type CategoryKey } from "@/lib/category-filter";
+import { ProductCard } from "./ProductCard";
+import { CATEGORY_EVENT, type CategoryKey } from "@/lib/category-filter";
+import { filterProducts, useProductsData } from "@/lib/product-data";
+import type { Product } from "@/lib/products";
 
-const CHIPS: CategoryKey[] = ["Todos", "Zapatillas", "Indumentaria", "Accesorios", "Niños", "Ofertas"];
+const CHIPS: CategoryKey[] = [
+  "Todos",
+  "Zapatillas",
+  "Indumentaria",
+  "Accesorios",
+  "Ninos",
+  "Ofertas",
+];
 
-const fmt = (raw: string) => {
-  const n = Number(String(raw).replace(/[^\d.-]/g, ""));
-  if (!Number.isFinite(n) || n <= 0) return raw || "";
-  return "$" + n.toLocaleString("es-AR", { maximumFractionDigits: 0 });
-};
-
-function sheetToProduct(s: SheetProduct): Product {
-  const parts = s.nombre.split(" ");
-  const brand = parts[0] || s.categoria;
-  const extras = (s.imagenes_extra || "").split("|").map((u) => u.trim()).filter(Boolean);
-  const images = [s.imagen_url, ...extras].filter(Boolean);
-  return {
-    id: s.id || String(s.rowIndex),
-    sku: `SHEET-${s.id || s.rowIndex}`,
-    name: s.nombre,
-    brand,
-    category: s.categoria,
-    price: fmt(s.precio),
-    image: s.imagen_url || "",
-    images,
-    badge: s.destacado ? "Destacado" : undefined,
-    description: s.descripcion,
-  };
-}
-
-export function Products() {
+export function Products({ limit }: { limit?: number }) {
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
   const [cat, setCat] = useState<CategoryKey>("Todos");
+  const { products: allProducts } = useProductsData();
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -48,138 +30,59 @@ export function Products() {
     return () => window.removeEventListener(CATEGORY_EVENT, handler);
   }, []);
 
-  const fetchSheet = useServerFn(listSheetProducts);
-  const { data: sheetRows } = useQuery({
-    queryKey: ["sheet-products"],
-    queryFn: () => fetchSheet(),
-    staleTime: 5 * 60_000,
-  });
+  const products = useMemo(() => {
+    const filtered = filterProducts(allProducts, cat);
+    return typeof limit === "number" ? filtered.slice(0, limit) : filtered;
+  }, [allProducts, cat, limit]);
 
-  const allProducts = useMemo<Product[]>(() => {
-    if (!sheetRows || sheetRows.length === 0) return PRODUCTS;
-    const active = sheetRows.filter((r) => r.activo && r.nombre);
-    if (active.length === 0) return PRODUCTS;
-    return active
-      .map(sheetToProduct)
-      .sort((a, b) => Number(b.badge === "Destacado") - Number(a.badge === "Destacado"));
-  }, [sheetRows]);
-
-  const products = useMemo(
-    () => allProducts.filter((p) => matchesCategory(p.category, p.name, p.badge, cat)),
-    [allProducts, cat],
-  );
-
-  const handleSelect = (p: Product) => {
-    setSelected(p);
+  function handleSelect(product: Product) {
+    setSelected(product);
     setOpen(true);
-  };
+  }
 
   return (
-    <section id="productos" className="py-8">
+    <section id="productos" className="py-4">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="flex items-end justify-between mb-4">
-          <h2 className="font-display font-extrabold text-2xl md:text-3xl">
-            Productos destacados
-          </h2>
-          <button type="button" onClick={() => setCat("Todos")} className="text-sm font-semibold text-primary inline-flex items-center gap-1">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-display text-xl font-black uppercase tracking-normal">Productos</h2>
+          <button
+            type="button"
+            onClick={() => setCat("Todos")}
+            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+          >
             Ver todas <ArrowRight className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="mb-4 -mx-4 px-4 overflow-x-auto">
-          <div className="flex gap-2 min-w-max">
+        <div className="mb-3 -mx-4 overflow-x-auto px-4">
+          <div className="flex min-w-max gap-2">
             {CHIPS.map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setCat(c)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${
+                className={`rounded-full border px-3 py-1.5 text-xs font-extrabold transition ${
                   cat === c
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border hover:border-primary/50"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:border-primary/50"
                 }`}
               >
-                {c}
+                {c === "Ninos" ? "Ninos" : c}
               </button>
             ))}
           </div>
         </div>
 
         {products.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-            No hay productos en la categoría <span className="font-semibold text-foreground">{cat}</span> por el momento.
+          <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            No hay productos en esta categoria por el momento.
           </div>
         ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {products.map((p) => {
-            const extraCount = (p.images?.length ?? 0) > 1 ? (p.images!.length - 1) : 0;
-            return (
-              <article
-                key={p.id}
-                className="flex flex-col rounded-3xl bg-card border border-border overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06)] text-left cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:border-primary/40 transition-all duration-300"
-                onClick={() => handleSelect(p)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    handleSelect(p);
-                  }
-                }}
-              >
-                <div className="relative aspect-square bg-[#e5e7eb] p-2">
-                  <div className="relative h-full w-full rounded-2xl bg-white overflow-hidden ring-1 ring-black/5">
-                    {p.image ? (
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        loading="lazy"
-                        width={400}
-                        height={400}
-                        className="absolute inset-0 h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
-                        Sin imagen
-                      </div>
-                    )}
-                    {extraCount > 0 && (
-                      <span className="absolute bottom-2 right-2 rounded-full bg-black/70 text-white text-[10px] font-bold px-2 py-0.5">
-                        +{extraCount} foto{extraCount > 1 ? "s" : ""}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1.5 px-3 pb-3">
-                  {p.badge && (
-                    <span className="self-start inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                      {p.badge}
-                    </span>
-                  )}
-                  <h3 className="font-display font-bold text-[15px] leading-tight">
-                    {p.name}
-                  </h3>
-                  <p className="text-[11px] text-muted-foreground">
-                    {p.brand} · {p.category}
-                  </p>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <p className="font-display font-extrabold text-primary text-[15px]">
-                      {p.price}
-                    </p>
-                    {p.priceOld && (
-                      <p className="text-[11px] text-muted-foreground line-through">
-                        {p.priceOld}
-                      </p>
-                    )}
-                  </div>
-                  <span className="mt-1 inline-flex items-center justify-center gap-1 rounded-lg bg-primary text-primary-foreground h-9 text-[12px] font-bold">
-                    Ver detalles
-                  </span>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} onSelect={handleSelect} />
+            ))}
+          </div>
         )}
       </div>
 

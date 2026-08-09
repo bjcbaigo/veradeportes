@@ -8,6 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import type { Product } from "@/lib/products";
+import { addToCart } from "@/lib/cart";
 import { waLink } from "@/lib/site";
 
 const SHOE_SIZES = ["38", "39", "40", "41", "42", "43", "44"];
@@ -19,11 +20,12 @@ type Props = {
 };
 
 export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
-  const gallery = (product?.images && product.images.length > 0
-    ? product.images
-    : product?.image
-      ? [product.image]
-      : []
+  const gallery = (
+    product?.images && product.images.length > 0
+      ? product.images
+      : product?.image
+        ? [product.image]
+        : []
   ).filter(Boolean);
   const [active, setActive] = useState(0);
   const [hovering, setHovering] = useState(false);
@@ -44,7 +46,6 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
   };
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -103,15 +104,13 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               </DialogDescription>
             </DialogHeader>
 
-            <p className="font-display font-extrabold text-2xl text-primary">
-              {product.price}
-            </p>
-
+            <p className="font-display font-extrabold text-2xl text-primary">{product.price}</p>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {product.description || (isShoe
-                ? "Zapatilla cómoda y resistente, ideal para uso diario, training y running. Consultá disponibilidad de talles por WhatsApp."
-                : "Producto deportivo de calidad. Consultá disponibilidad, talles y colores por WhatsApp.")}
+              {product.description ||
+                (isShoe
+                  ? "Zapatilla cómoda y resistente, ideal para uso diario, training y running. Consultá disponibilidad de talles por WhatsApp."
+                  : "Producto deportivo de calidad. Consultá disponibilidad, talles y colores por WhatsApp.")}
             </p>
 
             <div className="grid gap-2">
@@ -145,10 +144,16 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                   </p>
                   <div className="flex flex-col gap-1">
                     {product.features.split(",").map((item, i) => {
-                      const clean = item.trim().replace(/^( y )/, "").replace(/\.$/, "");
+                      const clean = item
+                        .trim()
+                        .replace(/^( y )/, "")
+                        .replace(/\.$/, "");
                       if (!clean) return null;
                       return (
-                        <span key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                        <span
+                          key={i}
+                          className="text-xs text-muted-foreground flex items-start gap-1.5"
+                        >
                           <span className="text-primary mt-0.5 shrink-0">•</span>
                           {clean}
                         </span>

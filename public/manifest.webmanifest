@@ -1,0 +1,17 @@
+{
+  "name": "Vera Deportes",
+  "short_name": "Vera",
+  "description": "Tienda deportiva mobile-first de Vera Deportes.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff4b00",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 64x64 128x128 256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}

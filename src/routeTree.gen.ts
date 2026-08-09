@@ -13,7 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminCargasRouteImport } from './routes/admin-cargas'
 import { Route as CargarRouteImport } from './routes/cargar'
+import { Route as CarritoRouteImport } from './routes/carrito'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as PreviewRouteImport } from './routes/preview'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -43,9 +45,19 @@ const CargarRoute = CargarRouteImport.update({
   path: '/cargar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CarritoRoute = CarritoRouteImport.update({
+  id: '/carrito',
+  path: '/carrito',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfertasRoute = OfertasRouteImport.update({
+  id: '/ofertas',
+  path: '/ofertas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PreviewRoute = PreviewRouteImport.update({
@@ -98,7 +110,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/admin-cargas': typeof AdminCargasRoute
   '/cargar': typeof CargarRoute
+  '/carrito': typeof CarritoRoute
   '/mcp': typeof McpRoute
+  '/ofertas': typeof OfertasRoute
   '/preview': typeof PreviewRoute
   '/registro': typeof RegistroRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -113,7 +127,9 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/admin-cargas': typeof AdminCargasRoute
   '/cargar': typeof CargarRoute
+  '/carrito': typeof CarritoRoute
   '/mcp': typeof McpRoute
+  '/ofertas': typeof OfertasRoute
   '/preview': typeof PreviewRoute
   '/registro': typeof RegistroRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -129,7 +145,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/admin-cargas': typeof AdminCargasRoute
   '/cargar': typeof CargarRoute
+  '/carrito': typeof CarritoRoute
   '/mcp': typeof McpRoute
+  '/ofertas': typeof OfertasRoute
   '/preview': typeof PreviewRoute
   '/registro': typeof RegistroRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -146,7 +164,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-cargas'
     | '/cargar'
+    | '/carrito'
     | '/mcp'
+    | '/ofertas'
     | '/preview'
     | '/registro'
     | '/sitemap.xml'
@@ -161,7 +181,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-cargas'
     | '/cargar'
+    | '/carrito'
     | '/mcp'
+    | '/ofertas'
     | '/preview'
     | '/registro'
     | '/sitemap.xml'
@@ -176,7 +198,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-cargas'
     | '/cargar'
+    | '/carrito'
     | '/mcp'
+    | '/ofertas'
     | '/preview'
     | '/registro'
     | '/sitemap.xml'
@@ -192,7 +216,9 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AdminCargasRoute: typeof AdminCargasRoute
   CargarRoute: typeof CargarRoute
+  CarritoRoute: typeof CarritoRoute
   McpRoute: typeof McpRoute
+  OfertasRoute: typeof OfertasRoute
   PreviewRoute: typeof PreviewRoute
   RegistroRoute: typeof RegistroRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -233,11 +259,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CargarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carrito': {
+      id: '/carrito'
+      path: '/carrito'
+      fullPath: '/carrito'
+      preLoaderRoute: typeof CarritoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ofertas': {
+      id: '/ofertas'
+      path: '/ofertas'
+      fullPath: '/ofertas'
+      preLoaderRoute: typeof OfertasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/preview': {
@@ -304,7 +344,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AdminCargasRoute: AdminCargasRoute,
   CargarRoute: CargarRoute,
+  CarritoRoute: CarritoRoute,
   McpRoute: McpRoute,
+  OfertasRoute: OfertasRoute,
   PreviewRoute: PreviewRoute,
   RegistroRoute: RegistroRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

@@ -71,16 +71,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Vera Deportes" },
       { name: "author", content: "Vera Deportes" },
       { property: "og:site_name", content: "Vera Deportes" },
+      { name: "theme-color", content: "#ff4b00" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/95b7f57d-6ec5-41ba-b27f-b84185318ece/id-preview-0fb59f88--3aa0618c-6b4d-4421-bc8a-7d6f774bc7aa.lovable.app-1779578795323.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/95b7f57d-6ec5-41ba-b27f-b84185318ece/id-preview-0fb59f88--3aa0618c-6b4d-4421-bc8a-7d6f774bc7aa.lovable.app-1779578795323.png" },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/95b7f57d-6ec5-41ba-b27f-b84185318ece/id-preview-0fb59f88--3aa0618c-6b4d-4421-bc8a-7d6f774bc7aa.lovable.app-1779578795323.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/95b7f57d-6ec5-41ba-b27f-b84185318ece/id-preview-0fb59f88--3aa0618c-6b4d-4421-bc8a-7d6f774bc7aa.lovable.app-1779578795323.png",
+      },
     ],
     links: [
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -107,6 +117,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));',
+          }}
+        />
         <Scripts />
       </body>
     </html>

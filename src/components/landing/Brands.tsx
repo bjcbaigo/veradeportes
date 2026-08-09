@@ -1,9 +1,9 @@
+import { ArrowRight } from "lucide-react";
 import nike from "@/assets/brands/nike.png.asset.json";
 import adidas from "@/assets/brands/adidas.svg.asset.json";
 import puma from "@/assets/brands/puma.png.asset.json";
 import topper from "@/assets/brands/topper.svg.asset.json";
 import asics from "@/assets/brands/asics-black.png.asset.json";
-import skechers from "@/assets/brands/skechers-black.png.asset.json";
 import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
 
 const BRANDS = [
@@ -12,31 +12,42 @@ const BRANDS = [
   { name: "Puma", src: puma.url },
   { name: "Topper", src: topper.url },
   { name: "Asics", src: asics.url },
-  { name: "Skechers", src: skechers.url },
   { name: "New Balance", src: nbLogo.url },
 ];
 
 export function Brands() {
   return (
-    <section className="py-6 border-y border-border bg-card/50">
+    <section id="marcas" className="py-4">
       <div className="mx-auto max-w-6xl px-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground text-center mb-4">
-          Trabajamos con las mejores marcas
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-          {BRANDS.map((b) => (
-            <div
-              key={b.name}
-              className="flex items-center justify-center h-14 w-20 sm:h-16 sm:w-24 rounded-xl bg-white border border-border p-2"
-            >
-              <img
-                src={b.src}
-                alt={b.name}
-                loading="lazy"
-                className="max-h-full max-w-full object-contain"
-              />
-            </div>
-          ))}
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-display text-xl font-black uppercase tracking-normal">
+            Marcas destacadas
+          </h2>
+          <a
+            href="#productos"
+            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+          >
+            Ver todas <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
+        <div className="-mx-4 overflow-x-auto px-4">
+          <div className="flex gap-3 pb-2">
+            {BRANDS.map((b) => (
+              <a
+                key={b.name}
+                href={`#productos`}
+                className="flex h-16 w-[104px] shrink-0 items-center justify-center rounded-2xl border border-border bg-white p-3 transition hover:border-primary/60"
+                aria-label={`Ver productos ${b.name}`}
+              >
+                <img
+                  src={b.src}
+                  alt={b.name}
+                  loading="lazy"
+                  className="max-h-full max-w-full object-contain"
+                />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>
