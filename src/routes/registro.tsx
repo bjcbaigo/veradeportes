@@ -24,6 +24,7 @@ import {
 import { SplashScreen } from "@/components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
 import { addCartItem } from "@/lib/cart";
+import { toggleFavorite } from "@/lib/favorites";
 import {
   getFirstPurchaseBenefit,
   readCustomerProfile,
@@ -83,6 +84,9 @@ function ComingSoon() {
       addCartItem(pending.item);
       window.location.href = "/carrito";
       return;
+    }
+    if (pending?.type === "toggle-favorite") {
+      toggleFavorite(pending.productId);
     }
     window.location.href = returnTo || fallback;
   }

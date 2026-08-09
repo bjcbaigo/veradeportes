@@ -1,5 +1,11 @@
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
-import { requireCustomerAccess } from "@/lib/customer-access";
+import {
+  isCustomerRegistered,
+  requireCustomerAccess,
+  storePendingToggleFavorite,
+} from "@/lib/customer-access";
+import { FAVORITES_EVENT, isFavorite, toggleFavorite } from "@/lib/favorites";
 import type { Product } from "@/lib/products";
 
 type Props = {
@@ -15,17 +21,21 @@ function discountLabel(product: Product) {
   return `-${Math.round((1 - current / old) * 100)}%`;
 }
 
-function saveFavorite(productId: string) {
-  const current = JSON.parse(window.localStorage.getItem("vera-favorites") || "[]") as string[];
-  window.localStorage.setItem(
-    "vera-favorites",
-    JSON.stringify([...new Set([...current, productId])]),
-  );
-}
-
 export function ProductCard({ product, onSelect, compact = false }: Props) {
   const discount = discountLabel(product);
   const extraCount = (product.images?.length ?? 0) > 1 ? product.images!.length - 1 : 0;
+  const [favorite, setFavorite] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setFavorite(isFavorite(product.id));
+    sync();
+    window.addEventListener(FAVORITES_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(FAVORITES_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [product.id]);
 
   return (
     <article
@@ -71,15 +81,23 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         )}
         <button
           type="button"
-          aria-label={`Guardar ${product.name} en favoritos`}
+          aria-label={`${favorite ? "Quitar" : "Guardar"} ${product.name} en favoritos`}
+          aria-pressed={favorite}
+          title={favorite ? "Quitar de favoritos" : "Guardar en favoritos"}
           onClick={(e) => {
             e.stopPropagation();
-            if (!requireCustomerAccess(e, "favorito")) return;
-            saveFavorite(product.id);
+            if (!isCustomerRegistered()) {
+              storePendingToggleFavorite(product.id);
+              requireCustomerAccess(e, "favorito");
+              return;
+            }
+            setFavorite(toggleFavorite(product.id));
           }}
-          className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-foreground shadow-sm ring-1 ring-black/5 hover:text-primary"
+          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-sm ring-1 ring-black/5 transition ${
+            favorite ? "text-primary" : "text-foreground hover:text-primary"
+          }`}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
         </button>
       </div>
 

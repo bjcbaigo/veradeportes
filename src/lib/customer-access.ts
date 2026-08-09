@@ -10,10 +10,15 @@ export type CustomerProfile = {
   registeredAt: string;
 };
 
-type PendingAction = {
-  type: "add-to-cart";
-  item: CartItem;
-};
+export type PendingAction =
+  | {
+      type: "add-to-cart";
+      item: CartItem;
+    }
+  | {
+      type: "toggle-favorite";
+      productId: string;
+    };
 
 export function getFirstPurchaseBenefit() {
   const configured = import.meta.env.VITE_FIRST_PURCHASE_DISCOUNT;
@@ -78,13 +83,23 @@ export function productToCartItem(product: Product): CartItem {
   };
 }
 
-export function storePendingAddToCart(product: Product) {
+function storePendingAction(pending: PendingAction) {
   if (typeof window === "undefined") return;
-  const pending: PendingAction = {
+  window.localStorage.setItem(PENDING_ACTION_KEY, JSON.stringify(pending));
+}
+
+export function storePendingAddToCart(product: Product) {
+  storePendingAction({
     type: "add-to-cart",
     item: productToCartItem(product),
-  };
-  window.localStorage.setItem(PENDING_ACTION_KEY, JSON.stringify(pending));
+  });
+}
+
+export function storePendingToggleFavorite(productId: string) {
+  storePendingAction({
+    type: "toggle-favorite",
+    productId,
+  });
 }
 
 export function takePendingAction(): PendingAction | null {
