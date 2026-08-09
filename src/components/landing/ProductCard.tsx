@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import type { Product } from "@/lib/products";
 
 type Props = {
@@ -12,6 +13,14 @@ function discountLabel(product: Product) {
   const old = Number(product.priceOld?.replace(/[^\d.-]/g, "") ?? 0);
   if (!old || !current || current >= old) return product.badge;
   return `-${Math.round((1 - current / old) * 100)}%`;
+}
+
+function saveFavorite(productId: string) {
+  const current = JSON.parse(window.localStorage.getItem("vera-favorites") || "[]") as string[];
+  window.localStorage.setItem(
+    "vera-favorites",
+    JSON.stringify([...new Set([...current, productId])]),
+  );
 }
 
 export function ProductCard({ product, onSelect, compact = false }: Props) {
@@ -63,7 +72,11 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         <button
           type="button"
           aria-label={`Guardar ${product.name} en favoritos`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!requireCustomerAccess(e, "favorito")) return;
+            saveFavorite(product.id);
+          }}
           className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-foreground shadow-sm ring-1 ring-black/5 hover:text-primary"
         >
           <Heart className="h-4 w-4" />

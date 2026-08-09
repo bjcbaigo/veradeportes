@@ -9,6 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import type { Product } from "@/lib/products";
 import { addToCart } from "@/lib/cart";
+import {
+  isCustomerRegistered,
+  requireCustomerAccess,
+  storePendingAddToCart,
+} from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
 const SHOE_SIZES = ["38", "39", "40", "41", "42", "43", "44"];
@@ -46,6 +51,16 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
   };
+  function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
+    if (!isCustomerRegistered()) {
+      storePendingAddToCart(product);
+      requireCustomerAccess(event, "agregar-carrito", "/carrito");
+      return;
+    }
+    addToCart(product);
+    onOpenChange(false);
+    window.location.href = "/carrito";
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -168,19 +183,24 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               <div>
                 <p className="text-xs font-semibold mb-1.5">Talles disponibles</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {SHOE_SIZES.map((s) => (
-                    <a
-                      key={s}
-                      href={waLink(
-                        `Hola! Quiero consultar disponibilidad del talle ${s} de ${product.name}.`,
-                      )}
-                      target="_blank"
-                      rel="noopener"
-                      className="min-w-10 h-9 px-2 rounded-md border border-border text-sm font-semibold flex items-center justify-center hover:border-primary hover:text-primary transition"
-                    >
-                      {s}
-                    </a>
-                  ))}
+                  {SHOE_SIZES.map((s) => {
+                    const sizeHref = waLink(
+                      `Hola! Quiero consultar disponibilidad del talle ${s} de ${product.name}.`,
+                    );
+
+                    return (
+                      <a
+                        key={s}
+                        href={sizeHref}
+                        onClick={(e) => requireCustomerAccess(e, "whatsapp", sizeHref)}
+                        target="_blank"
+                        rel="noopener"
+                        className="min-w-10 h-9 px-2 rounded-md border border-border text-sm font-semibold flex items-center justify-center hover:border-primary hover:text-primary transition"
+                      >
+                        {s}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -201,8 +221,22 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
             </div>
 
             <div className="flex flex-col gap-2 mt-1">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="inline-flex h-11 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+              >
+                Agregar al carrito
+              </button>
               <a
                 href={waLink(`Hola! Quiero comprar: ${product.name} (${product.price}).`)}
+                onClick={(e) =>
+                  requireCustomerAccess(
+                    e,
+                    "whatsapp",
+                    waLink(`Hola! Quiero comprar: ${product.name} (${product.price}).`),
+                  )
+                }
                 target="_blank"
                 rel="noopener"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground h-11 text-sm font-bold hover:bg-primary/90 transition"
@@ -212,6 +246,13 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               </a>
               <a
                 href={waLink(`Hola! Quiero consultar por: ${product.name}.`)}
+                onClick={(e) =>
+                  requireCustomerAccess(
+                    e,
+                    "whatsapp",
+                    waLink(`Hola! Quiero consultar por: ${product.name}.`),
+                  )
+                }
                 target="_blank"
                 rel="noopener"
                 className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-primary text-primary h-10 text-sm font-bold hover:bg-primary hover:text-primary-foreground transition"

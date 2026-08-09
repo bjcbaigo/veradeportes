@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
 import logoAsset from "@/assets/logo-vera.png.asset.json";
 import heroAthletes from "@/assets/hero-athletes.png";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
 const logo = logoAsset.url;
@@ -119,6 +120,13 @@ function ComingSoonPage() {
           </a>
           <a
             href={waLink("Hola! Quiero hacer una consulta sobre Vera Deportes.")}
+            onClick={(e) =>
+              requireCustomerAccess(
+                e,
+                "whatsapp",
+                waLink("Hola! Quiero hacer una consulta sobre Vera Deportes."),
+              )
+            }
             target="_blank"
             rel="noopener"
             aria-label="WhatsApp"
@@ -155,4 +163,3 @@ function ComingSoonPage() {
     </main>
   );
 }
-

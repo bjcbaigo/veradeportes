@@ -1,10 +1,14 @@
 import { MessageCircle } from "lucide-react";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
 export function WhatsAppFab() {
+  const href = waLink("Hola! Quiero hacer una consulta.");
+
   return (
     <a
-      href={waLink("Hola! Quiero hacer una consulta.")}
+      href={href}
+      onClick={(e) => requireCustomerAccess(e, "whatsapp", href)}
       target="_blank"
       rel="noopener"
       aria-label="Consultar por WhatsApp"

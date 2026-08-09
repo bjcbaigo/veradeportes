@@ -1,14 +1,17 @@
 import { MessageCircle, MapPin } from "lucide-react";
 import hero from "@/assets/hero.jpg";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { SITE, waLink } from "@/lib/site";
 
 export function Hero() {
+  const consultHref = waLink("Hola! Quiero hacer una consulta sobre productos.");
+
   return (
     <section id="top" className="w-full">
       <div className="relative overflow-hidden w-full">
         <img
           src={hero}
-          alt="Portada Vera Deportes — indumentaria y calzado deportivo en Vera, Santa Fe"
+          alt="Portada Vera Deportes - indumentaria y calzado deportivo en Vera, Santa Fe"
           width={1916}
           height={821}
           fetchPriority="high"
@@ -21,16 +24,21 @@ export function Hero() {
           <div className="relative p-4 sm:p-6 md:p-12 max-w-xl">
             <div className="h-1 w-8 sm:w-10 bg-primary rounded-full mb-3 sm:mb-5" />
             <h1 className="font-display font-extrabold text-3xl sm:text-5xl md:text-6xl leading-[1.1] sm:leading-[0.95] text-white drop-shadow-lg">
-              {SITE.heroTitle.split(" ")[0]} <span className="text-primary">{SITE.heroTitle.split(" ").slice(1).join(" ")}</span>
-              <span className="block text-base sm:text-lg md:text-xl font-semibold text-white/90 mt-2">Tu tienda de indumentaria y calzado deportivo en Vera, Santa Fe</span>
+              {SITE.heroTitle.split(" ")[0]}{" "}
+              <span className="text-primary">{SITE.heroTitle.split(" ").slice(1).join(" ")}</span>
+              <span className="block text-base sm:text-lg md:text-xl font-semibold text-white/90 mt-2">
+                Tu tienda de indumentaria y calzado deportivo en Vera, Santa Fe
+              </span>
             </h1>
             <p className="mt-3 sm:mt-5 text-white/90 text-sm sm:text-base md:text-lg leading-relaxed drop-shadow">
-              {SITE.heroSubtitle}. <span className="text-primary font-semibold">{SITE.shipping}.</span>
+              {SITE.heroSubtitle}.{" "}
+              <span className="text-primary font-semibold">{SITE.shipping}.</span>
             </p>
 
             <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <a
-                href={waLink("Hola! Quiero hacer una consulta sobre productos.")}
+                href={consultHref}
+                onClick={(e) => requireCustomerAccess(e, "whatsapp", consultHref)}
                 target="_blank"
                 rel="noopener"
                 className="inline-flex w-full sm:w-auto h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
@@ -45,7 +53,7 @@ export function Hero() {
                 className="inline-flex w-full sm:w-auto h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 active:scale-[0.98] transition whitespace-nowrap"
               >
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                <span>Cómo llegar</span>
+                <span>Como llegar</span>
               </a>
               <a
                 href="#productos"
@@ -60,4 +68,3 @@ export function Hero() {
     </section>
   );
 }
-

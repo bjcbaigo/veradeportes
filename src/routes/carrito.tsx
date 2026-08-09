@@ -3,6 +3,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { BottomNav } from "@/components/landing/BottomNav";
 import { Header } from "@/components/landing/Header";
 import { clearCart, formatPrice, removeFromCart, updateCartQty, useCart } from "@/lib/cart";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
 export const Route = createFileRoute("/carrito")({
@@ -24,6 +25,7 @@ function CartPage() {
     `Subtotal: ${formatPrice(subtotal)}`,
     "Envio/retiro: a coordinar",
   ].join("\n");
+  const checkoutHref = waLink(message);
 
   return (
     <div id="top" className="min-h-screen bg-page pb-20 text-foreground font-sans">
@@ -109,7 +111,8 @@ function CartPage() {
                 <span>{formatPrice(subtotal)}</span>
               </div>
               <a
-                href={waLink(message)}
+                href={checkoutHref}
+                onClick={(e) => requireCustomerAccess(e, "checkout", checkoutHref)}
                 target="_blank"
                 rel="noopener"
                 className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary text-sm font-extrabold uppercase text-primary-foreground"

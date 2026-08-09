@@ -11,7 +11,7 @@ export type CartItem = {
   qty: number;
 };
 
-const CART_KEY = "vera-cart";
+export const CART_KEY = "vera-cart";
 export const CART_EVENT = "vera:cart-change";
 
 function readCart(): CartItem[] {
@@ -29,23 +29,26 @@ function writeCart(items: CartItem[]) {
   window.dispatchEvent(new CustomEvent(CART_EVENT));
 }
 
-export function addToCart(product: Product) {
+export function addCartItem(item: CartItem) {
   if (typeof window === "undefined") return;
   const items = readCart();
-  const existing = items.find((item) => item.id === product.id);
-  if (existing) existing.qty += 1;
-  else {
-    items.push({
-      id: product.id,
-      name: product.name,
-      brand: product.brand,
-      category: product.category,
-      price: product.price,
-      image: product.image,
-      qty: 1,
-    });
-  }
+  const existing = items.find((current) => current.id === item.id);
+  if (existing) existing.qty += item.qty;
+  else items.push(item);
   writeCart(items);
+}
+
+export function addToCart(product: Product) {
+  if (typeof window === "undefined") return;
+  addCartItem({
+    id: product.id,
+    name: product.name,
+    brand: product.brand,
+    category: product.category,
+    price: product.price,
+    image: product.image,
+    qty: 1,
+  });
 }
 
 export function updateCartQty(id: string, qty: number) {

@@ -1,7 +1,11 @@
 import { MessageCircle } from "lucide-react";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
 export function WhatsAppHelp() {
+  const message = "Hola! Quiero hacer una consulta sobre Vera Deportes.";
+  const href = waLink(message);
+
   return (
     <section id="whatsapp" className="py-3">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
@@ -16,7 +20,8 @@ export function WhatsAppHelp() {
             </p>
           </div>
           <a
-            href={waLink("Hola! Quiero hacer una consulta sobre Vera Deportes.")}
+            href={href}
+            onClick={(e) => requireCustomerAccess(e, "whatsapp", href)}
             target="_blank"
             rel="noopener"
             className="inline-flex h-10 shrink-0 items-center justify-center rounded-full bg-whatsapp px-4 text-xs font-extrabold text-whatsapp-foreground"

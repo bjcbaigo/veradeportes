@@ -1,7 +1,12 @@
 import { MessageCircle } from "lucide-react";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
 export function Promo() {
+  const promoHref = waLink(
+    "Hola! Vi las promociones de la semana y quiero aprovechar. Que productos tienen con descuento?",
+  );
+
   return (
     <section id="ofertas" className="py-8">
       <div className="mx-auto max-w-6xl px-4">
@@ -22,15 +27,14 @@ export function Promo() {
                 Hasta <span className="text-primary">25% OFF</span>
               </h2>
               <p className="mt-2 text-ink-foreground/90 text-sm md:text-base">
-                Zapatillas, remeras, shorts y buzos con descuento esta semana.
-                Consultá stock y talles por WhatsApp.
+                Zapatillas, remeras, shorts y buzos con descuento esta semana. Consulta stock y
+                talles por WhatsApp.
               </p>
             </div>
 
             <a
-              href={waLink(
-                "¡Hola! Vi las promociones de la semana y quiero aprovechar. ¿Qué productos tienen con descuento?"
-              )}
+              href={promoHref}
+              onClick={(e) => requireCustomerAccess(e, "whatsapp", promoHref)}
               target="_blank"
               rel="noopener"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 h-12 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition shadow-xl whitespace-nowrap"

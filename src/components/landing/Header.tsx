@@ -2,6 +2,7 @@ import { Facebook, Instagram, Menu, MessageCircle, Moon, ShoppingCart, Sun, X } 
 import { useEffect, useRef, useState } from "react";
 import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
+import { requireCustomerAccess } from "@/lib/customer-access";
 import { SITE, waLink } from "@/lib/site";
 
 function ThemeToggle() {
@@ -35,7 +36,7 @@ const NAV = [
   { label: "Ofertas", href: "/ofertas" },
   { label: "Novedades", href: "/tienda#productos" },
   { label: "Favoritos", href: "/tienda#productos" },
-  { label: "Mi cuenta", href: "/tienda#cuenta" },
+  { label: "Mi cuenta", href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
   { label: "Mis pedidos", href: "/tienda#pedidos" },
   { label: "Como llegar", href: SITE.maps, external: true },
   { label: "Contactanos", href: "/tienda#whatsapp" },
@@ -185,6 +186,9 @@ export function Header() {
               </a>
               <a
                 href={waLink("Hola! Quiero hacer una consulta.")}
+                onClick={(e) =>
+                  requireCustomerAccess(e, "whatsapp", waLink("Hola! Quiero hacer una consulta."))
+                }
                 target="_blank"
                 rel="noopener"
                 aria-label="WhatsApp"
