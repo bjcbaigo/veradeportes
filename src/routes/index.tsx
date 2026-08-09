@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Instagram, MessageCircle, Moon, Sun } from "lucide-react";
+import { Instagram, MessageCircle, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
 import logoAsset from "@/assets/logo-vera.png.asset.json";
