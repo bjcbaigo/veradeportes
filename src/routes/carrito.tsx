@@ -35,7 +35,7 @@ function CartPage() {
           <div className="mt-4 rounded-2xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">Tu carrito esta vacio.</p>
             <a
-              href="/#productos"
+              href="/tienda#productos"
               className="mt-4 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground"
             >
               Ver productos

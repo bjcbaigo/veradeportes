@@ -2,11 +2,11 @@ import { Grid2X2, Home, ShoppingCart, Tag, User } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 const ITEMS = [
-  { label: "Inicio", icon: Home, href: "#top" },
-  { label: "Categorias", icon: Grid2X2, href: "#categorias" },
+  { label: "Inicio", icon: Home, href: "/tienda" },
+  { label: "Categorias", icon: Grid2X2, href: "/tienda#categorias" },
   { label: "Ofertas", icon: Tag, href: "/ofertas" },
   { label: "Carrito", icon: ShoppingCart, href: "/carrito" },
-  { label: "Cuenta", icon: User, href: "#cuenta" },
+  { label: "Cuenta", icon: User, href: "/tienda#cuenta" },
 ];
 
 export function BottomNav({ active = "Inicio" }: { active?: string }) {

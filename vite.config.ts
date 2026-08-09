@@ -7,9 +7,7 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
-const shouldLoadMcpPlugin = !(
-  process.platform === "win32" && process.env.npm_lifecycle_event === "build"
-);
+const shouldLoadMcpPlugin = process.platform !== "win32";
 
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this - wrangler.jsonc main alone is insufficient.
@@ -21,3 +19,4 @@ export default defineConfig({
     plugins: shouldLoadMcpPlugin ? [mcpPlugin()] : [],
   },
 });
+
