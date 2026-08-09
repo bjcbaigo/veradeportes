@@ -20,30 +20,30 @@ export function Brands() {
     <section id="marcas" className="py-3">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-[19px] font-black uppercase tracking-normal">
+          <h2 className="font-display text-sm font-black uppercase tracking-normal">
             Marcas destacadas
           </h2>
           <a
             href="#productos"
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+            className="inline-flex items-center gap-1 text-xs font-bold text-primary"
           >
-            Ver todas <ArrowRight className="h-4 w-4" />
+            Ver todas <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
         <div className="-mx-4 overflow-x-auto px-4">
-          <div className="flex gap-3 pb-2">
+          <div className="flex gap-2 pb-2">
             {BRANDS.map((b) => (
               <a
                 key={b.name}
                 href="#productos"
-                className="flex h-14 w-[96px] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-white p-3 shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition hover:border-primary/60"
+                className="flex h-12 w-[76px] shrink-0 items-center justify-center rounded-xl border border-border/80 bg-white p-2 shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition hover:border-primary/60"
                 aria-label={`Ver productos ${b.name}`}
               >
                 <img
                   src={b.src}
                   alt={b.name}
                   loading="lazy"
-                  className="max-h-full max-w-full object-contain"
+                  className="max-h-7 max-w-full object-contain"
                 />
               </a>
             ))}

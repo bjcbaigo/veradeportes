@@ -71,16 +71,16 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
       </div>
 
       <div className="flex flex-1 flex-col gap-1 px-3 py-3">
-        <h3 className="line-clamp-2 min-h-[36px] font-display text-[13px] font-extrabold leading-tight sm:text-sm">
+        <h3 className="line-clamp-2 min-h-[36px] font-display text-[12px] font-extrabold leading-tight sm:text-[13px]">
           {product.name}
         </h3>
-        <p className="truncate text-[11px] text-muted-foreground">
+        <p className="truncate text-[10px] text-muted-foreground">
           {product.brand} - {product.category}
         </p>
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <p className="font-display text-[15px] font-extrabold text-primary">{product.price}</p>
+          <p className="font-display text-sm font-extrabold text-primary">{product.price}</p>
           {product.priceOld && (
-            <p className="text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
+            <p className="text-[10px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
         </div>
       </div>

@@ -20,14 +20,14 @@ export function FeaturedOffers() {
     <section id="ofertas" className="py-3">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-[19px] font-black uppercase tracking-normal">
+          <h2 className="font-display text-sm font-black uppercase tracking-normal">
             Ofertas destacadas
           </h2>
           <a
             href="/ofertas"
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+            className="inline-flex items-center gap-1 text-xs font-bold text-primary"
           >
-            Ver todas <ArrowRight className="h-4 w-4" />
+            Ver todas <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
 

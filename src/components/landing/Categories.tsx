@@ -24,20 +24,18 @@ export function Categories() {
     <section id="categorias" className="py-3">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-[19px] font-black uppercase tracking-normal">
-            Categorias
-          </h2>
+          <h2 className="font-display text-sm font-black uppercase tracking-normal">Categorias</h2>
           <a
             href="#productos"
             onClick={() => emitCategory("Todos")}
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+            className="inline-flex items-center gap-1 text-xs font-bold text-primary"
           >
-            Ver todas <ArrowRight className="h-4 w-4" />
+            Ver todas <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
 
         <div className="-mx-4 overflow-x-auto px-4">
-          <div className="flex gap-3 pb-2 md:grid md:grid-cols-6">
+          <div className="flex gap-2 pb-2 md:grid md:grid-cols-6">
             {CATS.map((c) => (
               <button
                 key={c.label}
@@ -61,7 +59,7 @@ export function Categories() {
                     />
                   )}
                 </div>
-                <span className="mt-2 text-center text-[12px] font-extrabold leading-tight text-foreground">
+                <span className="mt-2 text-center text-[11px] font-extrabold leading-tight text-foreground">
                   {c.label}
                 </span>
               </button>
