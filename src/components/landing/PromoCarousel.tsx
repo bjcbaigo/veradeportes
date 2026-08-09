@@ -6,14 +6,14 @@ export function PromoCarousel() {
 
   return (
     <section id="promos" className="pt-3 sm:pt-4">
-      <div className="mx-auto max-w-6xl">
-        <div className="overflow-x-auto px-4 [scroll-snap-type:x_mandatory]">
-          <div className="flex gap-3 pb-3">
+      <div className="mx-auto max-w-6xl xl:max-w-7xl">
+        <div className="overflow-x-auto px-4 [scroll-snap-type:x_mandatory] xl:px-6">
+          <div className="flex gap-3 pb-3 lg:gap-4">
             {promotions.map((promo) => (
               <a
                 key={promo.id}
                 href={promo.href}
-                className="relative h-[210px] w-[86vw] max-w-[390px] shrink-0 overflow-hidden rounded-[28px] bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.18)] ring-1 ring-black/5 [scroll-snap-align:start] sm:h-[236px] sm:w-[390px]"
+                className="relative h-[210px] w-[86vw] max-w-[390px] shrink-0 overflow-hidden rounded-[28px] bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.18)] ring-1 ring-black/5 [scroll-snap-align:start] sm:h-[236px] sm:w-[390px] lg:h-[248px] lg:w-[31.8%] lg:max-w-none xl:h-[268px]"
               >
                 <img
                   src={promo.image}
@@ -26,7 +26,7 @@ export function PromoCarousel() {
                 <div className="absolute inset-0 bg-gradient-to-br from-black via-black/72 to-primary/72" />
                 <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-primary/45 blur-2xl" />
                 <div className="absolute -bottom-16 right-8 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
-                <div className="relative flex h-full flex-col justify-between p-5">
+                <div className="relative flex h-full flex-col justify-between p-5 lg:p-6">
                   <div className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white ring-1 ring-white/15">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -40,7 +40,7 @@ export function PromoCarousel() {
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-primary">
                       Vera Deportes
                     </p>
-                    <h2 className="mt-1 max-w-[270px] font-display text-[30px] font-black uppercase leading-[0.88] tracking-normal sm:text-[34px]">
+                    <h2 className="mt-1 max-w-[270px] font-display text-[30px] font-black uppercase leading-[0.88] tracking-normal sm:text-[34px] lg:text-[36px]">
                       {promo.title}
                     </h2>
                     <p className="mt-2 max-w-[260px] text-sm font-semibold leading-snug text-white/90">

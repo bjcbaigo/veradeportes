@@ -33,9 +33,9 @@ export const Route = createFileRoute("/tienda")({
 
 function StorefrontPage() {
   return (
-    <div id="top" className="min-h-screen bg-page pb-20 text-foreground font-sans">
+    <div id="top" className="min-h-screen bg-page pb-20 text-foreground font-sans lg:pb-0">
       <Header />
-      <main>
+      <main className="lg:space-y-1 xl:space-y-2">
         <PromoCarousel />
         <CommercialBenefits />
         <Categories />

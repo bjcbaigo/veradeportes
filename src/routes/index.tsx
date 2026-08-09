@@ -146,7 +146,6 @@ function ComingSoonPage() {
             <br className="hidden sm:block" />
             Muy pronto vas a descubrir productos, ofertas y novedades.
           </p>
-
         </div>
       </section>
 
@@ -156,3 +155,4 @@ function ComingSoonPage() {
     </main>
   );
 }
+

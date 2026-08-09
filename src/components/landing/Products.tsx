@@ -41,10 +41,12 @@ export function Products({ limit }: { limit?: number }) {
   }
 
   return (
-    <section id="productos" className="py-4">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-xl font-black uppercase tracking-normal">Productos</h2>
+    <section id="productos" className="py-4 lg:py-8">
+      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
+        <div className="mb-3 flex items-center justify-between lg:mb-4">
+          <h2 className="font-display text-xl font-black uppercase tracking-normal lg:text-2xl">
+            Productos
+          </h2>
           <button
             type="button"
             onClick={() => setCat("Todos")}
@@ -54,8 +56,8 @@ export function Products({ limit }: { limit?: number }) {
           </button>
         </div>
 
-        <div className="mb-3 -mx-4 overflow-x-auto px-4">
-          <div className="flex min-w-max gap-2">
+        <div className="mb-3 -mx-4 overflow-x-auto px-4 lg:mx-0 lg:mb-5 lg:overflow-visible lg:px-0">
+          <div className="flex min-w-max gap-2 lg:min-w-0 lg:flex-wrap">
             {CHIPS.map((c) => (
               <button
                 key={c}
@@ -78,7 +80,7 @@ export function Products({ limit }: { limit?: number }) {
             No hay productos en esta categoria por el momento.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-4 xl:grid-cols-5">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} onSelect={handleSelect} />
             ))}

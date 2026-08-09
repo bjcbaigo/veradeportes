@@ -18,9 +18,9 @@ export function FeaturedOffers() {
 
   return (
     <section id="ofertas" className="py-3">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-sm font-black uppercase tracking-normal">
+      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
+        <div className="mb-3 flex items-center justify-between lg:mb-4">
+          <h2 className="font-display text-sm font-black uppercase tracking-normal lg:text-lg">
             Ofertas destacadas
           </h2>
           <a
@@ -36,8 +36,8 @@ export function FeaturedOffers() {
             No hay ofertas activas por el momento.
           </div>
         ) : (
-          <div className="-mx-4 overflow-x-auto px-4">
-            <div className="flex gap-2.5 pb-2">
+          <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
+            <div className="flex gap-2.5 pb-2 lg:grid lg:grid-cols-5 lg:gap-4">
               {offers.map((product) => (
                 <ProductCard key={product.id} product={product} onSelect={handleSelect} compact />
               ))}

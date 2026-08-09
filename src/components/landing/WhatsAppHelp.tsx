@@ -4,8 +4,8 @@ import { waLink } from "@/lib/site";
 export function WhatsAppHelp() {
   return (
     <section id="whatsapp" className="py-3">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex items-center gap-3 rounded-[24px] border border-whatsapp/15 bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
+        <div className="flex items-center gap-3 rounded-[24px] border border-whatsapp/15 bg-white p-4 lg:p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
           <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-whatsapp text-whatsapp-foreground">
             <MessageCircle className="h-5 w-5" />
           </span>

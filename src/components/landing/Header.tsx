@@ -64,7 +64,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-white/96 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-3 sm:h-16 sm:px-4">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-3 sm:h-16 sm:px-4 xl:max-w-7xl xl:px-6">
         <button
           type="button"
           className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary/80 hover:bg-secondary"
@@ -90,7 +90,7 @@ export function Header() {
         </a>
 
         <div className="flex items-center gap-1.5">
-          <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+          <nav className="hidden items-center gap-7 text-sm font-medium md:flex xl:gap-9">
             {NAV.slice(1, 5).map((i) => (
               <a
                 key={i.href}
