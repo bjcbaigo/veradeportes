@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -135,6 +136,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <PwaInstallPrompt />
     </QueryClientProvider>
   );
 }
