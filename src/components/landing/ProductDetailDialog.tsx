@@ -52,12 +52,14 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
     setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
   };
   function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
+    const current = product;
+    if (!current) return;
     if (!isCustomerRegistered()) {
-      storePendingAddToCart(product);
+      storePendingAddToCart(current);
       requireCustomerAccess(event, "agregar-carrito", "/carrito");
       return;
     }
-    addToCart(product);
+    addToCart(current);
     onOpenChange(false);
     window.location.href = "/carrito";
   }
