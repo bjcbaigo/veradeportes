@@ -31,6 +31,8 @@
   --color-ring: var(--ring);
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
+  --color-ink-secondary: var(--ink-secondary);
+
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
   --color-page: var(--page);
@@ -39,46 +41,48 @@
 }
 
 :root {
-  --radius: 1.25rem;
+  --radius: 0.875rem;
   --font-display: "Montserrat", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
 
-  /* Vera Deportes palette: navy + orange */
-  --background: oklch(1 0 0);                 /* white surfaces (header, cards) */
-  --foreground: oklch(0.26 0.07 265);         /* navy ink #0F1B3D */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.26 0.07 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.26 0.07 265);
+  /* Vera Deportes palette: deep navy + orange */
+  --background: #ffffff;
+  --foreground: #071b3b;
+  --card: #ffffff;
+  --card-foreground: #071b3b;
+  --popover: #ffffff;
+  --popover-foreground: #071b3b;
 
-  --primary: oklch(0.7 0.2 45);               /* orange #FF6A00 */
-  --primary-foreground: oklch(1 0 0);
+  --primary: #ff6200;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.965 0.003 265);        /* very light photo backdrop */
-  --secondary-foreground: oklch(0.26 0.07 265);
+  --secondary: #f6f7f9;
+  --secondary-foreground: #071b3b;
 
-  --muted: oklch(0.965 0.003 265);
-  --muted-foreground: oklch(0.52 0.02 265);
+  --muted: #f6f7f9;
+  --muted-foreground: #687386;
 
-  --accent: oklch(0.7 0.2 45);
-  --accent-foreground: oklch(1 0 0);
+  --accent: #ff6200;
+  --accent-foreground: #ffffff;
 
   --destructive: oklch(0.58 0.24 27);
-  --destructive-foreground: oklch(1 0 0);
+  --destructive-foreground: #ffffff;
 
-  --border: oklch(0.91 0.005 265);
-  --input: oklch(0.93 0.005 265);
-  --ring: oklch(0.7 0.2 45);
+  --border: #e9ebef;
+  --input: #e9ebef;
+  --ring: #ff6200;
 
-  --ink: oklch(0.24 0.07 265);                /* navy blocks / tiles / banners */
-  --ink-foreground: oklch(1 0 0);
+  --ink: #071b3b;
+  --ink-foreground: #ffffff;
+  --ink-secondary: #102b54;
 
   --whatsapp: oklch(0.72 0.16 153);
-  --whatsapp-foreground: oklch(1 0 0);
+  --whatsapp-foreground: #ffffff;
 
   /* Page background */
-  --page: oklch(0.975 0.002 265);             /* near-white #F7F7F8 */
+  --page: #fafafa;
 }
+
 
 .dark {
   --background: oklch(0.19 0.045 265);
@@ -108,6 +112,7 @@
   --ring: oklch(0.73 0.19 45);
 
   --ink: oklch(0.16 0.05 265);
+  --ink-secondary: oklch(0.22 0.05 265);
   --ink-foreground: oklch(0.98 0.005 265);
 
   --whatsapp: oklch(0.70 0.16 153);

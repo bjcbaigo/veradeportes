@@ -39,8 +39,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[20px] bg-card text-left shadow-[0_6px_18px_rgba(15,27,61,0.07)] transition hover:shadow-[0_12px_26px_rgba(15,27,61,0.12)] ${
-        compact ? "w-[148px] sm:w-[180px] lg:w-full" : ""
+      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[12px] bg-card text-left shadow-[0_2px_10px_rgba(0,0,0,0.05)] transition hover:shadow-[0_4px_16px_rgba(7,27,59,0.10)] ${
+        compact ? "w-[150px] sm:w-[180px] lg:w-full" : ""
       }`}
       onClick={() => onSelect(product)}
       role="button"
@@ -52,8 +52,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative bg-card p-2">
-        <div className="relative h-[126px] w-full overflow-hidden rounded-[16px] bg-secondary sm:h-[154px] lg:h-[178px]">
+      <div className="relative bg-card p-1.5">
+        <div className="relative aspect-square w-full overflow-hidden rounded-[10px] bg-secondary">
           {product.image ? (
             <img
               src={product.image}
@@ -69,13 +69,13 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             </div>
           )}
           {extraCount > 0 && (
-            <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-bold text-white">
+            <span className="absolute bottom-2 right-2 rounded-full bg-ink/75 px-2 py-0.5 text-[10px] font-bold text-ink-foreground">
               +{extraCount}
             </span>
           )}
         </div>
         {discount && (
-          <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-extrabold uppercase text-primary-foreground shadow-sm">
+          <span className="absolute left-2.5 top-2.5 rounded-[8px] bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">
             {discount}
           </span>
         )}
@@ -93,30 +93,28 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             }
             setFavorite(toggleFavorite(product.id));
           }}
-          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-sm ring-1 ring-black/5 transition ${
-            favorite ? "text-primary" : "text-foreground hover:text-primary"
+          className={`absolute right-2.5 top-2.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/90 transition ${
+            favorite ? "text-primary" : "text-foreground/60 hover:text-primary"
           }`}
         >
-          <Heart className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
+          <Heart className="h-[18px] w-[18px]" fill={favorite ? "currentColor" : "none"} />
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 px-3 pb-3 pt-2 lg:px-4">
-        <h3 className="line-clamp-2 min-h-[34px] font-sans text-[12px] font-semibold leading-tight text-foreground sm:text-[13px] lg:text-sm">
+      <div className="flex flex-1 flex-col gap-0.5 px-3 pb-3 pt-1">
+        <h3 className="line-clamp-2 min-h-[34px] font-sans text-[13px] font-medium leading-tight text-foreground lg:text-sm">
           {product.name}
         </h3>
-        <p className="truncate text-[10px] text-muted-foreground">
-          {product.brand} - {product.category}
-        </p>
-        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <p className="font-display text-sm font-black italic text-primary lg:text-base">
+        <div className="mt-auto flex flex-wrap items-baseline gap-x-2">
+          <p className="font-display text-[16px] font-bold text-primary lg:text-[18px]">
             {product.price}
           </p>
           {product.priceOld && (
-            <p className="text-[10px] text-muted-foreground line-through">{product.priceOld}</p>
+            <p className="text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
         </div>
       </div>
+
     </article>
   );
 }

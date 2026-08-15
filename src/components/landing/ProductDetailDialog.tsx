@@ -226,7 +226,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+                className="inline-flex h-12 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
               >
                 Agregar al carrito
               </button>
@@ -241,7 +241,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                 }
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground h-11 text-sm font-bold hover:bg-primary/90 transition"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground h-12 text-sm font-bold hover:bg-primary/90 transition"
               >
                 <MessageCircle className="h-4 w-4" />
                 Comprar por WhatsApp

@@ -44,15 +44,15 @@ export function Products({ limit }: { limit?: number }) {
     <section id="productos" className="py-4 lg:py-8">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-center justify-between lg:mb-4">
-          <h2 className="font-display text-xl font-black uppercase tracking-normal lg:text-2xl">
+          <h2 className="font-display text-[17px] font-extrabold uppercase tracking-tight text-foreground lg:text-xl">
             Productos
           </h2>
           <button
             type="button"
             onClick={() => setCat("Todos")}
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-primary"
           >
-            Ver todas <ArrowRight className="h-4 w-4" />
+            Ver mas <ArrowRight className="h-4 w-4" />
           </button>
         </div>
 
@@ -63,10 +63,10 @@ export function Products({ limit }: { limit?: number }) {
                 key={c}
                 type="button"
                 onClick={() => setCat(c)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-extrabold transition ${
+                className={`rounded-[10px] border px-3.5 py-2 text-[12px] font-semibold transition ${
                   cat === c
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:border-primary/50"
+                    ? "border-ink bg-ink text-ink-foreground"
+                    : "border-border bg-card text-foreground/75 hover:border-ink/30"
                 }`}
               >
                 {c === "Ninos" ? "Ninos" : c}
@@ -80,7 +80,7 @@ export function Products({ limit }: { limit?: number }) {
             No hay productos en esta categoria por el momento.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 md:grid-cols-4 lg:gap-4 xl:grid-cols-5">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} onSelect={handleSelect} />
             ))}
