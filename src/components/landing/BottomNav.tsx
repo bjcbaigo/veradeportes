@@ -44,7 +44,14 @@ export function BottomNav({ active = "Inicio" }: { active?: string }) {
           <a
             key={label}
             href={href}
-            onClick={() => setCurrent(label)}
+            onClick={(e) => {
+              if (label === "Buscar") {
+                e.preventDefault();
+                openSearch();
+              }
+              setCurrent(label);
+            }}
+
             className={`relative flex flex-col items-center justify-center gap-1 text-[11px] ${
               current === label ? "font-bold text-primary" : "font-medium text-foreground/55"
             }`}
