@@ -39,45 +39,45 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1.25rem;
   --font-display: "Montserrat", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
 
-  /* Vera Deportes palette */
-  --background: oklch(1 0 0);                 /* white surfaces (header) */
-  --foreground: oklch(0.18 0 0);              /* near black #050505 */
-  --card: oklch(0.96 0 0);                   /* light gray boxes */
-  --card-foreground: oklch(0.18 0 0);
+  /* Vera Deportes palette: navy + orange */
+  --background: oklch(1 0 0);                 /* white surfaces (header, cards) */
+  --foreground: oklch(0.26 0.07 265);         /* navy ink #0F1B3D */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.26 0.07 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.26 0.07 265);
 
-  --primary: oklch(0.68 0.22 38);             /* orange #FF4B00 */
+  --primary: oklch(0.7 0.2 45);               /* orange #FF6A00 */
   --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.94 0 0);               /* soft gray */
-  --secondary-foreground: oklch(0.18 0 0);
+  --secondary: oklch(0.965 0.003 265);        /* very light photo backdrop */
+  --secondary-foreground: oklch(0.26 0.07 265);
 
-  --muted: oklch(0.94 0 0);
-  --muted-foreground: oklch(0.45 0 0);
+  --muted: oklch(0.965 0.003 265);
+  --muted-foreground: oklch(0.52 0.02 265);
 
-  --accent: oklch(0.68 0.22 38);
+  --accent: oklch(0.7 0.2 45);
   --accent-foreground: oklch(1 0 0);
 
   --destructive: oklch(0.58 0.24 27);
   --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.85 0 0);
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.68 0.22 38);
+  --border: oklch(0.91 0.005 265);
+  --input: oklch(0.93 0.005 265);
+  --ring: oklch(0.7 0.2 45);
 
-  --ink: oklch(0.18 0 0);                     /* high-contrast black blocks */
+  --ink: oklch(0.24 0.07 265);                /* navy blocks / tiles / banners */
   --ink-foreground: oklch(1 0 0);
 
   --whatsapp: oklch(0.72 0.16 153);
   --whatsapp-foreground: oklch(1 0 0);
 
   /* Page background */
-  --page: oklch(1 0 0);                       /* white */
+  --page: oklch(0.975 0.002 265);             /* near-white #F7F7F8 */
 }
 
 .dark {
