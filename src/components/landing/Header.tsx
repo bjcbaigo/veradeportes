@@ -102,7 +102,16 @@ export function Header() {
               </a>
             ))}
           </nav>
+          <button
+            type="button"
+            onClick={() => openSearch()}
+            aria-label="Buscar productos"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
+          >
+            <Search className="h-[22px] w-[22px]" strokeWidth={2} />
+          </button>
           <a
+
             href="/carrito"
             aria-label="Carrito"
             className="relative inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
