@@ -63,13 +63,13 @@ export function PromoCarousel() {
                 />
                 <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/95 to-transparent" />
                 <div className="relative flex h-full max-w-[62%] flex-col justify-center gap-1 pl-5 lg:pl-6">
-                  <h2 className="font-display text-[26px] font-extrabold uppercase leading-[0.95] sm:text-[30px]">
+                  <h2 className="font-display text-[26px] font-semibold uppercase leading-[0.95] tracking-tight sm:text-[30px]">
                     {promo.subtitle}
                   </h2>
-                  <p className="font-display text-[15px] font-semibold uppercase leading-tight text-ink-foreground/85 sm:text-[17px]">
+                  <p className="font-display text-[15px] font-light uppercase leading-tight tracking-wide text-ink-foreground/85 sm:text-[17px]">
                     {promo.title}
                   </p>
-                  <span className="mt-3 inline-flex h-[42px] w-fit items-center rounded-[12px] bg-primary px-4 text-[12px] font-bold uppercase tracking-wide text-primary-foreground">
+                  <span className="mt-3 inline-flex h-[42px] w-fit items-center rounded-[12px] bg-primary px-4 text-[12px] font-semibold uppercase tracking-wide text-primary-foreground">
                     {promo.ctaText}
                   </span>
                 </div>
