@@ -150,7 +150,7 @@ function ComingSoon() {
         className="mx-auto max-w-6xl px-5 pt-8 sm:pt-12 grid md:grid-cols-2 gap-8 md:gap-10 items-center"
       >
         <div>
-          <span className="inline-block bg-black text-white text-xs font-bold tracking-wider px-3 py-1.5 rounded">
+          <span className="inline-block bg-ink text-ink-foreground text-xs font-bold tracking-wider px-3 py-1.5 rounded">
             MUY PRONTO
           </span>
           <h1 className="font-display font-extrabold italic uppercase mt-4 leading-[0.95] text-2xl sm:text-5xl md:text-6xl tracking-tight">
@@ -217,7 +217,7 @@ function ComingSoon() {
               <button
                 type="button"
                 onClick={() => finishPendingAccess("/tienda")}
-                className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-lg bg-primary text-sm font-bold text-white"
+                className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground"
               >
                 {returnTo || intent ? "Continuar" : "Volver a la tienda"}
               </button>
@@ -253,7 +253,7 @@ function ComingSoon() {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="w-full h-12 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold text-sm tracking-wide transition disabled:opacity-60"
+                className="w-full h-12 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm tracking-wide transition disabled:opacity-60"
               >
                 {status === "loading" ? "ENVIANDO..." : "QUIERO SER DE LOS PRIMEROS"}
               </button>
@@ -334,7 +334,7 @@ function ComingSoon() {
             },
           ].map(({ n, icon: Icon, t, s }) => (
             <div key={n} className="text-center relative">
-              <div className="mx-auto w-7 h-7 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
+              <div className="mx-auto w-7 h-7 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
                 {n}
               </div>
               <div className="mx-auto mt-3 w-20 h-20 rounded-full bg-neutral-50 border border-neutral-200 flex items-center justify-center">
@@ -440,7 +440,7 @@ function ComingSoon() {
       </section>
 
       {/* FOOTER */}
-      <footer className="mt-12 bg-black text-white">
+      <footer className="mt-12 bg-ink text-ink-foreground">
         <div className="mx-auto max-w-6xl px-5 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src={logo} alt="Vera Deportes" className="h-8 w-auto" />
