@@ -28,11 +28,10 @@ export function Categories() {
                 onClick={() => emitCategory(filter)}
                 className="group flex w-[76px] shrink-0 flex-col items-center focus:outline-none md:w-auto lg:w-full"
               >
-                <div className="flex aspect-square w-[76px] items-center justify-center rounded-[14px] bg-ink text-ink-foreground shadow-[0_2px_10px_rgba(7,27,59,0.12)] transition group-hover:bg-ink-secondary group-focus-visible:ring-2 group-focus-visible:ring-primary md:w-full lg:rounded-[16px]">
+                <div className="flex aspect-square w-[76px] items-center justify-center rounded-[16px] bg-ink text-ink-foreground shadow-[0_2px_10px_rgba(7,27,59,0.12)] transition group-hover:bg-ink-secondary group-focus-visible:ring-2 group-focus-visible:ring-primary md:w-full lg:rounded-[18px]">
                   <Icon
                     className="h-8 w-8 lg:h-9 lg:w-9"
-                    strokeWidth={1.4}
-                    fill="currentColor"
+                    strokeWidth={2}
                   />
                 </div>
                 <span className="mt-2 text-center text-[12px] font-medium leading-tight text-foreground/80 lg:text-sm">
