@@ -52,8 +52,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative bg-secondary/80 p-2">
-        <div className="relative h-[126px] w-full overflow-hidden rounded-[18px] bg-white ring-1 ring-black/5 sm:h-[154px] lg:h-[178px]">
+      <div className="relative bg-card p-2">
+        <div className="relative h-[126px] w-full overflow-hidden rounded-[16px] bg-secondary sm:h-[154px] lg:h-[178px]">
           {product.image ? (
             <img
               src={product.image}
