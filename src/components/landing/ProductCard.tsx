@@ -39,7 +39,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[22px] border border-border/80 bg-white text-left shadow-[0_8px_22px_rgba(0,0,0,0.06)] transition hover:border-primary/50 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] ${
+      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[20px] bg-card text-left shadow-[0_6px_18px_rgba(15,27,61,0.07)] transition hover:shadow-[0_12px_26px_rgba(15,27,61,0.12)] ${
         compact ? "w-[148px] sm:w-[180px] lg:w-full" : ""
       }`}
       onClick={() => onSelect(product)}
