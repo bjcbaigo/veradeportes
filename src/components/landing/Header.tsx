@@ -4,6 +4,7 @@ import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { openSearch } from "@/lib/search";
+import { SearchOverlay } from "@/components/landing/SearchOverlay";
 import { SITE, waLink } from "@/lib/site";
 
 
@@ -66,6 +67,8 @@ export function Header() {
   }, [open]);
 
   return (
+    <>
+    <SearchOverlay />
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto grid h-[130px] max-w-6xl grid-cols-[44px_minmax(0,1fr)_auto] items-center px-4 sm:h-[150px] xl:max-w-7xl xl:px-6">
         <button
@@ -216,5 +219,6 @@ export function Header() {
         </div>
       )}
     </header>
+    </>
   );
 }
