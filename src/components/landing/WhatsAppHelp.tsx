@@ -14,7 +14,7 @@ export function WhatsAppHelp() {
             <MessageCircle className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <h2 className="font-display text-base font-black">Tenes dudas?</h2>
+            <h2 className="font-display text-base font-bold">Tenes dudas?</h2>
             <p className="text-xs leading-snug text-muted-foreground">
               Escribinos por WhatsApp y te ayudamos con stock, talles y compras.
             </p>

@@ -25,7 +25,7 @@ export function Promo() {
               </span>
               <h2 className="font-display text-4xl font-semibold uppercase leading-[0.95] tracking-tight text-ink-foreground md:text-6xl">
                 Hasta <span className="text-primary">25% OFF</span>
-                <span className="mt-1 block text-base font-bold not-italic tracking-normal text-ink-foreground/80 md:text-xl">
+                <span className="mt-1 block text-base font-light tracking-normal text-ink-foreground/80 md:text-xl">
                   En calzado seleccionado
                 </span>
               </h2>
