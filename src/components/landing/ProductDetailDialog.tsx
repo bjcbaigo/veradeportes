@@ -52,12 +52,14 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
     setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
   };
   function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
+    const current = product;
+    if (!current) return;
     if (!isCustomerRegistered()) {
-      storePendingAddToCart(product);
+      storePendingAddToCart(current);
       requireCustomerAccess(event, "agregar-carrito", "/carrito");
       return;
     }
-    addToCart(product);
+    addToCart(current);
     onOpenChange(false);
     window.location.href = "/carrito";
   }
@@ -68,7 +70,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
         <div className="grid md:grid-cols-2 bg-card">
           <div className="flex flex-col gap-2 p-3 md:p-4">
             <div
-              className="aspect-square bg-[#f3f4f6] rounded-lg flex items-center justify-center overflow-hidden cursor-zoom-in"
+              className="aspect-square bg-secondary rounded-lg flex items-center justify-center overflow-hidden cursor-zoom-in"
               onMouseEnter={() => setHovering(true)}
               onMouseLeave={() => setHovering(false)}
               onMouseMove={handleMouseMove}
@@ -95,7 +97,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                     key={i}
                     type="button"
                     onClick={() => setActive(i)}
-                    className={`h-14 w-14 shrink-0 rounded-md overflow-hidden bg-[#f3f4f6] border-2 transition ${
+                    className={`h-14 w-14 shrink-0 rounded-md overflow-hidden bg-secondary border-2 transition ${
                       i === active ? "border-primary" : "border-transparent hover:border-border"
                     }`}
                     aria-label={`Ver foto ${i + 1}`}

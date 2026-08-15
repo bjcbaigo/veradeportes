@@ -1,30 +1,26 @@
-import { ArrowRight, Dumbbell, Percent } from "lucide-react";
-import zap from "@/assets/cat-zapatillas.png";
-import rem from "@/assets/cat-remeras.png";
-import acc from "@/assets/cat-accesorios.png";
-import buz from "@/assets/cat-buzos.png";
+import { ArrowRight, Baby, Dumbbell, Footprints, Shirt, Tag, Watch } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const CATS: {
-  label: CategoryKey | "Calzado" | "Futbol";
+  label: string;
   filter: CategoryKey;
-  image?: string;
-  icon?: "offer" | "sport";
+  icon: LucideIcon;
 }[] = [
-  { label: "Calzado", filter: "Zapatillas", image: zap },
-  { label: "Indumentaria", filter: "Indumentaria", image: rem },
-  { label: "Futbol", filter: "Indumentaria", icon: "sport" },
-  { label: "Accesorios", filter: "Accesorios", image: acc },
-  { label: "Ninos", filter: "Ninos", image: buz },
-  { label: "Ofertas", filter: "Ofertas", icon: "offer" },
+  { label: "Calzado", filter: "Zapatillas", icon: Footprints },
+  { label: "Indumentaria", filter: "Indumentaria", icon: Shirt },
+  { label: "Futbol", filter: "Indumentaria", icon: Dumbbell },
+  { label: "Accesorios", filter: "Accesorios", icon: Watch },
+  { label: "Ninos", filter: "Ninos", icon: Baby },
+  { label: "Ofertas", filter: "Ofertas", icon: Tag },
 ];
 
 export function Categories() {
   return (
-    <section id="categorias" className="py-3">
+    <section id="categorias" className="py-4">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-center justify-between lg:mb-4">
-          <h2 className="font-display text-sm font-black uppercase tracking-normal lg:text-lg">
+          <h2 className="font-display text-sm font-black uppercase tracking-tight text-foreground lg:text-lg">
             Categorias
           </h2>
           <a
@@ -37,32 +33,19 @@ export function Categories() {
         </div>
 
         <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-          <div className="flex gap-2 pb-2 md:grid md:grid-cols-6 lg:gap-4">
-            {CATS.map((c) => (
+          <div className="flex gap-3 pb-2 md:grid md:grid-cols-6 lg:gap-4">
+            {CATS.map(({ label, filter, icon: Icon }) => (
               <button
-                key={c.label}
+                key={label}
                 type="button"
-                onClick={() => emitCategory(c.filter)}
-                className="flex w-[82px] shrink-0 flex-col items-center transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 md:w-auto lg:w-full"
+                onClick={() => emitCategory(filter)}
+                className="group flex w-[80px] shrink-0 flex-col items-center focus:outline-none md:w-auto lg:w-full"
               >
-                <div className="flex h-[74px] w-[74px] lg:h-[92px] lg:w-[92px] items-center justify-center rounded-full bg-white p-2 shadow-[0_8px_20px_rgba(0,0,0,0.07)] ring-1 ring-black/5">
-                  {c.icon === "offer" ? (
-                    <Percent className="h-7 w-7 text-primary" strokeWidth={3} />
-                  ) : c.icon === "sport" ? (
-                    <Dumbbell className="h-7 w-7 text-primary" strokeWidth={2.5} />
-                  ) : (
-                    <img
-                      src={c.image}
-                      alt={c.label}
-                      loading="lazy"
-                      width={128}
-                      height={128}
-                      className="h-full w-full object-contain"
-                    />
-                  )}
+                <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-ink text-ink-foreground shadow-[0_10px_22px_rgba(15,27,61,0.18)] transition group-hover:bg-primary group-focus-visible:ring-2 group-focus-visible:ring-primary lg:h-[86px] lg:w-[86px]">
+                  <Icon className="h-8 w-8 lg:h-9 lg:w-9" strokeWidth={1.8} />
                 </div>
-                <span className="mt-2 text-center text-[11px] font-extrabold leading-tight text-foreground lg:text-sm">
-                  {c.label}
+                <span className="mt-2 text-center text-[11px] font-semibold leading-tight text-muted-foreground lg:text-sm">
+                  {label}
                 </span>
               </button>
             ))}

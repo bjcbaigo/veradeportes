@@ -36,7 +36,7 @@ export function BottomNav({ active = "Inicio" }: { active?: string }) {
   }, [active]);
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-white/96 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_26px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_26px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
       <div className="grid h-[64px] grid-cols-5">
         {ITEMS.map(({ label, icon: Icon, href }) => (
           <a

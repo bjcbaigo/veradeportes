@@ -119,7 +119,7 @@ function ComingSoon() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-neutral-900 font-sans">
+    <main className="min-h-screen bg-card text-foreground font-sans">
       <SplashScreen />
 
       {/* TOP BAR */}
@@ -127,18 +127,18 @@ function ComingSoon() {
         <a href="#top" className="flex items-center gap-2 sm:gap-3">
           <img src={logo} alt="Vera Deportes" className="h-10 sm:h-12 w-auto invert" />
           <span className="font-display font-extrabold text-lg sm:text-2xl tracking-tight">
-            VERA <span className="text-[#FF4B00]">DEPORTES</span>
+            VERA <span className="text-primary">DEPORTES</span>
           </span>
         </a>
         <div className="hidden sm:flex items-center gap-4 text-sm text-neutral-600">
           <span>Seguinos en nuestras redes</span>
-          <a href="#" aria-label="Instagram" className="hover:text-[#FF4B00]">
+          <a href="#" aria-label="Instagram" className="hover:text-primary">
             <Instagram className="h-5 w-5" />
           </a>
-          <a href="#" aria-label="Facebook" className="hover:text-[#FF4B00]">
+          <a href="#" aria-label="Facebook" className="hover:text-primary">
             <Facebook className="h-5 w-5" />
           </a>
-          <a href="#" aria-label="WhatsApp" className="hover:text-[#FF4B00]">
+          <a href="#" aria-label="WhatsApp" className="hover:text-primary">
             <MessageCircle className="h-5 w-5" />
           </a>
         </div>
@@ -150,11 +150,11 @@ function ComingSoon() {
         className="mx-auto max-w-6xl px-5 pt-8 sm:pt-12 grid md:grid-cols-2 gap-8 md:gap-10 items-center"
       >
         <div>
-          <span className="inline-block bg-black text-white text-xs font-bold tracking-wider px-3 py-1.5 rounded">
+          <span className="inline-block bg-ink text-ink-foreground text-xs font-bold tracking-wider px-3 py-1.5 rounded">
             MUY PRONTO
           </span>
           <h1 className="font-display font-extrabold italic uppercase mt-4 leading-[0.95] text-2xl sm:text-5xl md:text-6xl tracking-tight">
-            Algo <span className="text-[#FF4B00]">grande</span>
+            Algo <span className="text-primary">grande</span>
             <br />
             está por llegar
           </h1>
@@ -172,11 +172,11 @@ function ComingSoon() {
             ].map(({ icon: Icon, t, s }) => (
               <div key={t} className="text-center">
                 <Icon
-                  className="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-[#FF4B00]"
+                  className="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-primary"
                   strokeWidth={1.8}
                 />
                 <div className="mt-2 text-[10px] sm:text-xs font-extrabold">{t}</div>
-                <div className="text-[10px] sm:text-xs font-extrabold text-[#FF4B00]">{s}</div>
+                <div className="text-[10px] sm:text-xs font-extrabold text-primary">{s}</div>
               </div>
             ))}
           </div>
@@ -195,15 +195,15 @@ function ComingSoon() {
 
       {/* FORM CARD */}
       <section className="mx-auto max-w-md px-5 mt-10">
-        <div className="bg-white rounded-2xl shadow-xl border border-neutral-100 p-6 sm:p-7">
+        <div className="bg-card rounded-2xl shadow-xl border border-neutral-100 p-6 sm:p-7">
           <h2 className="text-center font-extrabold text-xl sm:text-2xl tracking-tight">
             SÉ DE LOS PRIMEROS
-            <div className="text-[#FF4B00]">EN ENTERARTE</div>
+            <div className="text-primary">EN ENTERARTE</div>
           </h2>
           <p className="text-center text-sm text-neutral-500 mt-2">
             Registrate y recibí novedades exclusivas, beneficios y acceso anticipado.
           </p>
-          <p className="mt-3 rounded-xl bg-[#FF4B00]/10 px-3 py-2 text-center text-xs font-bold text-[#FF4B00]">
+          <p className="mt-3 rounded-xl bg-primary/10 px-3 py-2 text-center text-xs font-bold text-primary">
             {getFirstPurchaseBenefit()}
           </p>
 
@@ -217,7 +217,7 @@ function ComingSoon() {
               <button
                 type="button"
                 onClick={() => finishPendingAccess("/tienda")}
-                className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#FF4B00] text-sm font-bold text-white"
+                className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground"
               >
                 {returnTo || intent ? "Continuar" : "Volver a la tienda"}
               </button>
@@ -233,7 +233,7 @@ function ComingSoon() {
                   required
                   aria-label="Tu nombre"
                   placeholder="Tu nombre"
-                  className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white transition"
+                  className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-primary focus:bg-card transition"
                 />
               </div>
               <div className="relative">
@@ -246,14 +246,14 @@ function ComingSoon() {
                   required
                   aria-label="Tu WhatsApp"
                   placeholder="Tu WhatsApp"
-                  className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-[#FF4B00] focus:bg-white transition"
+                  className="w-full h-12 pl-10 pr-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-primary focus:bg-card transition"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="w-full h-12 rounded-lg bg-[#FF4B00] hover:bg-[#e54300] text-white font-bold text-sm tracking-wide transition disabled:opacity-60"
+                className="w-full h-12 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm tracking-wide transition disabled:opacity-60"
               >
                 {status === "loading" ? "ENVIANDO..." : "QUIERO SER DE LOS PRIMEROS"}
               </button>
@@ -280,7 +280,7 @@ function ComingSoon() {
         <h3 className="font-extrabold text-xl sm:text-3xl tracking-tight">
           LA COMUNIDAD DEPORTIVA DE VERA Y LA REGIÓN
         </h3>
-        <p className="text-[#FF4B00] italic font-bold text-lg sm:text-2xl mt-1">
+        <p className="text-primary italic font-bold text-lg sm:text-2xl mt-1">
           TIENE UN NUEVO PUNTO DE ENCUENTRO
         </p>
 
@@ -304,7 +304,7 @@ function ComingSoon() {
         <h3 className="text-center font-extrabold text-xl sm:text-2xl tracking-tight">
           ¿CÓMO FUNCIONA?
         </h3>
-        <div className="mx-auto mt-2 h-1 w-12 bg-[#FF4B00] rounded-full" />
+        <div className="mx-auto mt-2 h-1 w-12 bg-primary rounded-full" />
 
         <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-8 relative">
           {[
@@ -334,7 +334,7 @@ function ComingSoon() {
             },
           ].map(({ n, icon: Icon, t, s }) => (
             <div key={n} className="text-center relative">
-              <div className="mx-auto w-7 h-7 rounded-full bg-[#FF4B00] text-white text-sm font-bold flex items-center justify-center">
+              <div className="mx-auto w-7 h-7 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
                 {n}
               </div>
               <div className="mx-auto mt-3 w-20 h-20 rounded-full bg-neutral-50 border border-neutral-200 flex items-center justify-center">
@@ -355,13 +355,13 @@ function ComingSoon() {
             <h4 className="font-display font-extrabold text-2xl sm:text-3xl mt-1 leading-tight">
               KIT DEPORTIVO
               <br />
-              <span className="text-[#FF4B00]">VERA DEPORTES</span>
+              <span className="text-primary">VERA DEPORTES</span>
             </h4>
             <ul className="mt-4 space-y-1.5 text-sm">
               {["Mochila deportiva", "Botella deportiva", "Remera técnica", "Toalla deportiva"].map(
                 (i) => (
                   <li key={i} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-[#FF4B00]" /> {i}
+                    <Check className="h-4 w-4 text-primary" /> {i}
                   </li>
                 ),
               )}
@@ -376,10 +376,10 @@ function ComingSoon() {
             className="w-full h-auto"
           />
           <div className="text-center">
-            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 border-[#FF4B00] flex items-center justify-center mx-auto">
+            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 border-primary flex items-center justify-center mx-auto">
               <div>
                 <div className="text-xs font-bold tracking-wider">SORTEAMOS</div>
-                <div className="text-[#FF4B00] font-extrabold text-3xl sm:text-4xl leading-none mt-1">
+                <div className="text-primary font-extrabold text-3xl sm:text-4xl leading-none mt-1">
                   1 KIT
                 </div>
                 <div className="text-[11px] italic mt-2 px-3">¡Registrate y participá!</div>
@@ -413,7 +413,7 @@ function ComingSoon() {
                   className="max-h-8 w-auto object-contain [filter:brightness(0)]"
                 />
               ) : (
-                <span className="font-extrabold uppercase tracking-wider text-base sm:text-lg text-neutral-900">
+                <span className="font-extrabold uppercase tracking-wider text-base sm:text-lg text-foreground">
                   {m.name}
                 </span>
               )}
@@ -440,12 +440,12 @@ function ComingSoon() {
       </section>
 
       {/* FOOTER */}
-      <footer className="mt-12 bg-black text-white">
+      <footer className="mt-12 bg-ink text-ink-foreground">
         <div className="mx-auto max-w-6xl px-5 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src={logo} alt="Vera Deportes" className="h-8 w-auto" />
             <span className="font-display font-extrabold text-base">
-              VERA <span className="text-[#FF4B00]">DEPORTES</span>
+              VERA <span className="text-primary">DEPORTES</span>
             </span>
           </div>
           <p className="text-xs text-neutral-400">

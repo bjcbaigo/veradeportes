@@ -13,7 +13,7 @@ export function PromoCarousel() {
               <a
                 key={promo.id}
                 href={promo.href}
-                className="relative h-[210px] w-[86vw] max-w-[390px] shrink-0 overflow-hidden rounded-[28px] bg-[#111111] text-white shadow-[0_18px_42px_rgba(0,0,0,0.18)] ring-1 ring-black/5 [scroll-snap-align:start] sm:h-[236px] sm:w-[390px] lg:h-[248px] lg:w-[31.8%] lg:max-w-none xl:h-[268px]"
+                className="relative h-[210px] w-[86vw] max-w-[390px] shrink-0 overflow-hidden rounded-[28px] bg-ink text-white shadow-[0_18px_42px_rgba(0,0,0,0.18)] ring-1 ring-black/5 [scroll-snap-align:start] sm:h-[236px] sm:w-[390px] lg:h-[248px] lg:w-[31.8%] lg:max-w-none xl:h-[268px]"
               >
                 <img
                   src={promo.image}

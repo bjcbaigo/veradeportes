@@ -39,7 +39,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[22px] border border-border/80 bg-white text-left shadow-[0_8px_22px_rgba(0,0,0,0.06)] transition hover:border-primary/50 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] ${
+      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[20px] bg-card text-left shadow-[0_6px_18px_rgba(15,27,61,0.07)] transition hover:shadow-[0_12px_26px_rgba(15,27,61,0.12)] ${
         compact ? "w-[148px] sm:w-[180px] lg:w-full" : ""
       }`}
       onClick={() => onSelect(product)}
@@ -52,8 +52,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative bg-secondary/80 p-2">
-        <div className="relative h-[126px] w-full overflow-hidden rounded-[18px] bg-white ring-1 ring-black/5 sm:h-[154px] lg:h-[178px]">
+      <div className="relative bg-card p-2">
+        <div className="relative h-[126px] w-full overflow-hidden rounded-[16px] bg-secondary sm:h-[154px] lg:h-[178px]">
           {product.image ? (
             <img
               src={product.image}
@@ -101,15 +101,15 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 px-3 py-3 lg:px-4">
-        <h3 className="line-clamp-2 min-h-[36px] font-display text-[12px] font-extrabold leading-tight sm:text-[13px] lg:text-sm">
+      <div className="flex flex-1 flex-col gap-1 px-3 pb-3 pt-2 lg:px-4">
+        <h3 className="line-clamp-2 min-h-[34px] font-sans text-[12px] font-semibold leading-tight text-foreground sm:text-[13px] lg:text-sm">
           {product.name}
         </h3>
         <p className="truncate text-[10px] text-muted-foreground">
           {product.brand} - {product.category}
         </p>
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <p className="font-display text-sm font-extrabold text-primary lg:text-base">
+          <p className="font-display text-sm font-black italic text-primary lg:text-base">
             {product.price}
           </p>
           {product.priceOld && (

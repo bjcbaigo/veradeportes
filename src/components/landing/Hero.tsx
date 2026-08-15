@@ -7,62 +7,64 @@ export function Hero() {
   const consultHref = waLink("Hola! Quiero hacer una consulta sobre productos.");
 
   return (
-    <section id="top" className="w-full">
-      <div className="relative overflow-hidden w-full">
-        <img
-          src={hero}
-          alt="Portada Vera Deportes - indumentaria y calzado deportivo en Vera, Santa Fe"
-          width={1916}
-          height={821}
-          fetchPriority="high"
-          decoding="async"
-          className="w-full h-[420px] sm:h-auto object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+    <section id="top" className="w-full pt-6 pb-4 sm:pt-10">
+      <div className="mx-auto grid max-w-6xl items-center gap-6 px-4 lg:grid-cols-2 lg:gap-10 xl:max-w-7xl xl:px-6">
+        <div>
+          <h1 className="font-display text-[40px] font-black uppercase leading-[0.92] tracking-[-0.04em] text-foreground sm:text-6xl">
+            Explora.
+            <br />
+            Elegi.
+            <br />
+            Encontra.
+          </h1>
+          <p className="mt-4 max-w-sm text-base font-semibold leading-snug text-muted-foreground sm:text-lg">
+            Todo lo que necesitas,
+            <br />
+            en un <span className="text-primary">solo lugar</span>.
+          </p>
+          <p className="mt-3 max-w-md text-sm text-muted-foreground">
+            {SITE.heroSubtitle}. <span className="font-semibold">{SITE.shipping}.</span>
+          </p>
 
-        <div className="absolute inset-0 flex items-center">
-          <div className="relative p-4 sm:p-6 md:p-12 max-w-xl">
-            <div className="h-1 w-8 sm:w-10 bg-primary rounded-full mb-3 sm:mb-5" />
-            <h1 className="font-display font-extrabold text-3xl sm:text-5xl md:text-6xl leading-[1.1] sm:leading-[0.95] text-white drop-shadow-lg">
-              {SITE.heroTitle.split(" ")[0]}{" "}
-              <span className="text-primary">{SITE.heroTitle.split(" ").slice(1).join(" ")}</span>
-              <span className="block text-base sm:text-lg md:text-xl font-semibold text-white/90 mt-2">
-                Tu tienda de indumentaria y calzado deportivo en Vera, Santa Fe
-              </span>
-            </h1>
-            <p className="mt-3 sm:mt-5 text-white/90 text-sm sm:text-base md:text-lg leading-relaxed drop-shadow">
-              {SITE.heroSubtitle}.{" "}
-              <span className="text-primary font-semibold">{SITE.shipping}.</span>
-            </p>
-
-            <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <a
-                href={consultHref}
-                onClick={(e) => requireCustomerAccess(e, "whatsapp", consultHref)}
-                target="_blank"
-                rel="noopener"
-                className="inline-flex w-full sm:w-auto h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/30 active:scale-[0.98] transition whitespace-nowrap"
-              >
-                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                <span>Consultar por WhatsApp</span>
-              </a>
-              <a
-                href={SITE.maps}
-                target="_blank"
-                rel="noopener"
-                className="inline-flex w-full sm:w-auto h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 active:scale-[0.98] transition whitespace-nowrap"
-              >
-                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                <span>Como llegar</span>
-              </a>
-              <a
-                href="#productos"
-                className="hidden sm:inline-flex h-10 sm:h-12 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur-sm px-3 sm:px-5 text-[13px] sm:text-[15px] font-semibold text-white hover:bg-white/20 transition whitespace-nowrap"
-              >
-                Ver productos
-              </a>
-            </div>
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:gap-3">
+            <a
+              href={consultHref}
+              onClick={(e) => requireCustomerAccess(e, "whatsapp", consultHref)}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-[0_10px_24px_rgba(255,106,0,0.3)] transition active:scale-[0.98] sm:w-auto"
+            >
+              <MessageCircle className="h-5 w-5 shrink-0" />
+              Consultar
+            </a>
+            <a
+              href={SITE.maps}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-bold uppercase tracking-wide text-ink-foreground transition hover:opacity-90 active:scale-[0.98] sm:w-auto"
+            >
+              <MapPin className="h-5 w-5 shrink-0" />
+              Como llegar
+            </a>
+            <a
+              href="#productos"
+              className="inline-flex h-12 items-center justify-center rounded-full border border-border px-6 text-sm font-bold uppercase tracking-wide text-foreground transition hover:border-primary hover:text-primary"
+            >
+              Ver productos
+            </a>
           </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[28px] bg-ink shadow-[0_18px_40px_rgba(15,27,61,0.2)]">
+          <img
+            src={hero}
+            alt="Portada Vera Deportes - indumentaria y calzado deportivo en Vera, Santa Fe"
+            width={1916}
+            height={821}
+            fetchPriority="high"
+            decoding="async"
+            className="h-[240px] w-full object-cover opacity-95 sm:h-[320px] lg:h-[380px]"
+          />
         </div>
       </div>
     </section>

@@ -36,7 +36,7 @@ export function Brands() {
               <a
                 key={b.name}
                 href="#productos"
-                className="flex h-12 w-[76px] shrink-0 lg:h-20 lg:w-full items-center justify-center rounded-xl border border-border/80 bg-white p-2 lg:rounded-2xl lg:p-4 shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition hover:border-primary/60"
+                className="flex h-12 w-[76px] shrink-0 lg:h-20 lg:w-full items-center justify-center rounded-xl border border-border/80 bg-card p-2 lg:rounded-2xl lg:p-4 shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition hover:border-primary/60"
                 aria-label={`Ver productos ${b.name}`}
               >
                 <img
