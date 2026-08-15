@@ -1,44 +1,42 @@
-import { Baby, Dumbbell, Footprints, Shirt, Tag, Watch } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Shirt, ShoppingBag, Tag, Watch } from "lucide-react";
 import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const CATS: {
-  label: string;
+  label: CategoryKey | "Calzado";
   filter: CategoryKey;
-  icon: LucideIcon;
+  icon: typeof ShoppingBag;
 }[] = [
-  { label: "Calzado", filter: "Zapatillas", icon: Footprints },
+  { label: "Calzado", filter: "Zapatillas", icon: ShoppingBag },
   { label: "Indumentaria", filter: "Indumentaria", icon: Shirt },
   { label: "Ofertas", filter: "Ofertas", icon: Tag },
   { label: "Accesorios", filter: "Accesorios", icon: Watch },
-  { label: "Ninos", filter: "Ninos", icon: Baby },
-  { label: "Futbol", filter: "Indumentaria", icon: Dumbbell },
 ];
 
 export function Categories() {
   return (
-    <section id="categorias" className="pt-3 pb-1">
+    <section id="categorias" className="bg-white pb-2 pt-3 lg:py-5">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:overflow-visible lg:px-0">
-          <div className="flex gap-3 pb-1 md:grid md:grid-cols-6 lg:gap-4">
-            {CATS.map(({ label, filter, icon: Icon }) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => emitCategory(filter)}
-                className="group flex w-[76px] shrink-0 flex-col items-center focus:outline-none md:w-auto lg:w-full"
-              >
-                <div className="flex aspect-square w-[76px] items-center justify-center rounded-[16px] bg-ink text-ink-foreground shadow-[0_2px_10px_rgba(7,27,59,0.12)] transition group-hover:bg-ink-secondary group-focus-visible:ring-2 group-focus-visible:ring-primary md:w-full lg:rounded-[18px]">
-                  <Icon
-                    className="h-8 w-8 lg:h-9 lg:w-9"
-                    strokeWidth={2}
-                  />
-                </div>
-                <span className="mt-2 text-center text-[12px] font-medium leading-tight text-foreground/80 lg:text-sm">
-                  {label}
-                </span>
-              </button>
-            ))}
+        <h2 className="sr-only">Categorias</h2>
+        <div className="px-1 sm:px-0">
+          <div className="grid grid-cols-4 gap-2.5 pb-2 sm:gap-3 md:grid-cols-4 lg:gap-4">
+            {CATS.map((c) => {
+              const Icon = c.icon;
+              return (
+                <button
+                  key={c.label}
+                  type="button"
+                  onClick={() => emitCategory(c.filter)}
+                  className="flex min-w-0 flex-col items-center text-center transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/60"
+                >
+                  <span className="flex h-[50px] w-[50px] items-center justify-center rounded-[13px] bg-ink text-ink-foreground shadow-[0_2px_8px_rgba(7,27,59,0.10)] sm:h-[54px] sm:w-[54px] lg:h-[64px] lg:w-[64px]">
+                    <Icon className="h-7 w-7" strokeWidth={2.25} />
+                  </span>
+                  <span className="mt-1.5 w-full max-w-[78px] truncate text-center text-[10.5px] font-medium leading-tight text-foreground sm:text-[11px] lg:text-sm">
+                    {c.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -3,12 +3,15 @@ import type { Product } from "@/lib/products";
 
 export type CartItem = {
   id: string;
+  productId?: string;
   name: string;
   brand: string;
   category: string;
   price: string;
   image: string;
   qty: number;
+  size?: string;
+  color?: string;
 };
 
 export const CART_KEY = "vera-cart";
@@ -38,16 +41,25 @@ export function addCartItem(item: CartItem) {
   writeCart(items);
 }
 
-export function addToCart(product: Product) {
+export function addToCart(product: Product, options: { size?: string; color?: string } = {}) {
   if (typeof window === "undefined") return;
+  const variantId = [
+    options.size && `talle-${options.size}`,
+    options.color && `color-${options.color}`,
+  ]
+    .filter(Boolean)
+    .join("-");
   addCartItem({
-    id: product.id,
+    id: variantId ? `${product.id}:${variantId}` : product.id,
+    productId: product.id,
     name: product.name,
     brand: product.brand,
     category: product.category,
     price: product.price,
     image: product.image,
     qty: 1,
+    size: options.size,
+    color: options.color,
   });
 }
 

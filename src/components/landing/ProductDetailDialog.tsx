@@ -35,15 +35,26 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   const [active, setActive] = useState(0);
   const [hovering, setHovering] = useState(false);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
+  const [selectedSize, setSelectedSize] = useState("");
+  const [actionError, setActionError] = useState("");
 
   useEffect(() => {
     setActive(0);
+    setSelectedSize("");
+    setActionError("");
   }, [product?.id]);
 
   if (!product) return null;
 
   const isShoe = product.category === "Zapatillas";
   const mainImage = gallery[active] || product.image;
+  const selectedVariantText = selectedSize ? `Talle ${selectedSize}` : "";
+  const purchaseHref = waLink(
+    `Hola! Quiero comprar: ${product.name}${selectedVariantText ? ` - ${selectedVariantText}` : ""} (${product.price}).`,
+  );
+  const consultHref = waLink(
+    `Hola! Quiero consultar por: ${product.name}${selectedVariantText ? ` - ${selectedVariantText}` : ""}.`,
+  );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -51,26 +62,41 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setOrigin({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
   };
+  function ensureRequiredSelection() {
+    if (isShoe && !selectedSize) {
+      setActionError("Elegí un talle para continuar.");
+      return false;
+    }
+    setActionError("");
+    return true;
+  }
+
   function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
-    const current = product;
-    if (!current) return;
+    if (!ensureRequiredSelection()) return;
     if (!isCustomerRegistered()) {
-      storePendingAddToCart(current);
+      storePendingAddToCart(product, { size: selectedSize || undefined });
       requireCustomerAccess(event, "agregar-carrito", "/carrito");
       return;
     }
-    addToCart(current);
+    addToCart(product, { size: selectedSize || undefined });
     onOpenChange(false);
     window.location.href = "/carrito";
+  }
+  function handleCustomerLink(event: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (!ensureRequiredSelection()) {
+      event.preventDefault();
+      return;
+    }
+    requireCustomerAccess(event, "whatsapp", href);
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
-        <div className="grid md:grid-cols-2 bg-card">
+      <DialogContent className="max-w-2xl overflow-hidden p-0 max-h-[90vh] overflow-y-auto rounded-[18px]">
+        <div className="grid bg-white md:grid-cols-2">
           <div className="flex flex-col gap-2 p-3 md:p-4">
             <div
-              className="aspect-square bg-secondary rounded-lg flex items-center justify-center overflow-hidden cursor-zoom-in"
+              className="aspect-square cursor-zoom-in overflow-hidden rounded-[14px] bg-secondary flex items-center justify-center"
               onMouseEnter={() => setHovering(true)}
               onMouseLeave={() => setHovering(false)}
               onMouseMove={handleMouseMove}
@@ -97,7 +123,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                     key={i}
                     type="button"
                     onClick={() => setActive(i)}
-                    className={`h-14 w-14 shrink-0 rounded-md overflow-hidden bg-secondary border-2 transition ${
+                    className={`h-14 w-14 shrink-0 rounded-md overflow-hidden bg-[#f3f4f6] border-2 transition ${
                       i === active ? "border-primary" : "border-transparent hover:border-border"
                     }`}
                     aria-label={`Ver foto ${i + 1}`}
@@ -108,12 +134,12 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               </div>
             )}
           </div>
-          <div className="p-5 flex flex-col gap-3">
+          <div className="flex flex-col gap-3 p-5">
             <DialogHeader className="text-left space-y-1">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">
                 {product.category}
               </p>
-              <DialogTitle className="font-display text-xl leading-tight">
+              <DialogTitle className="text-xl font-black leading-tight text-foreground">
                 {product.name}
               </DialogTitle>
               <DialogDescription className="sr-only">
@@ -121,7 +147,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               </DialogDescription>
             </DialogHeader>
 
-            <p className="font-display font-extrabold text-2xl text-primary">{product.price}</p>
+            <p className="text-2xl font-black text-primary">{product.price}</p>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
               {product.description ||
@@ -144,7 +170,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                       return (
                         <span
                           key={i}
-                          className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[10px] px-2 py-0.5 font-medium"
+                          className="inline-flex items-center rounded-full bg-secondary text-foreground text-[10px] px-2 py-0.5 font-medium"
                         >
                           {clean}
                         </span>
@@ -183,28 +209,45 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
 
             {isShoe && (
               <div>
-                <p className="text-xs font-semibold mb-1.5">Talles disponibles</p>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="mb-1.5 flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold">Talles disponibles</p>
+                  {selectedSize && (
+                    <span className="text-[11px] font-bold text-primary">
+                      Elegido: {selectedSize}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Elegir talle">
                   {SHOE_SIZES.map((s) => {
-                    const sizeHref = waLink(
-                      `Hola! Quiero consultar disponibilidad del talle ${s} de ${product.name}.`,
-                    );
-
+                    const isSelected = selectedSize === s;
                     return (
-                      <a
+                      <button
                         key={s}
-                        href={sizeHref}
-                        onClick={(e) => requireCustomerAccess(e, "whatsapp", sizeHref)}
-                        target="_blank"
-                        rel="noopener"
-                        className="min-w-10 h-9 px-2 rounded-md border border-border text-sm font-semibold flex items-center justify-center hover:border-primary hover:text-primary transition"
+                        type="button"
+                        role="radio"
+                        aria-checked={isSelected}
+                        onClick={() => {
+                          setSelectedSize(s);
+                          setActionError("");
+                        }}
+                        className={`min-w-10 h-9 px-2 rounded-xl border text-sm font-semibold flex items-center justify-center transition ${
+                          isSelected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-white text-foreground hover:border-ink hover:bg-ink hover:text-white"
+                        }`}
                       >
                         {s}
-                      </a>
+                      </button>
                     );
                   })}
                 </div>
               </div>
+            )}
+
+            {actionError && (
+              <p className="rounded-lg bg-primary/10 px-3 py-2 text-xs font-bold text-primary">
+                {actionError}
+              </p>
             )}
 
             <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground mt-1">
@@ -226,38 +269,26 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="inline-flex h-12 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-primary text-sm font-black text-primary-foreground transition hover:bg-primary/90"
               >
                 Agregar al carrito
               </button>
               <a
-                href={waLink(`Hola! Quiero comprar: ${product.name} (${product.price}).`)}
-                onClick={(e) =>
-                  requireCustomerAccess(
-                    e,
-                    "whatsapp",
-                    waLink(`Hola! Quiero comprar: ${product.name} (${product.price}).`),
-                  )
-                }
+                href={purchaseHref}
+                onClick={(e) => handleCustomerLink(e, purchaseHref)}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground h-12 text-sm font-bold hover:bg-primary/90 transition"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-ink text-sm font-bold text-ink-foreground transition hover:bg-ink/90"
               >
                 <MessageCircle className="h-4 w-4" />
                 Comprar por WhatsApp
               </a>
               <a
-                href={waLink(`Hola! Quiero consultar por: ${product.name}.`)}
-                onClick={(e) =>
-                  requireCustomerAccess(
-                    e,
-                    "whatsapp",
-                    waLink(`Hola! Quiero consultar por: ${product.name}.`),
-                  )
-                }
+                href={consultHref}
+                onClick={(e) => handleCustomerLink(e, consultHref)}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-primary text-primary h-10 text-sm font-bold hover:bg-primary hover:text-primary-foreground transition"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border text-sm font-bold text-foreground transition hover:border-primary hover:text-primary"
               >
                 Consultar talle / stock
               </a>

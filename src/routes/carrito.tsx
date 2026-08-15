@@ -18,10 +18,17 @@ export const Route = createFileRoute("/carrito")({
 
 function CartPage() {
   const { items, subtotal } = useCart();
+  const itemVariantText = (item: { size?: string; color?: string }) =>
+    [item.size && `Talle ${item.size}`, item.color && `Color ${item.color}`]
+      .filter(Boolean)
+      .join(" - ");
   const shipping = items.length > 0 ? "A coordinar" : "$0";
   const message = [
     "Hola! Quiero finalizar esta compra:",
-    ...items.map((item) => `- ${item.qty} x ${item.name} (${item.price})`),
+    ...items.map((item) => {
+      const variant = itemVariantText(item);
+      return `- ${item.qty} x ${item.name}${variant ? ` - ${variant}` : ""} (${item.price})`;
+    }),
     `Subtotal: ${formatPrice(subtotal)}`,
     "Envio/retiro: a coordinar",
   ].join("\n");
@@ -30,15 +37,15 @@ function CartPage() {
   return (
     <div id="top" className="min-h-screen bg-page pb-20 text-foreground font-sans">
       <Header />
-      <main className="mx-auto max-w-3xl px-4 py-4">
-        <h1 className="font-display text-2xl font-black uppercase">Carrito</h1>
+      <main className="mx-auto max-w-3xl px-4 py-5">
+        <h1 className="text-2xl font-black uppercase text-foreground">Carrito</h1>
 
         {items.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-border bg-card p-8 text-center">
+          <div className="mt-4 rounded-[14px] border border-border bg-white p-8 text-center">
             <p className="text-sm text-muted-foreground">Tu carrito esta vacio.</p>
             <a
               href="/tienda#productos"
-              className="mt-4 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground"
+              className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground"
             >
               Ver productos
             </a>
@@ -49,7 +56,7 @@ function CartPage() {
               {items.map((item) => (
                 <article
                   key={item.id}
-                  className="flex gap-3 rounded-2xl border border-border bg-background p-3"
+                  className="flex gap-3 rounded-[14px] border border-border bg-white p-3 shadow-[0_2px_10px_rgba(7,27,59,0.04)]"
                 >
                   <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-secondary">
                     {item.image && (
@@ -61,10 +68,13 @@ function CartPage() {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="line-clamp-2 font-display text-sm font-extrabold leading-tight">
-                      {item.name}
-                    </h2>
+                    <h2 className="line-clamp-2 text-sm font-bold leading-tight">{item.name}</h2>
                     <p className="mt-1 text-xs text-muted-foreground">{item.category}</p>
+                    {itemVariantText(item) && (
+                      <p className="mt-1 text-xs font-bold text-foreground">
+                        {itemVariantText(item)}
+                      </p>
+                    )}
                     <p className="mt-1 font-display text-sm font-black text-primary">
                       {item.price}
                     </p>
@@ -72,7 +82,7 @@ function CartPage() {
                       <button
                         type="button"
                         onClick={() => updateCartQty(item.id, item.qty - 1)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -80,14 +90,14 @@ function CartPage() {
                       <button
                         type="button"
                         onClick={() => updateCartQty(item.id, item.qty + 1)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
                         onClick={() => removeFromCart(item.id)}
-                        className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground"
+                        className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border text-muted-foreground"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -97,7 +107,7 @@ function CartPage() {
               ))}
             </div>
 
-            <section className="rounded-2xl border border-border bg-card p-4">
+            <section className="rounded-[14px] border border-border bg-white p-4">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
                 <strong>{formatPrice(subtotal)}</strong>
@@ -106,7 +116,7 @@ function CartPage() {
                 <span>Envio</span>
                 <strong>{shipping}</strong>
               </div>
-              <div className="mt-3 flex justify-between border-t border-border pt-3 font-display text-lg font-black">
+              <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-black">
                 <span>Total</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
@@ -115,14 +125,14 @@ function CartPage() {
                 onClick={(e) => requireCustomerAccess(e, "checkout", checkoutHref)}
                 target="_blank"
                 rel="noopener"
-                className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary text-sm font-extrabold uppercase text-primary-foreground"
+                className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary text-sm font-extrabold uppercase text-primary-foreground"
               >
                 Finalizar compra
               </a>
               <button
                 type="button"
                 onClick={clearCart}
-                className="mt-2 inline-flex h-10 w-full items-center justify-center rounded-lg border border-border text-sm font-bold"
+                className="mt-2 inline-flex h-10 w-full items-center justify-center rounded-xl border border-border text-sm font-bold"
               >
                 Vaciar carrito
               </button>

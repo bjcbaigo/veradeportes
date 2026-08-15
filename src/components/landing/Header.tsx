@@ -1,12 +1,9 @@
-import { Facebook, Instagram, Menu, MessageCircle, Moon, Search, ShoppingCart, Sun, X } from "lucide-react";
+import { Facebook, Instagram, Menu, MessageCircle, Moon, ShoppingCart, Sun, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
-import { openSearch } from "@/lib/search";
-import { SearchOverlay } from "@/components/landing/SearchOverlay";
 import { SITE, waLink } from "@/lib/site";
-
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -25,7 +22,7 @@ function ThemeToggle() {
     <button
       onClick={() => setDark((v) => !v)}
       aria-label="Cambiar tema"
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border hover:bg-secondary"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-foreground hover:bg-secondary"
     >
       {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
@@ -67,63 +64,52 @@ export function Header() {
   }, [open]);
 
   return (
-    <>
-    <SearchOverlay />
-    <header className="sticky top-0 z-40 border-b border-border bg-background">
-      <div className="mx-auto grid h-[130px] max-w-6xl grid-cols-[44px_minmax(0,1fr)_auto] items-center px-4 sm:h-[150px] xl:max-w-7xl xl:px-6">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-white/98 pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
+      <div className="mx-auto grid h-[58px] max-w-6xl grid-cols-[44px_1fr_44px] items-center px-4 sm:h-16 xl:max-w-7xl xl:px-6">
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
         >
-          <Menu className="h-[22px] w-[22px]" strokeWidth={2.2} />
+          <Menu className="h-5 w-5" strokeWidth={2.25} />
         </button>
 
-        <a href="/tienda" className="flex min-w-0 items-center justify-center gap-2">
+        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-1.5">
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-28 w-auto shrink-0 sm:h-32"
-            width={320}
-            height={320}
+            className="h-9 w-auto shrink-0 sm:h-11"
+            width={160}
+            height={160}
           />
-          <span className="hidden font-display text-base font-extrabold leading-none tracking-tight sm:inline">
+          <span className="font-display text-[12px] font-black leading-none text-foreground sm:text-sm">
             <span className="text-primary">VERA</span> DEPORTES
           </span>
         </a>
 
-        <div className="flex items-center justify-end gap-1.5">
-          <nav className="hidden items-center gap-7 text-sm font-medium md:flex xl:gap-9">
+        <div className="flex items-center justify-end">
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 text-sm font-semibold md:flex xl:gap-9">
             {NAV.slice(1, 5).map((i) => (
               <a
                 key={i.href}
                 href={i.href}
-                className="text-foreground/80 transition hover:text-primary"
+                className="text-foreground/75 transition hover:text-primary"
               >
                 {i.label}
               </a>
             ))}
           </nav>
-          <button
-            type="button"
-            onClick={() => openSearch()}
-            aria-label="Buscar productos"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
-          >
-            <Search className="h-[22px] w-[22px]" strokeWidth={2} />
-          </button>
           <a
-
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <ShoppingCart className="h-[22px] w-[22px]" strokeWidth={2} />
+            <ShoppingCart className="h-5 w-5" strokeWidth={2.2} />
             {cartCount > 0 && (
-              <span className="absolute right-1 top-1 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+              <span className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground">
                 {cartCount}
               </span>
             )}
@@ -131,10 +117,9 @@ export function Header() {
         </div>
       </div>
 
-
       {open && (
         <div
-          className="fixed inset-0 z-[100] h-[100dvh] bg-black/50 backdrop-blur-[1px]"
+          className="fixed inset-0 z-[100] h-[100dvh] bg-[#071b3b]/45 backdrop-blur-[2px]"
           onClick={() => setOpen(false)}
           role="presentation"
         >
@@ -143,7 +128,7 @@ export function Header() {
             role="dialog"
             aria-modal="true"
             aria-label="Menu principal"
-            className="fixed left-0 top-0 z-[101] flex h-[100dvh] w-[86vw] max-w-[340px] flex-col overflow-y-auto border-r border-border bg-background px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] text-foreground shadow-2xl outline-none"
+            className="fixed left-0 top-0 z-[101] flex h-[100dvh] w-[86vw] max-w-[340px] flex-col overflow-y-auto border-r border-border bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] text-foreground shadow-2xl outline-none"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between gap-3">
@@ -162,7 +147,7 @@ export function Header() {
                 type="button"
                 aria-label="Cerrar menu"
                 onClick={() => setOpen(false)}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -175,7 +160,7 @@ export function Header() {
                   target={i.external ? "_blank" : undefined}
                   rel={i.external ? "noopener" : undefined}
                   onClick={() => setOpen(false)}
-                  className="border-b border-border/60 py-3 text-base font-medium text-foreground last:border-0 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="border-b border-border/70 py-3 text-base font-semibold text-foreground last:border-0 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   {i.label}
                 </a>
@@ -188,14 +173,14 @@ export function Header() {
                 target="_blank"
                 rel="noopener"
                 aria-label="Instagram"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border"
               >
                 <Instagram className="h-4 w-4" />
               </a>
               <a
                 href="#"
                 aria-label="Facebook"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border"
               >
                 <Facebook className="h-4 w-4" />
               </a>
@@ -207,7 +192,7 @@ export function Header() {
                 target="_blank"
                 rel="noopener"
                 aria-label="WhatsApp"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-whatsapp"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-whatsapp"
               >
                 <MessageCircle className="h-4 w-4" />
               </a>
@@ -219,6 +204,5 @@ export function Header() {
         </div>
       )}
     </header>
-    </>
   );
 }

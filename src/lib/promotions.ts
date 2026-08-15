@@ -19,8 +19,8 @@ export type HomePromotion = {
 export const HOME_PROMOTIONS: HomePromotion[] = [
   {
     id: "ofertas-semana",
-    title: "Ofertas de la semana",
-    subtitle: "Hasta 40% OFF",
+    title: "Hasta 40% OFF",
+    subtitle: "Ofertas de la semana",
     image: promoImage,
     ctaText: "Ver ofertas",
     href: "/ofertas",
@@ -29,8 +29,8 @@ export const HOME_PROMOTIONS: HomePromotion[] = [
   },
   {
     id: "nueva-coleccion",
-    title: "Nueva coleccion",
-    subtitle: "Lo ultimo en deporte",
+    title: "Lo ultimo",
+    subtitle: "Nueva coleccion deportiva",
     image: heroImage,
     ctaText: "Ver coleccion",
     href: "#productos",
@@ -39,8 +39,8 @@ export const HOME_PROMOTIONS: HomePromotion[] = [
   },
   {
     id: "envios",
-    title: "Envios a todo el pais",
-    subtitle: "Compras por WhatsApp con asesoramiento",
+    title: "Envios al pais",
+    subtitle: "Compra por WhatsApp",
     image: athletesImage,
     ctaText: "Conocer mas",
     href: "#whatsapp",
@@ -50,7 +50,7 @@ export const HOME_PROMOTIONS: HomePromotion[] = [
   {
     id: "training",
     title: "Modo training",
-    subtitle: "Calzado e indumentaria para entrenar",
+    subtitle: "Calzado e indumentaria",
     image: comingKit,
     ctaText: "Explorar",
     href: "#categorias",

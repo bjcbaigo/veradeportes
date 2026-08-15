@@ -39,8 +39,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[12px] bg-card text-left shadow-[0_2px_10px_rgba(0,0,0,0.05)] transition hover:shadow-[0_4px_16px_rgba(7,27,59,0.10)] ${
-        compact ? "w-[150px] sm:w-[180px] lg:w-full" : ""
+      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[13px] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.08)] focus-within:ring-2 focus-within:ring-primary/40 ${
+        compact ? "w-[154px] sm:w-[184px] lg:w-full" : ""
       }`}
       onClick={() => onSelect(product)}
       role="button"
@@ -52,16 +52,16 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative bg-card p-1.5">
-        <div className="relative aspect-square w-full overflow-hidden rounded-[10px] bg-secondary">
+      <div className="relative rounded-[13px] bg-secondary p-2.5">
+        <div className="relative aspect-[1/0.82] w-full overflow-hidden rounded-[12px] bg-secondary">
           {product.image ? (
             <img
               src={product.image}
               alt={product.name}
               loading="lazy"
               width={360}
-              height={360}
-              className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.03]"
+              height={300}
+              className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.035]"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
@@ -69,13 +69,13 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             </div>
           )}
           {extraCount > 0 && (
-            <span className="absolute bottom-2 right-2 rounded-full bg-ink/75 px-2 py-0.5 text-[10px] font-bold text-ink-foreground">
+            <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-[10px] font-bold text-white">
               +{extraCount}
             </span>
           )}
         </div>
         {discount && (
-          <span className="absolute left-2.5 top-2.5 rounded-[8px] bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">
+          <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-primary-foreground">
             {discount}
           </span>
         )}
@@ -93,28 +93,28 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             }
             setFavorite(toggleFavorite(product.id));
           }}
-          className={`absolute right-2.5 top-2.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/90 transition ${
-            favorite ? "text-primary" : "text-foreground/60 hover:text-primary"
+          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 transition ${
+            favorite ? "text-primary" : "text-foreground/70 hover:text-primary"
           }`}
         >
-          <Heart className="h-[18px] w-[18px]" fill={favorite ? "currentColor" : "none"} />
+          <Heart className="h-4 w-4" strokeWidth={1.8} fill={favorite ? "currentColor" : "none"} />
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-0.5 px-3 pb-3 pt-1">
-        <h3 className="line-clamp-2 min-h-[34px] font-sans text-[13px] font-medium leading-tight text-foreground lg:text-sm">
+      <div className="flex flex-1 flex-col gap-0.5 px-1.5 py-2.5">
+        <p className="truncate text-[10px] font-black uppercase tracking-[0.03em] text-foreground">
+          {product.brand}
+        </p>
+        <h3 className="line-clamp-2 min-h-[34px] text-[12px] font-medium leading-snug text-foreground sm:text-[13px] lg:text-sm">
           {product.name}
         </h3>
-        <div className="mt-auto flex flex-wrap items-baseline gap-x-2">
-          <p className="font-display text-[16px] font-bold text-primary lg:text-[18px]">
-            {product.price}
-          </p>
+        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-1">
+          <p className="text-[14px] font-black text-primary lg:text-base">{product.price}</p>
           {product.priceOld && (
-            <p className="text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
+            <p className="text-[10px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
         </div>
       </div>
-
     </article>
   );
 }

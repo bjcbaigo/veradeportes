@@ -1,92 +1,54 @@
-import { useEffect, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { getActivePromotions } from "@/lib/promotions";
 
 export function PromoCarousel() {
   const promotions = getActivePromotions();
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const onScroll = () => {
-      const child = track.firstElementChild as HTMLElement | null;
-      if (!child) return;
-      const step = child.offsetWidth + 12;
-      setIndex(Math.round(track.scrollLeft / step));
-    };
-    track.addEventListener("scroll", onScroll, { passive: true });
-    return () => track.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    if (promotions.length < 2) return;
-    const timer = window.setInterval(() => {
-      const track = trackRef.current;
-      const child = track?.firstElementChild as HTMLElement | null;
-      if (!track || !child) return;
-      const step = child.offsetWidth + 12;
-      const next = (Math.round(track.scrollLeft / step) + 1) % promotions.length;
-      track.scrollTo({ left: next * step, behavior: "smooth" });
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [promotions.length]);
-
-  function goTo(i: number) {
-    const track = trackRef.current;
-    const child = track?.firstElementChild as HTMLElement | null;
-    if (!track || !child) return;
-    track.scrollTo({ left: i * (child.offsetWidth + 12), behavior: "smooth" });
-  }
 
   return (
-    <section id="promos" className="pt-3">
+    <section id="promos" className="bg-white py-2 sm:py-3">
       <div className="mx-auto max-w-6xl xl:max-w-7xl">
-        <div
-          ref={trackRef}
-          className="overflow-x-auto px-4 [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden xl:px-6"
-        >
-          <div className="flex gap-3">
+        <div className="vd-scroll-x px-4 [scroll-snap-type:x_mandatory] xl:px-6">
+          <div className="flex gap-3 pb-3 lg:gap-4">
             {promotions.map((promo) => (
               <a
                 key={promo.id}
                 href={promo.href}
-                className="relative h-[168px] w-[calc(100vw-32px)] max-w-[560px] shrink-0 overflow-hidden rounded-[16px] bg-ink text-ink-foreground shadow-[0_2px_10px_rgba(0,0,0,0.06)] [scroll-snap-align:center] sm:h-[190px] lg:h-[220px] lg:w-[calc(33.33%-8px)] lg:max-w-none"
+                className="relative h-[188px] w-[calc(100vw-32px)] max-w-[430px] shrink-0 overflow-hidden rounded-[18px] bg-ink text-white shadow-[0_4px_14px_rgba(7,27,59,0.12)] [scroll-snap-align:start] sm:h-[206px] sm:w-[390px] lg:h-[214px] lg:w-[31.8%] lg:max-w-none xl:h-[228px]"
               >
                 <img
                   src={promo.image}
                   alt=""
-                  width={560}
-                  height={280}
+                  width={520}
+                  height={300}
                   loading={promo.order === 1 ? "eager" : "lazy"}
-                  className="absolute inset-y-0 right-0 h-full w-[62%] object-cover"
+                  className="absolute inset-0 h-full w-full object-cover opacity-82"
                 />
-                <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/95 to-transparent" />
-                <div className="relative flex h-full max-w-[62%] flex-col justify-center gap-1 pl-5 lg:pl-6">
-                  <h2 className="font-display text-[26px] font-semibold uppercase leading-[0.95] tracking-tight sm:text-[30px]">
-                    {promo.subtitle}
-                  </h2>
-                  <p className="font-display text-[15px] font-light uppercase leading-tight tracking-wide text-ink-foreground/85 sm:text-[17px]">
-                    {promo.title}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#071b3b] via-[#071b3b]/92 to-[#071b3b]/36" />
+                <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-primary/18 to-transparent" />
+                <div className="relative flex h-full flex-col justify-end p-4 sm:p-5 lg:p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/80">
+                    Vera Deportes
                   </p>
-                  <span className="mt-3 inline-flex h-[42px] w-fit items-center rounded-[12px] bg-primary px-4 text-[12px] font-semibold uppercase tracking-wide text-primary-foreground">
+                  <h2 className="mt-1.5 max-w-[210px] text-balance font-display text-[27px] font-black uppercase leading-[0.98] text-white sm:text-[31px] lg:max-w-[230px] lg:text-[30px] xl:text-[32px]">
+                    {promo.title}
+                  </h2>
+                  <p className="mt-1.5 max-w-[220px] text-[13px] font-semibold leading-snug text-white/88 lg:text-sm">
+                    {promo.subtitle}
+                  </p>
+                  <span className="mt-3 inline-flex h-9 w-fit max-w-full items-center gap-1.5 rounded-full bg-primary px-3.5 text-[11px] font-black uppercase text-primary-foreground shadow-[0_8px_18px_rgba(255,98,0,0.24)] sm:px-4 sm:text-xs">
                     {promo.ctaText}
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </span>
                 </div>
               </a>
             ))}
           </div>
         </div>
-        <div className="flex justify-center gap-1.5 pt-3">
-          {promotions.map((promo, i) => (
-            <button
+        <div className="flex justify-center gap-1.5 pt-0.5">
+          {promotions.map((promo, index) => (
+            <span
               key={promo.id}
-              type="button"
-              aria-label={`Ir a promocion ${i + 1}`}
-              onClick={() => goTo(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-4 bg-ink" : "w-1.5 bg-border"
-              }`}
+              className={`h-2 rounded-full ${index === 0 ? "w-2 bg-ink" : "w-2 bg-border"}`}
             />
           ))}
         </div>

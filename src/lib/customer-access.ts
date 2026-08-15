@@ -71,15 +71,27 @@ export function requireCustomerAccess(
   return false;
 }
 
-export function productToCartItem(product: Product): CartItem {
+export function productToCartItem(
+  product: Product,
+  options: { size?: string; color?: string } = {},
+): CartItem {
+  const variantId = [
+    options.size && `talle-${options.size}`,
+    options.color && `color-${options.color}`,
+  ]
+    .filter(Boolean)
+    .join("-");
   return {
-    id: product.id,
+    id: variantId ? `${product.id}:${variantId}` : product.id,
+    productId: product.id,
     name: product.name,
     brand: product.brand,
     category: product.category,
     price: product.price,
     image: product.image,
     qty: 1,
+    size: options.size,
+    color: options.color,
   };
 }
 
@@ -88,10 +100,13 @@ function storePendingAction(pending: PendingAction) {
   window.localStorage.setItem(PENDING_ACTION_KEY, JSON.stringify(pending));
 }
 
-export function storePendingAddToCart(product: Product) {
+export function storePendingAddToCart(
+  product: Product,
+  options: { size?: string; color?: string } = {},
+) {
   storePendingAction({
     type: "add-to-cart",
-    item: productToCartItem(product),
+    item: productToCartItem(product, options),
   });
 }
 

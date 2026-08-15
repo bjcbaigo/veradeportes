@@ -6,6 +6,7 @@ import { CommercialBenefits } from "@/components/landing/CommercialBenefits";
 import { FeaturedOffers } from "@/components/landing/FeaturedOffers";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
+import { HomeSearch } from "@/components/landing/HomeSearch";
 import { Products } from "@/components/landing/Products";
 import { PromoCarousel } from "@/components/landing/PromoCarousel";
 import { WhatsAppFab } from "@/components/landing/WhatsAppFab";
@@ -33,16 +34,20 @@ export const Route = createFileRoute("/tienda")({
 
 function StorefrontPage() {
   return (
-    <div id="top" className="min-h-screen bg-page pb-20 text-foreground font-sans lg:pb-0">
+    <div
+      id="top"
+      className="min-h-screen bg-page pb-[calc(84px+env(safe-area-inset-bottom))] text-foreground font-sans lg:pb-0"
+    >
       <Header />
-      <main className="lg:space-y-1 xl:space-y-2">
+      <HomeSearch />
+      <main>
         <Categories />
         <PromoCarousel />
         <FeaturedOffers />
+        <Products limit={8} />
         <CommercialBenefits />
         <Brands />
         <WhatsAppHelp />
-        <Products limit={8} />
       </main>
       <Footer />
       <BottomNav active="Inicio" />
