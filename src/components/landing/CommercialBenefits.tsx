@@ -10,7 +10,7 @@ export function CommercialBenefits() {
   return (
     <section className="py-3">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="grid grid-cols-3 gap-2 rounded-[22px] border border-border/80 bg-white p-2 lg:gap-3 lg:p-3 shadow-[0_6px_18px_rgba(0,0,0,0.04)]">
+        <div className="grid grid-cols-3 gap-2 rounded-[22px] border border-border/80 bg-card p-2 lg:gap-3 lg:p-3 shadow-[0_6px_18px_rgba(0,0,0,0.04)]">
           {BENEFITS.map(({ icon: Icon, title, text }) => (
             <div
               key={title}
