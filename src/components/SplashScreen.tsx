@@ -18,10 +18,12 @@ export function SplashScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black transition-opacity duration-500 ${
+      className={`pointer-events-none fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black transition-opacity duration-500 ${
         fading ? "opacity-0" : "opacity-100"
       }`}
+      style={{ animation: "splash-out 1.6s ease forwards" }}
     >
+
       {/* Glow radial pulsante */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 h-[120vmin] w-[120vmin] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
