@@ -105,7 +105,7 @@ export function SearchOverlay() {
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              type="search"
+              type="text"
               enterKeyHint="search"
               autoComplete="off"
               placeholder="Buscar zapatillas, marcas, remeras..."
