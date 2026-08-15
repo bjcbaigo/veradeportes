@@ -1,14 +1,16 @@
 import { Heart, Home, Search, ShoppingCart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
+import { openSearch } from "@/lib/search";
 
 const ITEMS = [
   { label: "Inicio", icon: Home, href: "/tienda" },
-  { label: "Buscar", icon: Search, href: "/tienda#productos" },
+  { label: "Buscar", icon: Search, href: "#buscar" },
   { label: "Favoritos", icon: Heart, href: "/tienda#productos" },
   { label: "Carrito", icon: ShoppingCart, href: "/carrito" },
   { label: "Cuenta", icon: User, href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
 ];
+
 
 function activeFromLocation(fallback: string) {
   if (typeof window === "undefined") return fallback;
