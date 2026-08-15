@@ -65,7 +65,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
-      <div className="mx-auto grid h-[80px] max-w-6xl grid-cols-[44px_minmax(0,1fr)_auto] items-center px-4 sm:h-[88px] xl:max-w-7xl xl:px-6">
+      <div className="mx-auto grid h-[130px] max-w-6xl grid-cols-[44px_minmax(0,1fr)_auto] items-center px-4 sm:h-[150px] xl:max-w-7xl xl:px-6">
         <button
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
@@ -81,9 +81,9 @@ export function Header() {
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-14 w-auto shrink-0 sm:h-16"
-            width={160}
-            height={160}
+            className="h-28 w-auto shrink-0 sm:h-32"
+            width={320}
+            height={320}
           />
           <span className="hidden font-display text-base font-extrabold leading-none tracking-tight sm:inline">
             <span className="text-primary">VERA</span> DEPORTES
