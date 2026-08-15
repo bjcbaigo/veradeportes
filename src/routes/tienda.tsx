@@ -36,10 +36,10 @@ function StorefrontPage() {
     <div id="top" className="min-h-screen bg-page pb-20 text-foreground font-sans lg:pb-0">
       <Header />
       <main className="lg:space-y-1 xl:space-y-2">
-        <PromoCarousel />
-        <CommercialBenefits />
         <Categories />
+        <PromoCarousel />
         <FeaturedOffers />
+        <CommercialBenefits />
         <Brands />
         <WhatsAppHelp />
         <Products limit={8} />
