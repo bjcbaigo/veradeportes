@@ -51,7 +51,12 @@ export function SplashScreen() {
       />
 
       <style>{`
+        @keyframes splash-out {
+          0%, 70% { opacity: 1; visibility: visible; }
+          100%    { opacity: 0; visibility: hidden; }
+        }
         @keyframes splash-pulse {
+
           0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); }
           50%      { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
         }
