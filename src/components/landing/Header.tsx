@@ -1,9 +1,11 @@
-import { Facebook, Instagram, Menu, MessageCircle, Moon, ShoppingCart, Sun, X } from "lucide-react";
+import { Facebook, Instagram, Menu, MessageCircle, Moon, Search, ShoppingCart, Sun, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
+import { openSearch } from "@/lib/search";
 import { SITE, waLink } from "@/lib/site";
+
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
