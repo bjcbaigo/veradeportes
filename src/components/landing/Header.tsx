@@ -64,33 +64,33 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-3 sm:h-16 sm:px-4 xl:max-w-7xl xl:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
+      <div className="mx-auto grid h-[62px] max-w-6xl grid-cols-[44px_minmax(0,1fr)_auto] items-center px-4 sm:h-[68px] xl:max-w-7xl xl:px-6">
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary/80 hover:bg-secondary"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
         >
-          <Menu className="h-5 w-5" strokeWidth={2.5} />
+          <Menu className="h-[22px] w-[22px]" strokeWidth={2.2} />
         </button>
 
-        <a href="/tienda" className="flex min-w-0 items-center gap-2">
+        <a href="/tienda" className="flex min-w-0 items-center justify-center gap-2">
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-9 w-auto shrink-0 sm:h-12"
+            className="h-10 w-auto shrink-0 sm:h-11"
             width={160}
             height={160}
           />
-          <span className="font-display text-sm font-extrabold leading-none tracking-normal sm:text-lg">
+          <span className="hidden font-display text-base font-extrabold leading-none tracking-tight sm:inline">
             <span className="text-primary">VERA</span> DEPORTES
           </span>
         </a>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center justify-end gap-1.5">
           <nav className="hidden items-center gap-7 text-sm font-medium md:flex xl:gap-9">
             {NAV.slice(1, 5).map((i) => (
               <a
@@ -105,17 +105,18 @@ export function Header() {
           <a
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary/80 hover:bg-secondary"
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-[12px] text-foreground hover:bg-secondary"
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-[22px] w-[22px]" strokeWidth={2} />
             {cartCount > 0 && (
-              <span className="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground">
+              <span className="absolute right-1 top-1 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                 {cartCount}
               </span>
             )}
           </a>
         </div>
       </div>
+
 
       {open && (
         <div
