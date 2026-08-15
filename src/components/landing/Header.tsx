@@ -81,7 +81,7 @@ export function Header() {
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-10 w-auto shrink-0 sm:h-11"
+            className="h-14 w-auto shrink-0 sm:h-16"
             width={160}
             height={160}
           />
