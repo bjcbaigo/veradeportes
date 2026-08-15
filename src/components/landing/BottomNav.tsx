@@ -1,24 +1,24 @@
-import { Grid2X2, Home, ShoppingCart, Tag, User } from "lucide-react";
+import { Heart, Home, Search, ShoppingCart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 
 const ITEMS = [
   { label: "Inicio", icon: Home, href: "/tienda" },
-  { label: "Categorias", icon: Grid2X2, href: "/tienda#categorias" },
-  { label: "Ofertas", icon: Tag, href: "/ofertas" },
+  { label: "Buscar", icon: Search, href: "/tienda#productos" },
+  { label: "Favoritos", icon: Heart, href: "/tienda#productos" },
   { label: "Carrito", icon: ShoppingCart, href: "/carrito" },
   { label: "Cuenta", icon: User, href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
 ];
 
 function activeFromLocation(fallback: string) {
   if (typeof window === "undefined") return fallback;
-  const { pathname, hash } = window.location;
-  if (pathname === "/ofertas") return "Ofertas";
+  const { pathname } = window.location;
+  if (pathname === "/ofertas") return "Buscar";
   if (pathname === "/carrito") return "Carrito";
   if (pathname === "/registro") return "Cuenta";
-  if (pathname === "/tienda" && hash === "#categorias") return "Categorias";
   return fallback;
 }
+
 
 export function BottomNav({ active = "Inicio" }: { active?: string }) {
   const { count: cartCount } = useCart();
