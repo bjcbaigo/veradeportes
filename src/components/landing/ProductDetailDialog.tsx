@@ -15,6 +15,7 @@ import {
   storePendingAddToCart,
 } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
+import { matchesCategory } from "@/lib/category-filter";
 
 const SHOE_SIZES = ["38", "39", "40", "41", "42", "43", "44"];
 
@@ -46,7 +47,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
 
   if (!product) return null;
 
-  const isShoe = product.category === "Zapatillas";
+  const isShoe = matchesCategory(product.category, product.name, product.badge, "Zapatillas");
   const mainImage = gallery[active] || product.image;
   const selectedVariantText = selectedSize ? `Talle ${selectedSize}` : "";
   const purchaseHref = waLink(
@@ -72,6 +73,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   }
 
   function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
+    if (!product) return;
     if (!ensureRequiredSelection()) return;
     if (!isCustomerRegistered()) {
       storePendingAddToCart(product, { size: selectedSize || undefined });

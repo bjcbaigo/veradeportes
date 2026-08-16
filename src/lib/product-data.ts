@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { PRODUCTS, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { matchesCategory, type CategoryKey } from "@/lib/category-filter";
 
@@ -53,9 +53,9 @@ export function useProductsData() {
   });
 
   const products = useMemo<Product[]>(() => {
-    if (!sheetRows || sheetRows.length === 0) return PRODUCTS;
+    if (!sheetRows || sheetRows.length === 0) return [];
     const active = sheetRows.filter((r) => r.activo && r.nombre);
-    if (active.length === 0) return PRODUCTS;
+    if (active.length === 0) return [];
     return active
       .map(sheetToProduct)
       .sort((a, b) => Number(b.badge === "Destacado") - Number(a.badge === "Destacado"));
