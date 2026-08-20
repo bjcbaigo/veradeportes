@@ -16,6 +16,8 @@ import {
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
+import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
+
 
 export const Route = createFileRoute("/admin-cargas")({
   ssr: false,
@@ -485,6 +487,49 @@ function TA({ label, v, onC, span, rows = 3 }: { label: string; v: string; onC: 
     </label>
   );
 }
+function TagPicker({
+  label,
+  options,
+  value,
+  onC,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onC: (x: string) => void;
+}) {
+  const selected = splitTags(value);
+  const toggle = (tag: string) => {
+    const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
+    onC(next.join("|"));
+  };
+  return (
+    <div className="block">
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <div className="mt-1 flex flex-wrap gap-1.5">
+        {options.map((tag) => {
+          const on = selected.includes(tag);
+          return (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggle(tag)}
+              className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                on
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+              }`}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
 
 /* ============ Productos ============ */
 function ProductosView() {
@@ -559,6 +604,11 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [imagen, setImagen] = useState(producto.url_imagen || "");
   const [imagenesExtra, setImagenesExtra] = useState(producto.imagenes_extra || "");
   const [destacado, setDestacado] = useState(false);
+  const [sku, setSku] = useState("");
+  const [marca, setMarca] = useState(producto.marca || "");
+  const [color, setColor] = useState("");
+  const [idealPara, setIdealPara] = useState("");
+  const [sellos, setSellos] = useState("");
   const [busy, setBusy] = useState(false);
 
   const extraList = imagenesExtra.split("|").map((s) => s.trim()).filter(Boolean);
@@ -574,7 +624,9 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         producto_rowIndex: producto.rowIndex,
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
+        sku, marca, color, ideal_para: idealPara, sellos,
       }});
+
       toast.success("Publicado en la landing");
       qc.invalidateQueries({ queryKey: ["productos"] });
       qc.invalidateQueries({ queryKey: ["sheet-products"] });
@@ -606,6 +658,14 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
           </div>
         )}
         <TA label="Descripción" v={descripcion} onC={setDescripcion} rows={3} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Inp label="Marca" v={marca} onC={setMarca} />
+          <Inp label="SKU" v={sku} onC={setSku} />
+          <Inp label="Color" v={color} onC={setColor} />
+        </div>
+        <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
+        <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
+
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={destacado} onChange={e => setDestacado(e.target.checked)} />
           Marcar como destacado
@@ -711,7 +771,11 @@ function LandingView() {
     mutationFn: (v: SheetProduct) => updLanding({ data: {
       rowIndex: v.rowIndex, nombre: v.nombre, categoria: v.categoria, precio: v.precio,
       descripcion: v.descripcion, imagen_url: v.imagen_url, activo: v.activo, destacado: v.destacado,
+      imagenes_extra: v.imagenes_extra ?? "",
+      sku: v.sku ?? "", marca: v.marca ?? "", color: v.color ?? "",
+      ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "",
     }}),
+
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success("Landing actualizada"); },
     onError: (e) => toast.error((e as Error).message),
   });
@@ -851,6 +915,14 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
             onChange={(nu) => { if (nu) setV(s => ({ ...s, imagenes_extra: [...extraList, nu].join("|") })); }} />
         </div>
         <TA label="Descripción" v={v.descripcion} onC={x => setV(s => ({ ...s, descripcion: x }))} rows={3} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Inp label="Marca" v={v.marca ?? ""} onC={x => setV(s => ({ ...s, marca: x }))} />
+          <Inp label="SKU" v={v.sku ?? ""} onC={x => setV(s => ({ ...s, sku: x }))} />
+          <Inp label="Color" v={v.color ?? ""} onC={x => setV(s => ({ ...s, color: x }))} />
+        </div>
+        <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={v.ideal_para ?? ""} onC={x => setV(s => ({ ...s, ideal_para: x }))} />
+        <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={v.sellos ?? ""} onC={x => setV(s => ({ ...s, sellos: x }))} />
+
         <div className="flex gap-4 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.destacado} onChange={e => setV(s => ({ ...s, destacado: e.target.checked }))} />Destacado</label>

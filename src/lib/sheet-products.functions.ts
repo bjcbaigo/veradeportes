@@ -33,8 +33,14 @@ export type SheetProduct = {
   activo: boolean;
   destacado: boolean;
   imagenes_extra: string; // pipe-separated URLs
+  sku: string;
+  marca: string;
+  color: string;
+  ideal_para: string; // pipe-separated
+  sellos: string; // pipe-separated
   rowIndex: number; // 1-based sheet row (header = 1)
 };
+
 
 async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
   const delays = [500, 1200, 2500, 5000];
@@ -51,7 +57,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<SheetProduct[]> => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:N1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) {
@@ -71,8 +77,14 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
       activo: (r[6] ?? "").toUpperCase() === "TRUE",
       destacado: (r[7] ?? "").toUpperCase() === "TRUE",
       imagenes_extra: r[8] ?? "",
+      sku: r[9] ?? "",
+      marca: r[10] ?? "",
+      color: r[11] ?? "",
+      ideal_para: r[12] ?? "",
+      sellos: r[13] ?? "",
       rowIndex: i + 2,
     }));
+
   },
 );
 
@@ -86,6 +98,11 @@ const UpdateInput = z.object({
   activo: z.boolean(),
   destacado: z.boolean(),
   imagenes_extra: z.string().max(3000).default(""),
+  sku: z.string().max(80).default(""),
+  marca: z.string().max(80).default(""),
+  color: z.string().max(80).default(""),
+  ideal_para: z.string().max(300).default(""),
+  sellos: z.string().max(300).default(""),
 });
 
 export const updateSheetProduct = createServerFn({ method: "POST" })
@@ -93,7 +110,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => UpdateInput.parse(data))
   .handler(async ({ data }) => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
-    const range = `${SHEET_NAME}!B${data.rowIndex}:I${data.rowIndex}`;
+    const range = `${SHEET_NAME}!B${data.rowIndex}:N${data.rowIndex}`;
     const body = {
       range,
       majorDimension: "ROWS",
@@ -106,8 +123,14 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
         data.activo ? "TRUE" : "FALSE",
         data.destacado ? "TRUE" : "FALSE",
         data.imagenes_extra,
+        data.sku,
+        data.marca,
+        data.color,
+        data.ideal_para,
+        data.sellos,
       ]],
     };
+
     const res = await fetch(
       `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=USER_ENTERED`,
       {
@@ -133,7 +156,7 @@ export const bulkDeleteByCategories = createServerFn({ method: "POST" })
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     // Read all products
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:N1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
@@ -147,7 +170,7 @@ export const bulkDeleteByCategories = createServerFn({ method: "POST" })
       const nameLower = (rows[i][1] ?? "").toLowerCase();
       const isOferta = wanted.has("ofertas") && (cat.includes("oferta") || nameLower.includes("oferta"));
       if (wanted.has(cat) || isOferta) {
-        ranges.push(`${SHEET_NAME}!A${i + 1}:I${i + 1}`);
+        ranges.push(`${SHEET_NAME}!A${i + 1}:N${i + 1}`);
       }
     }
     if (ranges.length === 0) return { ok: true, cleared: 0 };

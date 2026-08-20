@@ -157,8 +157,30 @@ export const initAdminSheets = createServerFn({ method: "POST" })
       }
     }
 
+    // Asegurar encabezados nuevos J–N en la pestaña Productos (landing)
+    const prodHead = await readRange("Productos!J1:N1");
+    const hasNew = (prodHead[0] ?? []).filter(Boolean).length === 5;
+    if (!hasNew) {
+      const range = "Productos!J1:N1";
+      const res = await fetch(
+        `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
+        {
+          method: "PUT",
+          headers: headers(lovableKey, sheetsKey),
+          body: JSON.stringify({
+            range,
+            majorDimension: "ROWS",
+            values: [["SKU", "Marca", "Color", "Ideal_Para", "Sellos"]],
+          }),
+        },
+      );
+      if (!res.ok) throw new Error(`headers Productos [${res.status}]: ${await res.text()}`);
+      invalidateReadCache("Productos");
+    }
+
     return { ok: true, created: toCreate };
   });
+
 
 /* ============ Tipos ============ */
 export type Carga = {
@@ -326,6 +348,11 @@ const PublicarInput = z.object({
   imagen_url: z.string().min(1).max(500),
   destacado: z.boolean().default(false),
   imagenes_extra: z.string().max(3000).default(""),
+  sku: z.string().max(80).default(""),
+  marca: z.string().max(80).default(""),
+  color: z.string().max(80).default(""),
+  ideal_para: z.string().max(300).default(""),
+  sellos: z.string().max(300).default(""),
 });
 
 export const publicarEnLanding = createServerFn({ method: "POST" })
@@ -334,14 +361,16 @@ export const publicarEnLanding = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     const id = `L-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-    await appendRow("Productos", "A:I", [
+    await appendRow("Productos", "A:N", [
       id, data.nombre, data.categoria, data.precio, data.descripcion,
       data.imagen_url, "TRUE", data.destacado ? "TRUE" : "FALSE",
-      data.imagenes_extra,
+      data.imagenes_extra, data.sku, data.marca, data.color,
+      data.ideal_para, data.sellos,
     ]);
     await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
     return { ok: true, id };
   });
+
 
 /* ============ Reset (vaciar hojas, conservando encabezados) ============ */
 async function clearRows(sheetName: string, endCol: string) {
@@ -363,6 +392,7 @@ export const resetAllSheets = createServerFn({ method: "POST" })
     await assertAdmin(context as any);
     await clearRows("CARGAS_USUARIOS", "I");
     await clearRows("PRODUCTOS_ADMIN", "P");
-    await clearRows("Productos", "I");
+    await clearRows("Productos", "N");
     return { ok: true };
   });
+

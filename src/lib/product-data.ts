@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import type { Product } from "@/lib/products";
 import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { matchesCategory, type CategoryKey } from "@/lib/category-filter";
+import { splitTags } from "@/lib/product-taxonomy";
+
 
 const fmt = (raw: string) => {
   const n = Number(String(raw).replace(/[^\d.-]/g, ""));
@@ -13,25 +15,30 @@ const fmt = (raw: string) => {
 
 export function sheetToProduct(s: SheetProduct): Product {
   const parts = s.nombre.split(" ");
-  const brand = parts[0] || s.categoria;
+  const brand = (s.marca || "").trim() || parts[0] || s.categoria;
   const extras = (s.imagenes_extra || "")
     .split("|")
     .map((u) => u.trim())
     .filter(Boolean);
   const images = [s.imagen_url, ...extras].filter(Boolean);
+  const ideal = splitTags(s.ideal_para);
   return {
     id: s.id || String(s.rowIndex),
-    sku: `SHEET-${s.id || s.rowIndex}`,
+    sku: s.sku || `SHEET-${s.id || s.rowIndex}`,
     name: s.nombre,
     brand,
     category: s.categoria,
+    color: s.color || undefined,
     price: fmt(s.precio),
     image: s.imagen_url || "",
     images,
     badge: s.destacado ? "Destacado" : undefined,
     description: s.descripcion,
+    idealFor: ideal.length ? ideal.join(", ") : undefined,
+    seals: splitTags(s.sellos),
   };
 }
+
 
 export function isOfferProduct(product: Product) {
   return (
