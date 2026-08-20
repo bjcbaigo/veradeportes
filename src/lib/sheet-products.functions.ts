@@ -33,8 +33,14 @@ export type SheetProduct = {
   activo: boolean;
   destacado: boolean;
   imagenes_extra: string; // pipe-separated URLs
+  sku: string;
+  marca: string;
+  color: string;
+  ideal_para: string; // pipe-separated
+  sellos: string; // pipe-separated
   rowIndex: number; // 1-based sheet row (header = 1)
 };
+
 
 async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
   const delays = [500, 1200, 2500, 5000];
