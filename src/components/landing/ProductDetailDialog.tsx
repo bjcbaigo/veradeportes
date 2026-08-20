@@ -207,7 +207,26 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                   </div>
                 </div>
               )}
+              {product.seals && product.seals.length > 0 && (
+                <div className="rounded-lg border border-border/60 p-2.5 space-y-1.5">
+                  <p className="text-xs font-semibold flex items-center gap-1.5 text-foreground">
+                    <ListChecks className="h-3.5 w-3.5 text-primary shrink-0" />
+                    Sellos
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {product.seals.map((s) => (
+                      <span
+                        key={s}
+                        className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] px-2 py-0.5 font-semibold"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
+
 
             {isShoe && (
               <div>
