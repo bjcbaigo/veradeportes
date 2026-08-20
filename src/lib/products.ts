@@ -4,6 +4,7 @@ export type Product = {
   name: string;
   brand: string;
   category: string;
+  color?: string;
   price: string;
   priceOld?: string;
   image: string;
@@ -12,4 +13,5 @@ export type Product = {
   description?: string;
   idealFor?: string;
   features?: string;
+  seals?: string[];
 };
