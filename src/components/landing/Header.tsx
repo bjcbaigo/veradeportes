@@ -1,33 +1,9 @@
-import { Facebook, Instagram, Menu, MessageCircle, Moon, ShoppingCart, Sun, X } from "lucide-react";
+import { Facebook, Instagram, Menu, MessageCircle, ShoppingCart, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { SITE, waLink } from "@/lib/site";
-
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = saved === "dark" || (!saved && prefersDark);
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark]);
-  return (
-    <button
-      onClick={() => setDark((v) => !v)}
-      aria-label="Cambiar tema"
-      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-foreground hover:bg-secondary"
-    >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
-  );
-}
 
 const NAV = [
   { label: "Portada", href: "/" },
@@ -48,6 +24,11 @@ export function Header() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { count: cartCount } = useCart();
 
+  // La tienda usa una sola paleta clara: evitamos texto claro sobre superficies blancas.
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const previousOverflow = document.body.style.overflow;
@@ -64,11 +45,11 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-white/98 pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
       <div className="mx-auto grid h-[58px] max-w-6xl grid-cols-[44px_1fr_auto] items-center px-4 sm:h-16 xl:max-w-7xl xl:px-6">
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
@@ -87,7 +68,7 @@ export function Header() {
             height={160}
           />
           <span className="font-display text-[12px] font-black leading-none text-foreground sm:text-sm">
-            <span className="text-primary">VERA</span> DEPORTES
+            <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>
 
@@ -97,7 +78,7 @@ export function Header() {
               <a
                 key={i.href}
                 href={i.href}
-                className="whitespace-nowrap text-foreground/75 transition hover:text-primary"
+                className="whitespace-nowrap text-foreground transition hover:text-primary"
               >
                 {i.label}
               </a>
@@ -106,7 +87,7 @@ export function Header() {
           <a
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+            className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <ShoppingCart className="h-5 w-5" strokeWidth={2.2} />
             {cartCount > 0 && (
@@ -129,7 +110,7 @@ export function Header() {
             role="dialog"
             aria-modal="true"
             aria-label="Menu principal"
-            className="fixed left-0 top-0 z-[101] flex h-[100dvh] w-[86vw] max-w-[340px] flex-col overflow-y-auto border-r border-border bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] text-foreground shadow-2xl outline-none"
+            className="fixed left-0 top-0 z-[101] flex h-[100dvh] w-[86vw] max-w-[340px] flex-col overflow-y-auto border-r border-border bg-background px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] text-foreground shadow-2xl outline-none"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between gap-3">
@@ -140,7 +121,7 @@ export function Header() {
               >
                 <img src={logo} alt="Vera Deportes" className="h-10 w-auto shrink-0" />
                 <span className="truncate font-display text-sm font-black">
-                  <span className="text-primary">VERA</span> DEPORTES
+                  <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
                 </span>
               </a>
               <button
@@ -168,7 +149,6 @@ export function Header() {
               ))}
             </nav>
             <div className="mt-5 flex items-center gap-2">
-              <ThemeToggle />
               <a
                 href={SITE.instagram}
                 target="_blank"
