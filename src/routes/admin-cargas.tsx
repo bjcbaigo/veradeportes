@@ -771,7 +771,11 @@ function LandingView() {
     mutationFn: (v: SheetProduct) => updLanding({ data: {
       rowIndex: v.rowIndex, nombre: v.nombre, categoria: v.categoria, precio: v.precio,
       descripcion: v.descripcion, imagen_url: v.imagen_url, activo: v.activo, destacado: v.destacado,
+      imagenes_extra: v.imagenes_extra ?? "",
+      sku: v.sku ?? "", marca: v.marca ?? "", color: v.color ?? "",
+      ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "",
     }}),
+
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success("Landing actualizada"); },
     onError: (e) => toast.error((e as Error).message),
   });
