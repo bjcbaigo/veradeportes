@@ -658,6 +658,14 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
           </div>
         )}
         <TA label="Descripción" v={descripcion} onC={setDescripcion} rows={3} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Inp label="Marca" v={marca} onC={setMarca} />
+          <Inp label="SKU" v={sku} onC={setSku} />
+          <Inp label="Color" v={color} onC={setColor} />
+        </div>
+        <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
+        <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
+
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={destacado} onChange={e => setDestacado(e.target.checked)} />
           Marcar como destacado
