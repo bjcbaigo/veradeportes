@@ -16,6 +16,8 @@ import {
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
+import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
+
 
 export const Route = createFileRoute("/admin-cargas")({
   ssr: false,
