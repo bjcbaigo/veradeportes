@@ -911,6 +911,14 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
             onChange={(nu) => { if (nu) setV(s => ({ ...s, imagenes_extra: [...extraList, nu].join("|") })); }} />
         </div>
         <TA label="Descripción" v={v.descripcion} onC={x => setV(s => ({ ...s, descripcion: x }))} rows={3} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Inp label="Marca" v={v.marca ?? ""} onC={x => setV(s => ({ ...s, marca: x }))} />
+          <Inp label="SKU" v={v.sku ?? ""} onC={x => setV(s => ({ ...s, sku: x }))} />
+          <Inp label="Color" v={v.color ?? ""} onC={x => setV(s => ({ ...s, color: x }))} />
+        </div>
+        <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={v.ideal_para ?? ""} onC={x => setV(s => ({ ...s, ideal_para: x }))} />
+        <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={v.sellos ?? ""} onC={x => setV(s => ({ ...s, sellos: x }))} />
+
         <div className="flex gap-4 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.destacado} onChange={e => setV(s => ({ ...s, destacado: e.target.checked }))} />Destacado</label>
