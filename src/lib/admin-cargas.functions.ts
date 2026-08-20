@@ -157,8 +157,30 @@ export const initAdminSheets = createServerFn({ method: "POST" })
       }
     }
 
+    // Asegurar encabezados nuevos J–N en la pestaña Productos (landing)
+    const prodHead = await readRange("Productos!J1:N1");
+    const hasNew = (prodHead[0] ?? []).filter(Boolean).length === 5;
+    if (!hasNew) {
+      const range = "Productos!J1:N1";
+      const res = await fetch(
+        `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
+        {
+          method: "PUT",
+          headers: headers(lovableKey, sheetsKey),
+          body: JSON.stringify({
+            range,
+            majorDimension: "ROWS",
+            values: [["SKU", "Marca", "Color", "Ideal_Para", "Sellos"]],
+          }),
+        },
+      );
+      if (!res.ok) throw new Error(`headers Productos [${res.status}]: ${await res.text()}`);
+      invalidateReadCache("Productos");
+    }
+
     return { ok: true, created: toCreate };
   });
+
 
 /* ============ Tipos ============ */
 export type Carga = {
