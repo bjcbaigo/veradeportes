@@ -156,7 +156,7 @@ export const bulkDeleteByCategories = createServerFn({ method: "POST" })
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     // Read all products
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:N1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
@@ -170,7 +170,7 @@ export const bulkDeleteByCategories = createServerFn({ method: "POST" })
       const nameLower = (rows[i][1] ?? "").toLowerCase();
       const isOferta = wanted.has("ofertas") && (cat.includes("oferta") || nameLower.includes("oferta"));
       if (wanted.has(cat) || isOferta) {
-        ranges.push(`${SHEET_NAME}!A${i + 1}:I${i + 1}`);
+        ranges.push(`${SHEET_NAME}!A${i + 1}:N${i + 1}`);
       }
     }
     if (ranges.length === 0) return { ok: true, cleared: 0 };
