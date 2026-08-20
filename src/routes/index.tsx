@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Instagram, MessageCircle, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
+import { PrivateAccess } from "@/components/PrivateAccess";
 import logoAsset from "@/assets/logo-vera.png.asset.json";
 import heroAthletes from "@/assets/hero-athletes.png";
 import { requireCustomerAccess } from "@/lib/customer-access";
@@ -157,8 +158,9 @@ function ComingSoonPage() {
         </div>
       </section>
 
-      <footer className="relative z-10 pb-6 text-center text-xs text-neutral-400 dark:text-neutral-500">
-        (c) {new Date().getFullYear()} Vera Deportes
+      <footer className="relative z-10 flex flex-col items-center gap-3 pb-6 text-center text-xs text-neutral-400 dark:text-neutral-500">
+        <PrivateAccess />
+        <span>(c) {new Date().getFullYear()} Vera Deportes</span>
       </footer>
     </main>
   );
