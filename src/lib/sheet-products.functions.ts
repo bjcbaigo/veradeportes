@@ -38,6 +38,7 @@ export type SheetProduct = {
   color: string;
   ideal_para: string; // pipe-separated
   sellos: string; // pipe-separated
+  talles: string; // pipe-separated
   rowIndex: number; // 1-based sheet row (header = 1)
 };
 
@@ -57,7 +58,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<SheetProduct[]> => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:N1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:O1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) {
@@ -82,6 +83,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
       color: r[11] ?? "",
       ideal_para: r[12] ?? "",
       sellos: r[13] ?? "",
+      talles: r[14] ?? "",
       rowIndex: i + 2,
     }));
 
@@ -103,6 +105,7 @@ const UpdateInput = z.object({
   color: z.string().max(80).default(""),
   ideal_para: z.string().max(300).default(""),
   sellos: z.string().max(300).default(""),
+  talles: z.string().max(200).default(""),
 });
 
 export const updateSheetProduct = createServerFn({ method: "POST" })
@@ -110,7 +113,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => UpdateInput.parse(data))
   .handler(async ({ data }) => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
-    const range = `${SHEET_NAME}!B${data.rowIndex}:N${data.rowIndex}`;
+    const range = `${SHEET_NAME}!B${data.rowIndex}:O${data.rowIndex}`;
     const body = {
       range,
       majorDimension: "ROWS",
@@ -128,6 +131,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
         data.color,
         data.ideal_para,
         data.sellos,
+        data.talles,
       ]],
     };
 

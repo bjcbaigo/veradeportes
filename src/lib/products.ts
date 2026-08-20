@@ -14,4 +14,5 @@ export type Product = {
   idealFor?: string;
   features?: string;
   seals?: string[];
+  sizes?: string[];
 };

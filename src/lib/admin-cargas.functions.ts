@@ -165,10 +165,10 @@ export const initAdminSheets = createServerFn({ method: "POST" })
     }
 
     // Asegurar encabezados nuevos J–N en la pestaña Productos (landing)
-    const prodHead = await readRange("Productos!J1:N1");
-    const hasNew = (prodHead[0] ?? []).filter(Boolean).length === 5;
+    const prodHead = await readRange("Productos!J1:O1");
+    const hasNew = (prodHead[0] ?? []).filter(Boolean).length === 6;
     if (!hasNew) {
-      const range = "Productos!J1:N1";
+      const range = "Productos!J1:O1";
       const res = await fetch(
         `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
         {
@@ -177,7 +177,7 @@ export const initAdminSheets = createServerFn({ method: "POST" })
           body: JSON.stringify({
             range,
             majorDimension: "ROWS",
-            values: [["SKU", "Marca", "Color", "Ideal_Para", "Sellos"]],
+            values: [["SKU", "Marca", "Color", "Ideal_Para", "Sellos", "Talles"]],
           }),
         },
       );
@@ -360,6 +360,7 @@ const PublicarInput = z.object({
   color: z.string().max(80).default(""),
   ideal_para: z.string().max(300).default(""),
   sellos: z.string().max(300).default(""),
+  talles: z.string().max(200).default(""),
 });
 
 export const publicarEnLanding = createServerFn({ method: "POST" })
@@ -368,11 +369,11 @@ export const publicarEnLanding = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     const id = `L-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-    await appendRow("Productos", "A:N", [
+    await appendRow("Productos", "A:O", [
       id, data.nombre, data.categoria, data.precio, data.descripcion,
       data.imagen_url, "TRUE", data.destacado ? "TRUE" : "FALSE",
       data.imagenes_extra, data.sku, data.marca, data.color,
-      data.ideal_para, data.sellos,
+      data.ideal_para, data.sellos, data.talles,
     ]);
     await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
     return { ok: true, id };
