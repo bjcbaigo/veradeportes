@@ -17,7 +17,7 @@ import {
 import { waLink } from "@/lib/site";
 import { matchesCategory } from "@/lib/category-filter";
 
-const SHOE_SIZES = ["38", "39", "40", "41", "42", "43", "44"];
+const SHOE_SIZES_DEFAULT = ["38", "39", "40", "41", "42", "43", "44"];
 
 type Props = {
   product: Product | null;
@@ -48,6 +48,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   if (!product) return null;
 
   const isShoe = matchesCategory(product.category, product.name, product.badge, "Zapatillas");
+  const shoeSizes = product.sizes && product.sizes.length > 0 ? product.sizes : SHOE_SIZES_DEFAULT;
   const mainImage = gallery[active] || product.image;
   const selectedVariantText = selectedSize ? `Talle ${selectedSize}` : "";
   const purchaseHref = waLink(
@@ -239,7 +240,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Elegir talle">
-                  {SHOE_SIZES.map((s) => {
+                  {shoeSizes.map((s) => {
                     const isSelected = selectedSize === s;
                     return (
                       <button

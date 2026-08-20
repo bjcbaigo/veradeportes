@@ -36,6 +36,7 @@ export function sheetToProduct(s: SheetProduct): Product {
     description: s.descripcion,
     idealFor: ideal.length ? ideal.join(", ") : undefined,
     seals: splitTags(s.sellos),
+    sizes: splitTags(s.talles),
   };
 }
 

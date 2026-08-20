@@ -16,7 +16,7 @@ import {
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
-import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
+import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, TALLES_CALZADO_OPTIONS, splitTags } from "@/lib/product-taxonomy";
 
 
 export const Route = createFileRoute("/admin-cargas")({
@@ -609,6 +609,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [color, setColor] = useState("");
   const [idealPara, setIdealPara] = useState("");
   const [sellos, setSellos] = useState("");
+  const [talles, setTalles] = useState("");
   const [busy, setBusy] = useState(false);
 
   const extraList = imagenesExtra.split("|").map((s) => s.trim()).filter(Boolean);
@@ -624,7 +625,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         producto_rowIndex: producto.rowIndex,
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
-        sku, marca, color, ideal_para: idealPara, sellos,
+        sku, marca, color, ideal_para: idealPara, sellos, talles,
       }});
 
       toast.success("Publicado en la landing");
@@ -665,6 +666,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         </div>
         <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
         <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
+        <TagPicker label="Talles disponibles" options={TALLES_CALZADO_OPTIONS} value={talles} onC={setTalles} />
 
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={destacado} onChange={e => setDestacado(e.target.checked)} />
@@ -773,7 +775,7 @@ function LandingView() {
       descripcion: v.descripcion, imagen_url: v.imagen_url, activo: v.activo, destacado: v.destacado,
       imagenes_extra: v.imagenes_extra ?? "",
       sku: v.sku ?? "", marca: v.marca ?? "", color: v.color ?? "",
-      ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "",
+      ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "", talles: v.talles ?? "",
     }}),
 
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success("Landing actualizada"); },
@@ -922,6 +924,7 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
         </div>
         <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={v.ideal_para ?? ""} onC={x => setV(s => ({ ...s, ideal_para: x }))} />
         <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={v.sellos ?? ""} onC={x => setV(s => ({ ...s, sellos: x }))} />
+        <TagPicker label="Talles disponibles" options={TALLES_CALZADO_OPTIONS} value={v.talles ?? ""} onC={x => setV(s => ({ ...s, talles: x }))} />
 
         <div className="flex gap-4 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>

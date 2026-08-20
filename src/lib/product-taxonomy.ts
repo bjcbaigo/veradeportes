@@ -18,6 +18,10 @@ export const SELLOS_OPTIONS = [
   "Alta durabilidad",
 ] as const;
 
+export const TALLES_CALZADO_OPTIONS = [
+  "34","35","36","37","38","39","40","41","42","43","44","45","46",
+] as const;
+
 export function splitTags(raw?: string): string[] {
   return (raw || "")
     .split(/\||,/)
