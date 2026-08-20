@@ -487,6 +487,49 @@ function TA({ label, v, onC, span, rows = 3 }: { label: string; v: string; onC: 
     </label>
   );
 }
+function TagPicker({
+  label,
+  options,
+  value,
+  onC,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onC: (x: string) => void;
+}) {
+  const selected = splitTags(value);
+  const toggle = (tag: string) => {
+    const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
+    onC(next.join("|"));
+  };
+  return (
+    <div className="block">
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <div className="mt-1 flex flex-wrap gap-1.5">
+        {options.map((tag) => {
+          const on = selected.includes(tag);
+          return (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggle(tag)}
+              className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                on
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+              }`}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
 
 /* ============ Productos ============ */
 function ProductosView() {
