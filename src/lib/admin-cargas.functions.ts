@@ -42,7 +42,7 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
 }
 
 // TTL cache + in-flight dedupe to keep Sheets read quota under control.
-const READ_TTL_MS = 15_000;
+const READ_TTL_MS = 60_000;
 const readCache = new Map<string, { at: number; data: string[][] }>();
 const inFlight = new Map<string, Promise<string[][]>>();
 
@@ -65,7 +65,13 @@ async function readRange(range: string): Promise<string[][]> {
       { headers: headers(lovableKey, sheetsKey) },
     );
     if (res.status === 400 || res.status === 404) return [];
-    if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
+    if (!res.ok) {
+      const body = await res.text();
+      // Quota/temporary failures: serve stale cache instead of breaking the UI.
+      if ((res.status === 429 || res.status >= 500) && hit) return hit.data;
+      if (res.status === 429) return [];
+      throw new Error(`Sheets read [${res.status}]: ${body}`);
+    }
     const json = (await res.json()) as { values?: string[][] };
     const data = json.values ?? [];
     readCache.set(range, { at: Date.now(), data });
@@ -75,6 +81,7 @@ async function readRange(range: string): Promise<string[][]> {
   inFlight.set(range, p);
   return p;
 }
+
 
 async function appendRow(sheetName: string, cols: string, values: (string | number)[]) {
   const { lovableKey, sheetsKey, sheetId } = env();
