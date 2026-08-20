@@ -65,10 +65,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-white/98 pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-[58px] max-w-6xl grid-cols-[44px_1fr_44px] items-center px-4 sm:h-16 xl:max-w-7xl xl:px-6">
+      <div className="mx-auto grid h-[58px] max-w-6xl grid-cols-[44px_1fr_auto] items-center px-4 sm:h-16 xl:max-w-7xl xl:px-6">
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
@@ -76,6 +76,7 @@ export function Header() {
         >
           <Menu className="h-5 w-5" strokeWidth={2.25} />
         </button>
+        <span className="hidden md:inline-flex h-10 w-10" />
 
         <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-1.5">
           <img
@@ -90,13 +91,13 @@ export function Header() {
           </span>
         </a>
 
-        <div className="flex items-center justify-end">
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 text-sm font-semibold md:flex xl:gap-9">
+        <div className="flex items-center justify-end gap-4 xl:gap-6">
+          <nav className="hidden items-center gap-5 text-sm font-semibold md:flex xl:gap-7">
             {NAV.slice(1, 5).map((i) => (
               <a
                 key={i.href}
                 href={i.href}
-                className="text-foreground/75 transition hover:text-primary"
+                className="whitespace-nowrap text-foreground/75 transition hover:text-primary"
               >
                 {i.label}
               </a>
@@ -105,7 +106,7 @@ export function Header() {
           <a
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+            className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <ShoppingCart className="h-5 w-5" strokeWidth={2.2} />
             {cartCount > 0 && (
