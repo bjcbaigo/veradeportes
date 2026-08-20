@@ -604,6 +604,11 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [imagen, setImagen] = useState(producto.url_imagen || "");
   const [imagenesExtra, setImagenesExtra] = useState(producto.imagenes_extra || "");
   const [destacado, setDestacado] = useState(false);
+  const [sku, setSku] = useState("");
+  const [marca, setMarca] = useState(producto.marca || "");
+  const [color, setColor] = useState("");
+  const [idealPara, setIdealPara] = useState("");
+  const [sellos, setSellos] = useState("");
   const [busy, setBusy] = useState(false);
 
   const extraList = imagenesExtra.split("|").map((s) => s.trim()).filter(Boolean);
@@ -619,7 +624,9 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         producto_rowIndex: producto.rowIndex,
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
+        sku, marca, color, ideal_para: idealPara, sellos,
       }});
+
       toast.success("Publicado en la landing");
       qc.invalidateQueries({ queryKey: ["productos"] });
       qc.invalidateQueries({ queryKey: ["sheet-products"] });
