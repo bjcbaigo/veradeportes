@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import type { Product } from "@/lib/products";
 import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.functions";
 import { matchesCategory, type CategoryKey } from "@/lib/category-filter";
+import { splitTags } from "@/lib/product-taxonomy";
+
 
 const fmt = (raw: string) => {
   const n = Number(String(raw).replace(/[^\d.-]/g, ""));
