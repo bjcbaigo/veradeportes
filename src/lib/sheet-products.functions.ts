@@ -57,7 +57,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<SheetProduct[]> => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:I1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:N1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) {
@@ -77,8 +77,14 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
       activo: (r[6] ?? "").toUpperCase() === "TRUE",
       destacado: (r[7] ?? "").toUpperCase() === "TRUE",
       imagenes_extra: r[8] ?? "",
+      sku: r[9] ?? "",
+      marca: r[10] ?? "",
+      color: r[11] ?? "",
+      ideal_para: r[12] ?? "",
+      sellos: r[13] ?? "",
       rowIndex: i + 2,
     }));
+
   },
 );
 
