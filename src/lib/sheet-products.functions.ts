@@ -98,6 +98,11 @@ const UpdateInput = z.object({
   activo: z.boolean(),
   destacado: z.boolean(),
   imagenes_extra: z.string().max(3000).default(""),
+  sku: z.string().max(80).default(""),
+  marca: z.string().max(80).default(""),
+  color: z.string().max(80).default(""),
+  ideal_para: z.string().max(300).default(""),
+  sellos: z.string().max(300).default(""),
 });
 
 export const updateSheetProduct = createServerFn({ method: "POST" })
@@ -105,7 +110,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => UpdateInput.parse(data))
   .handler(async ({ data }) => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
-    const range = `${SHEET_NAME}!B${data.rowIndex}:I${data.rowIndex}`;
+    const range = `${SHEET_NAME}!B${data.rowIndex}:N${data.rowIndex}`;
     const body = {
       range,
       majorDimension: "ROWS",
@@ -118,8 +123,14 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
         data.activo ? "TRUE" : "FALSE",
         data.destacado ? "TRUE" : "FALSE",
         data.imagenes_extra,
+        data.sku,
+        data.marca,
+        data.color,
+        data.ideal_para,
+        data.sellos,
       ]],
     };
+
     const res = await fetch(
       `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=USER_ENTERED`,
       {
