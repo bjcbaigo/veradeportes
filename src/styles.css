@@ -34,6 +34,10 @@
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
   --color-page: var(--page);
+  --color-vd-navy: var(--vd-navy);
+  --color-vd-navy-2: var(--vd-navy-2);
+  --color-vd-orange: var(--vd-orange);
+  --color-vd-surface: var(--vd-surface);
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 }
