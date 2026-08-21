@@ -285,7 +285,21 @@ function UploadForm({ pin }: { pin: string }) {
             placeholder="Ej: Zapatillas"
             className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
         </Field>
+        <Field label="Modelo">
+          <input value={modelo} onChange={(e) => setModelo(e.target.value)} maxLength={120}
+            placeholder="Ej: Gel-Challenger 14"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
+        </Field>
+        <Field label="Color">
+          <input value={color} onChange={(e) => setColor(e.target.value)} maxLength={80}
+            placeholder="Ej: Negro / blanco"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
+        </Field>
       </div>
+
+      <ChipPicker label="Ideal para (opcional)" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
+      <ChipPicker label="Sellos (opcional)" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
+      <ChipPicker label="Talles disponibles (opcional)" options={TALLES_CALZADO_OPTIONS} value={talles} onC={setTalles} />
 
       <Field label="Comentario (opcional)">
         <textarea value={comentario} onChange={(e) => setComentario(e.target.value)} maxLength={500} rows={3}
