@@ -85,7 +85,10 @@ async function readRange(range: string): Promise<string[][]> {
 
 async function appendRow(sheetName: string, cols: string, values: (string | number)[]) {
   const { lovableKey, sheetsKey, sheetId } = env();
-  const range = `${sheetName}!${cols}`;
+  // Anclar a A1: con rangos anchos (A:T) la API detecta mal la "tabla" cuando
+  // el encabezado tiene menos columnas que los datos y anexa la fila corrida a la derecha.
+  void cols;
+  const range = `${sheetName}!A1`;
   const res = await fetchWithRetry(
     `${GATEWAY}/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
     {

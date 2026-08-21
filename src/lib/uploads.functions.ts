@@ -6,7 +6,8 @@ const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const DRIVE_UPLOAD = "https://connector-gateway.lovable.dev/google_drive/upload/drive/v3/files";
 const DRIVE_API = "https://connector-gateway.lovable.dev/google_drive/drive/v3";
 const SHEET_NAME = "CARGAS_USUARIOS";
-const SHEET_RANGE = `${SHEET_NAME}!A:N`;
+// Anclar el append a A1: con rangos anchos la API puede anexar la fila corrida a la derecha.
+const SHEET_RANGE = `${SHEET_NAME}!A1`;
 
 function env() {
   const lovableKey = process.env.LOVABLE_API_KEY;

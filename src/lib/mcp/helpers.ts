@@ -87,7 +87,9 @@ export async function updateRow(sheetName: string, range: string, values: (strin
 
 export async function appendRow(sheetName: string, cols: string, values: (string | number)[]) {
   const { sheetId } = sheetsEnv();
-  const range = `${sheetName}!${cols}`;
+  // Anclar a A1 (ver admin-cargas.functions.ts): evita filas corridas a la derecha.
+  void cols;
+  const range = `${sheetName}!A1`;
   const res = await fetch(
     `${SHEETS_GATEWAY}/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
     {
