@@ -68,7 +68,11 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
     const json = (await res.json()) as { values?: string[][] };
     const rows = json.values ?? [];
     if (rows.length < 2) return [];
-    return rows.slice(1).map((r, i) => ({
+    // Filtrar filas basura (sin ID ni nombre) para no ensuciar panel ni landing
+    return rows.slice(1)
+      .map((r, i) => ({ r, rowIndex: i + 2 }))
+      .filter(({ r }) => (r[0] ?? "").trim() !== "" || (r[1] ?? "").trim() !== "")
+      .map(({ r, rowIndex }) => ({
       id: r[0] ?? "",
       nombre: r[1] ?? "",
       categoria: r[2] ?? "",
@@ -84,7 +88,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
       ideal_para: r[12] ?? "",
       sellos: r[13] ?? "",
       talles: r[14] ?? "",
-      rowIndex: i + 2,
+      rowIndex,
     }));
 
   },
