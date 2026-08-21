@@ -132,6 +132,20 @@ function Login() {
 const ESTADOS = ["PENDIENTE","EN_REVISION","ANALIZADO","APROBADO","PUBLICADO","DESCARTADO"] as const;
 type Tab = "cargas" | "productos" | "landing" | "agenda";
 
+// Miniaturas: las fotos de Drive (lh3.googleusercontent.com) pesan varios MB en
+// original; con =s### Google devuelve una versión redimensionada (mucho más rápida).
+function thumb(url: string, size = 400): string {
+  if (!url) return url;
+  if (url.includes("lh3.googleusercontent.com")) {
+    return url.replace(/=s\d+$/, "") + `=s${size}`;
+  }
+  return url;
+}
+
+// Las lecturas de Sheets van por un gateway externo (lentas); evitamos refetch
+// innecesario: el servidor ya cachea 60s, alineamos el cliente con eso.
+const QUERY_OPTS = { staleTime: 60_000, refetchOnWindowFocus: false } as const;
+
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("cargas");
 
@@ -240,7 +254,7 @@ function CargasView() {
   const [filter, setFilter] = useState<typeof ESTADOS[number] | "TODOS">("PENDIENTE");
   const [editing, setEditing] = useState<Carga[] | null>(null);
 
-  const q = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas() });
+  const q = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
 
   const groups = useMemo(() => {
     const all = q.data ?? [];
@@ -299,7 +313,7 @@ function CargasView() {
                 <div className="relative aspect-square bg-[#e5e7eb]">
                   {primary.url_imagen ? (
                     <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
-                      <img src={primary.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                      <img src={thumb(primary.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
                     </a>
                   ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
                   {isGroup && (
@@ -311,7 +325,7 @@ function CargasView() {
                 {isGroup && (
                   <div className="flex gap-1 overflow-x-auto border-t border-neutral-100 bg-neutral-50 px-2 py-1.5">
                     {items.map(c => (
-                      <img key={c.id} src={c.url_imagen} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
+                      <img key={c.id} src={thumb(c.url_imagen, 200)} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
                     ))}
                   </div>
                 )}
@@ -425,7 +439,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
         </div>
         <div className="grid gap-4 p-5 md:grid-cols-[220px_1fr]">
           <div className="space-y-2">
-            {primary.url_imagen && <img src={primary.url_imagen} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
+            {primary.url_imagen && <img src={thumb(primary.url_imagen, 1200)} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
             {isGroup && (
               <>
                 <p className="text-[11px] font-semibold text-neutral-700">Elegí la foto principal:</p>
@@ -435,7 +449,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
                       className={`aspect-square overflow-hidden rounded-md border-2 bg-neutral-100 ${
                         i === primaryIdx ? "border-orange-500 ring-2 ring-orange-200" : "border-neutral-200 hover:border-neutral-400"
                       }`}>
-                      <img src={c.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+                      <img src={thumb(c.url_imagen, 200)} alt="" className="h-full w-full object-contain" loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -552,7 +566,7 @@ function ProductosView() {
   const fetch = useServerFn(listProductosAdmin);
   const upd = useServerFn(updateProductoEstado);
   const agendar = useServerFn(agendarPublicacion);
-  const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch() });
+  const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch(), ...QUERY_OPTS });
   const [scheduling, setScheduling] = useState<Producto | null>(null);
   const [publishing, setPublishing] = useState<Producto | null>(null);
   const [viewingTexts, setViewingTexts] = useState<Producto | null>(null);
@@ -582,7 +596,7 @@ function ProductosView() {
             {visibles.map(p => (
               <div key={p.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
                 <div className="relative aspect-square bg-[#e5e7eb]">
-                  {p.url_imagen && <img src={p.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
+                  {p.url_imagen && <img src={thumb(p.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between">
@@ -718,7 +732,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         {extraList.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto">
             {[imagen, ...extraList].filter(Boolean).map((src, i) => (
-              <img key={i} src={src} alt="" className="h-14 w-14 shrink-0 rounded border border-neutral-200 bg-neutral-50 object-contain" />
+              <img key={i} src={thumb(src, 200)} alt="" className="h-14 w-14 shrink-0 rounded border border-neutral-200 bg-neutral-50 object-contain" loading="lazy" />
             ))}
           </div>
         )}
@@ -790,7 +804,7 @@ function ScheduleDialog({ producto, onClose, agendar }: { producto: Producto; on
 /* ============ Agenda ============ */
 function AgendaView() {
   const fetch = useServerFn(listAgenda);
-  const q = useQuery({ queryKey: ["agenda"], queryFn: () => fetch() });
+  const q = useQuery({ queryKey: ["agenda"], queryFn: () => fetch(), ...QUERY_OPTS });
   return (
     <div>
       <div className="mb-3 flex items-center gap-2">
@@ -830,7 +844,7 @@ function LandingView() {
   const qc = useQueryClient();
   const fetchLanding = useServerFn(listSheetProducts);
   const updLanding = useServerFn(updateSheetProduct);
-  const q = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLanding() });
+  const q = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLanding(), ...QUERY_OPTS });
   const [editing, setEditing] = useState<SheetProduct | null>(null);
 
   const mut = useMutation({
@@ -886,7 +900,7 @@ function LandingView() {
             {q.data.map(p => (
               <div key={p.rowIndex} className={`overflow-hidden rounded-xl border bg-white shadow-sm ${p.activo ? "border-neutral-200" : "border-neutral-200 opacity-60"}`}>
                 <div className="relative aspect-square bg-[#e5e7eb]">
-                  {p.imagen_url && <img src={p.imagen_url} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
+                  {p.imagen_url && <img src={thumb(p.imagen_url, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between gap-2">
@@ -942,7 +956,7 @@ function ImagePicker({ label, value, onChange }: { label: string; value: string;
     <div className="space-y-1">
       <label className="text-xs font-medium text-neutral-600">{label}</label>
       <div className="flex items-start gap-2">
-        {value && <img src={value} alt="" className="h-16 w-16 rounded border border-neutral-200 bg-neutral-100 object-contain" />}
+        {value && <img src={thumb(value, 200)} alt="" className="h-16 w-16 rounded border border-neutral-200 bg-neutral-100 object-contain" loading="lazy" />}
         <div className="flex-1 space-y-1">
           <input value={value} onChange={(e) => onChange(e.target.value)} className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-xs" placeholder="URL..." />
           <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs font-medium hover:bg-neutral-50">
