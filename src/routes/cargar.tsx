@@ -327,3 +327,45 @@ function Field({ label, required, children }: { label: string; required?: boolea
     </label>
   );
 }
+
+function ChipPicker({
+  label,
+  options,
+  value,
+  onC,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onC: (x: string) => void;
+}) {
+  const selected = splitTags(value);
+  const toggle = (tag: string) => {
+    const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
+    onC(next.join("|"));
+  };
+  return (
+    <div>
+      <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-600">{label}</span>
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        {options.map((tag) => {
+          const on = selected.includes(tag);
+          return (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggle(tag)}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                on
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+              }`}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
