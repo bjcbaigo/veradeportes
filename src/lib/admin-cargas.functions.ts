@@ -125,8 +125,8 @@ export const getSheetUrl = createServerFn({ method: "GET" })
 
 /* ============ Inicializar pestañas ============ */
 const TAB_HEADERS = {
-  CARGAS_USUARIOS: ["ID","Fecha","Usuario","URL_Imagen","Marca_Sugerida","Categoria_Sugerida","Comentario","Estado","URL_Drive"],
-  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID","Imagenes_Extra"],
+  CARGAS_USUARIOS: ["ID","Fecha","Usuario","URL_Imagen","Marca_Sugerida","Categoria_Sugerida","Comentario","Estado","URL_Drive","Modelo_Sugerido","Color","Ideal_Para","Sellos","Talles"],
+  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID","Imagenes_Extra","Color","Ideal_Para","Sellos","Talles"],
   CALENDARIO_PUBLICACIONES: ["ID","Producto_ID","Fecha_Publicacion","Canal","Tipo_Publicacion","Estado"],
 } as const;
 
@@ -214,6 +214,7 @@ export type Producto = {
   descripcion: string; caracteristicas: string; uso: string;
   hashtags: string; texto_ig: string; texto_wsp: string;
   estado: string; carga_id: string; imagenes_extra: string;
+  color: string; ideal_para: string; sellos: string; talles: string;
 };
 export type Agenda = {
   rowIndex: number;
@@ -269,6 +270,10 @@ const ProductoInput = z.object({
   carga_id: z.string().max(80).default(""),
   carga_rowIndex: z.number().int().min(2).max(2000).optional(),
   imagenes_extra: z.string().max(3000).default(""),
+  color: z.string().max(80).default(""),
+  ideal_para: z.string().max(300).default(""),
+  sellos: z.string().max(300).default(""),
+  talles: z.string().max(200).default(""),
 });
 
 export const aprobarYCrearProducto = createServerFn({ method: "POST" })
@@ -283,12 +288,12 @@ export const aprobarYCrearProducto = createServerFn({ method: "POST" })
       hour: "2-digit", minute: "2-digit", hour12: false,
     }).format(new Date());
 
-    await appendRow("PRODUCTOS_ADMIN", "A:P", [
+    await appendRow("PRODUCTOS_ADMIN", "A:T", [
       id, fecha, data.url_imagen, data.marca, data.modelo,
       data.categoria, data.subcategoria, data.descripcion,
       data.caracteristicas, data.uso, data.hashtags,
       data.texto_ig, data.texto_wsp, data.estado, data.carga_id,
-      data.imagenes_extra,
+      data.imagenes_extra, data.color, data.ideal_para, data.sellos, data.talles,
     ]);
 
     if (data.carga_rowIndex) {
@@ -301,7 +306,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<Producto[]> => {
     await assertAdmin(context as any);
-    const rows = await readRange("PRODUCTOS_ADMIN!A2:P2000");
+    const rows = await readRange("PRODUCTOS_ADMIN!A2:T2000");
     return rows.map((r, i) => ({
       rowIndex: i + 2,
       id: r[0] ?? "", fecha_revision: r[1] ?? "", url_imagen: r[2] ?? "",
@@ -311,6 +316,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
       texto_ig: r[11] ?? "", texto_wsp: r[12] ?? "",
       estado: (r[13] ?? "APROBADO").toUpperCase(), carga_id: r[14] ?? "",
       imagenes_extra: r[15] ?? "",
+      color: r[16] ?? "", ideal_para: r[17] ?? "", sellos: r[18] ?? "", talles: r[19] ?? "",
     }));
   });
 
@@ -411,8 +417,8 @@ export const resetAllSheets = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context as any);
-    await clearRows("CARGAS_USUARIOS", "I");
-    await clearRows("PRODUCTOS_ADMIN", "P");
+    await clearRows("CARGAS_USUARIOS", "N");
+    await clearRows("PRODUCTOS_ADMIN", "T");
     await clearRows("Productos", "N");
     return { ok: true };
   });
