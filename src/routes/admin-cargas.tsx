@@ -930,6 +930,7 @@ function LandingView() {
       imagenes_extra: v.imagenes_extra ?? "",
       sku: v.sku ?? "", marca: v.marca ?? "", color: v.color ?? "",
       ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "", talles: v.talles ?? "",
+      precio_anterior: v.precio_anterior ?? "",
     }}),
 
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success("Landing actualizada"); },
@@ -1056,6 +1057,7 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
         <Inp label="Nombre" v={v.nombre} onC={x => setV(s => ({ ...s, nombre: x }))} />
         <Inp label="Categoría" v={v.categoria} onC={x => setV(s => ({ ...s, categoria: x }))} />
         <Inp label="Precio" v={v.precio} onC={x => setV(s => ({ ...s, precio: x }))} />
+        <OfertaFields precio={v.precio} precioAnterior={v.precio_anterior ?? ""} onChange={x => setV(s => ({ ...s, precio_anterior: x }))} />
         <ImagePicker label="Imagen principal" value={v.imagen_url} onChange={x => setV(s => ({ ...s, imagen_url: x }))} />
         <div className="space-y-1">
           <label className="text-xs font-medium text-neutral-600">Imágenes extra</label>
