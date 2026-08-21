@@ -18,9 +18,39 @@ export const SELLOS_OPTIONS = [
   "Alta durabilidad",
 ] as const;
 
-export const TALLES_CALZADO_OPTIONS = [
-  "34","35","36","37","38","39","40","41","42","43","44","45","46",
-] as const;
+// --- Talles de calzado ---
+// Incluyen valores intermedios (medios talles): 34, 34.5, 35, 35.5...
+function rangeTalles(from: number, to: number): string[] {
+  const out: string[] = [];
+  for (let n = from * 2; n <= to * 2; n++) {
+    const v = n / 2;
+    out.push(Number.isInteger(v) ? String(v) : v.toFixed(1));
+  }
+  return out;
+}
+
+export type TalleRango = "ninos" | "adultos";
+
+export const TALLES_NINOS_OPTIONS = rangeTalles(25, 35);
+export const TALLES_ADULTOS_OPTIONS = rangeTalles(34, 46);
+
+export const TALLE_RANGOS: { id: TalleRango; label: string; hint: string; options: string[] }[] = [
+  { id: "ninos", label: "Niños", hint: "25 a 35", options: TALLES_NINOS_OPTIONS },
+  { id: "adultos", label: "Adultos", hint: "34 a 46", options: TALLES_ADULTOS_OPTIONS },
+];
+
+// Compatibilidad: unión de ambos rangos.
+export const TALLES_CALZADO_OPTIONS = Array.from(
+  new Set([...TALLES_NINOS_OPTIONS, ...TALLES_ADULTOS_OPTIONS]),
+).sort((a, b) => Number(a) - Number(b));
+
+// Detecta el rango más probable a partir de los talles ya elegidos.
+export function detectTalleRango(raw?: string): TalleRango {
+  const nums = splitTags(raw).map(Number).filter((n) => !Number.isNaN(n));
+  if (nums.length === 0) return "adultos";
+  const max = Math.max(...nums);
+  return max <= 35 ? "ninos" : "adultos";
+}
 
 export function splitTags(raw?: string): string[] {
   return (raw || "")
