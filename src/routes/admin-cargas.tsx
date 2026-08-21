@@ -366,7 +366,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
   const isGroup = cargas.length > 1;
 
   const [v, setV] = useState({
-    marca: primary.marca, modelo: "", categoria: primary.categoria, subcategoria: "",
+    marca: primary.marca, modelo: primary.modelo ?? "", categoria: primary.categoria, subcategoria: "",
     descripcion: (primary.comentario || "").replace(/\s*\[G-[^\]]+\]\s*/g, "").trim(),
     caracteristicas: "", uso: "",
     hashtags: "", texto_ig: "", texto_wsp: "",
@@ -390,6 +390,8 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
         uso: v.uso, hashtags: v.hashtags, texto_ig: v.texto_ig, texto_wsp: v.texto_wsp,
         estado: v.estado, carga_id: primary.id, carga_rowIndex: primary.rowIndex,
         imagenes_extra: extras,
+        color: primary.color ?? "", ideal_para: primary.idealPara ?? "",
+        sellos: primary.sellos ?? "", talles: primary.talles ?? "",
       }});
       // Marcar el resto del grupo con el mismo estado
       for (const c of cargas) {
@@ -618,10 +620,10 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [destacado, setDestacado] = useState(false);
   const [sku, setSku] = useState("");
   const [marca, setMarca] = useState(producto.marca || "");
-  const [color, setColor] = useState("");
-  const [idealPara, setIdealPara] = useState("");
-  const [sellos, setSellos] = useState("");
-  const [talles, setTalles] = useState("");
+  const [color, setColor] = useState(producto.color || "");
+  const [idealPara, setIdealPara] = useState(producto.ideal_para || "");
+  const [sellos, setSellos] = useState(producto.sellos || "");
+  const [talles, setTalles] = useState(producto.talles || "");
   const [busy, setBusy] = useState(false);
 
   const extraList = imagenesExtra.split("|").map((s) => s.trim()).filter(Boolean);

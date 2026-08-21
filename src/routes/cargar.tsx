@@ -6,6 +6,12 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { submitUpload, verifyUploadPin } from "@/lib/uploads.functions";
 import { optimizeImage, formatBytes, type OptimizedImage } from "@/lib/image-optimize";
+import {
+  IDEAL_PARA_OPTIONS,
+  SELLOS_OPTIONS,
+  TALLES_CALZADO_OPTIONS,
+  splitTags,
+} from "@/lib/product-taxonomy";
 
 export const Route = createFileRoute("/cargar")({
   head: () => ({
@@ -99,6 +105,11 @@ function UploadForm({ pin }: { pin: string }) {
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [modelo, setModelo] = useState("");
+  const [color, setColor] = useState("");
+  const [idealPara, setIdealPara] = useState("");
+  const [sellos, setSellos] = useState("");
+  const [talles, setTalles] = useState("");
   const [comentario, setComentario] = useState("");
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
@@ -164,6 +175,8 @@ function UploadForm({ pin }: { pin: string }) {
         await submit({ data: {
           pin, usuario: usuario.trim(),
           marca: marca.trim(), categoria: categoria.trim(),
+          modelo: modelo.trim(), color: color.trim(),
+          idealPara: idealPara.trim(), sellos: sellos.trim(), talles: talles.trim(),
           comentario: com,
           filename: it.file.name,
           mime: "image/jpeg", dataBase64: b64,
@@ -174,6 +187,7 @@ function UploadForm({ pin }: { pin: string }) {
       localStorage.setItem("vera_uploader", usuario.trim());
       items.forEach((it) => URL.revokeObjectURL(it.previewUrl));
       setItems([]); setMarca(""); setCategoria(""); setComentario("");
+      setModelo(""); setColor(""); setIdealPara(""); setSellos(""); setTalles("");
       setOk(enviadas);
       toast.success(enviadas === 1 ? "¡Foto enviada!" : `¡${enviadas} fotos enviadas!`);
     } catch (err) {
@@ -271,7 +285,21 @@ function UploadForm({ pin }: { pin: string }) {
             placeholder="Ej: Zapatillas"
             className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
         </Field>
+        <Field label="Modelo">
+          <input value={modelo} onChange={(e) => setModelo(e.target.value)} maxLength={120}
+            placeholder="Ej: Gel-Challenger 14"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
+        </Field>
+        <Field label="Color">
+          <input value={color} onChange={(e) => setColor(e.target.value)} maxLength={80}
+            placeholder="Ej: Negro / blanco"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
+        </Field>
       </div>
+
+      <ChipPicker label="Ideal para (opcional)" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
+      <ChipPicker label="Sellos (opcional)" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
+      <ChipPicker label="Talles disponibles (opcional)" options={TALLES_CALZADO_OPTIONS} value={talles} onC={setTalles} />
 
       <Field label="Comentario (opcional)">
         <textarea value={comentario} onChange={(e) => setComentario(e.target.value)} maxLength={500} rows={3}
@@ -297,5 +325,47 @@ function Field({ label, required, children }: { label: string; required?: boolea
       </span>
       {children}
     </label>
+  );
+}
+
+function ChipPicker({
+  label,
+  options,
+  value,
+  onC,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onC: (x: string) => void;
+}) {
+  const selected = splitTags(value);
+  const toggle = (tag: string) => {
+    const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
+    onC(next.join("|"));
+  };
+  return (
+    <div>
+      <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-600">{label}</span>
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        {options.map((tag) => {
+          const on = selected.includes(tag);
+          return (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggle(tag)}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                on
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+              }`}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
