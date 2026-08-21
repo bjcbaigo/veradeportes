@@ -17,7 +17,8 @@ import {
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
-import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, TALLES_CALZADO_OPTIONS, splitTags } from "@/lib/product-taxonomy";
+import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
+import { TallesPicker } from "@/components/TallesPicker";
 
 
 export const Route = createFileRoute("/admin-cargas")({
@@ -680,7 +681,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         </div>
         <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
         <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
-        <TagPicker label="Talles disponibles" options={TALLES_CALZADO_OPTIONS} value={talles} onC={setTalles} />
+        <TallesPicker value={talles} onC={setTalles} />
 
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={destacado} onChange={e => setDestacado(e.target.checked)} />
@@ -938,7 +939,7 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
         </div>
         <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={v.ideal_para ?? ""} onC={x => setV(s => ({ ...s, ideal_para: x }))} />
         <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={v.sellos ?? ""} onC={x => setV(s => ({ ...s, sellos: x }))} />
-        <TagPicker label="Talles disponibles" options={TALLES_CALZADO_OPTIONS} value={v.talles ?? ""} onC={x => setV(s => ({ ...s, talles: x }))} />
+        <TallesPicker value={v.talles ?? ""} onC={x => setV(s => ({ ...s, talles: x }))} />
 
         <div className="flex gap-4 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={v.activo} onChange={e => setV(s => ({ ...s, activo: e.target.checked }))} />Activo</label>
