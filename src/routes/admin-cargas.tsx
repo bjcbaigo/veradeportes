@@ -313,7 +313,7 @@ function CargasView() {
                 <div className="relative aspect-square bg-[#e5e7eb]">
                   {primary.url_imagen ? (
                     <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
-                      <img src={primary.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                      <img src={thumb(primary.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
                     </a>
                   ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
                   {isGroup && (
@@ -325,7 +325,7 @@ function CargasView() {
                 {isGroup && (
                   <div className="flex gap-1 overflow-x-auto border-t border-neutral-100 bg-neutral-50 px-2 py-1.5">
                     {items.map(c => (
-                      <img key={c.id} src={c.url_imagen} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
+                      <img key={c.id} src={thumb(c.url_imagen, 200)} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
                     ))}
                   </div>
                 )}
