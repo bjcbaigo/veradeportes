@@ -113,6 +113,16 @@ async function updateCell(sheetName: string, cell: string, value: string) {
   invalidateReadCache(sheetName);
 }
 
+/* ============ URL pública de la planilla ============ */
+export const getSheetUrl = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ url: string }> => {
+    await assertAdmin(context as any);
+    const sheetId = process.env.PRODUCTS_SHEET_ID;
+    if (!sheetId) throw new Error("Falta PRODUCTS_SHEET_ID");
+    return { url: `https://docs.google.com/spreadsheets/d/${sheetId}/edit` };
+  });
+
 /* ============ Inicializar pestañas ============ */
 const TAB_HEADERS = {
   CARGAS_USUARIOS: ["ID","Fecha","Usuario","URL_Imagen","Marca_Sugerida","Categoria_Sugerida","Comentario","Estado","URL_Drive"],

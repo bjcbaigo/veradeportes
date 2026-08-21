@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,7 @@ import {
   initAdminSheets, listCargas, updateCargaEstado,
   aprobarYCrearProducto, listProductosAdmin, updateProductoEstado,
   agendarPublicacion, listAgenda, publicarEnLanding, resetAllSheets,
+  getSheetUrl,
   type Carga, type Producto,
 } from "@/lib/admin-cargas.functions";
 
@@ -135,6 +136,13 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
 
   const initFn = useServerFn(initAdminSheets);
   const resetFn = useServerFn(resetAllSheets);
+  const sheetUrlFn = useServerFn(getSheetUrl);
+  async function openSheet() {
+    try {
+      const { url } = await sheetUrlFn({});
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) { toast.error((e as Error).message); }
+  }
   const qc = useQueryClient();
   const [initBusy, setInitBusy] = useState(false);
   const [resetBusy, setResetBusy] = useState(false);
@@ -171,6 +179,10 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           <Link to="/cargar" className="inline-flex items-center gap-1.5 rounded-md bg-orange-500 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-orange-600">
             <Camera className="h-3.5 w-3.5" /> Cargar fotos
           </Link>
+          <button onClick={openSheet} title="Abrir la planilla de Google Sheets"
+            className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50">
+            <ExternalLink className="h-3.5 w-3.5" /> Abrir planilla
+          </button>
           <button onClick={doInit} disabled={initBusy} title="Crear pestañas en el Sheet si faltan"
             className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50 disabled:opacity-60">
             <Settings className="h-3.5 w-3.5" /> Inicializar
