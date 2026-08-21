@@ -30,6 +30,7 @@ export function sheetToProduct(s: SheetProduct): Product {
     category: s.categoria,
     color: s.color || undefined,
     price: fmt(s.precio),
+    priceOld: s.precio_anterior ? fmt(s.precio_anterior) : undefined,
     image: s.imagen_url || "",
     images,
     badge: s.destacado ? "Destacado" : undefined,
@@ -41,10 +42,19 @@ export function sheetToProduct(s: SheetProduct): Product {
 }
 
 
+function priceNumber(raw?: string) {
+  return Number((raw || "").replace(/[^\d]/g, "")) || 0;
+}
+
 export function isOfferProduct(product: Product) {
+  // Es oferta si: tiene sello "Oferta", la categoría/nombre lo dice,
+  // o tiene precio anterior mayor al actual (descuento real).
+  const hasOfferSeal = (product.seals ?? []).some((s) => s.toLowerCase() === "oferta");
+  const hasRealDiscount = priceNumber(product.priceOld) > priceNumber(product.price) && priceNumber(product.price) > 0;
   return (
-    matchesCategory(product.category, product.name, product.badge, "Ofertas") ||
-    Boolean(product.priceOld)
+    hasOfferSeal ||
+    hasRealDiscount ||
+    matchesCategory(product.category, product.name, product.badge, "Ofertas")
   );
 }
 
