@@ -439,7 +439,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
         </div>
         <div className="grid gap-4 p-5 md:grid-cols-[220px_1fr]">
           <div className="space-y-2">
-            {primary.url_imagen && <img src={primary.url_imagen} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
+            {primary.url_imagen && <img src={thumb(primary.url_imagen, 1200)} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
             {isGroup && (
               <>
                 <p className="text-[11px] font-semibold text-neutral-700">Elegí la foto principal:</p>
@@ -449,7 +449,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
                       className={`aspect-square overflow-hidden rounded-md border-2 bg-neutral-100 ${
                         i === primaryIdx ? "border-orange-500 ring-2 ring-orange-200" : "border-neutral-200 hover:border-neutral-400"
                       }`}>
-                      <img src={c.url_imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+                      <img src={thumb(c.url_imagen, 200)} alt="" className="h-full w-full object-contain" loading="lazy" />
                     </button>
                   ))}
                 </div>
