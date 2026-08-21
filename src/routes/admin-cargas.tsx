@@ -562,20 +562,23 @@ function ProductosView() {
     onError: (e) => toast.error((e as Error).message),
   });
 
+  // Ocultar descartados y filas sin datos (id o imagen vacíos)
+  const visibles = (q.data ?? []).filter((p) => p.estado !== "DESCARTADO" && p.id);
+
   return (
     <div>
       <div className="mb-3 flex items-center gap-2">
         <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
           <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
         </button>
-        <span className="ml-auto text-xs text-neutral-500">{q.data?.length ?? 0}</span>
+        <span className="ml-auto text-xs text-neutral-500">{visibles.length}</span>
       </div>
       {q.isLoading ? <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
-        : !q.data?.length ? (
+        : !visibles.length ? (
           <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">Sin productos aprobados todavía.</div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {q.data.map(p => (
+            {visibles.map(p => (
               <div key={p.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
                 <div className="relative aspect-square bg-[#e5e7eb]">
                   {p.url_imagen && <img src={p.url_imagen} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
