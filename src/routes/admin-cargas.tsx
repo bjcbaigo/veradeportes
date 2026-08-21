@@ -985,6 +985,11 @@ function LandingView() {
                       {p.activo ? "ACTIVO" : "OCULTO"}
                     </span>
                     {p.destacado && <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700"><Star className="h-3 w-3 fill-orange-500" />DESTACADO</span>}
+                    {parseMoney(p.precio_anterior) > parseMoney(p.precio) && parseMoney(p.precio) > 0 && (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">
+                        −{Math.round((1 - parseMoney(p.precio) / parseMoney(p.precio_anterior)) * 100)}%
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm font-semibold text-neutral-900">{p.nombre}</p>
                   <p className="text-xs text-neutral-500">{p.categoria} · <span className="font-semibold text-neutral-700">{p.precio}</span></p>
