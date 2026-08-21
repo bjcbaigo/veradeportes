@@ -9,9 +9,10 @@ import { optimizeImage, formatBytes, type OptimizedImage } from "@/lib/image-opt
 import {
   IDEAL_PARA_OPTIONS,
   SELLOS_OPTIONS,
-  TALLES_CALZADO_OPTIONS,
   splitTags,
 } from "@/lib/product-taxonomy";
+import { TallesPicker } from "@/components/TallesPicker";
+
 
 export const Route = createFileRoute("/cargar")({
   head: () => ({
