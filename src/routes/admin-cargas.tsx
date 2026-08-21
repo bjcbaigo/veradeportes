@@ -751,6 +751,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [nombre, setNombre] = useState(`${producto.marca} ${producto.modelo}`.trim());
   const [categoria, setCategoria] = useState(producto.categoria || "");
   const [precio, setPrecio] = useState("");
+  const [precioAnterior, setPrecioAnterior] = useState("");
   const [descripcion, setDescripcion] = useState(producto.descripcion || "");
   const [imagen, setImagen] = useState(producto.url_imagen || "");
   const [imagenesExtra, setImagenesExtra] = useState(producto.imagenes_extra || "");
@@ -777,6 +778,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
         sku, marca, color, ideal_para: idealPara, sellos, talles,
+        precio_anterior: precioAnterior,
       }});
 
       toast.success("Publicado en la landing");
@@ -795,6 +797,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         <Inp label="Nombre *" v={nombre} onC={setNombre} />
         <Inp label="Categoría *" v={categoria} onC={setCategoria} />
         <Inp label="Precio * (ej: 89000)" v={precio} onC={setPrecio} />
+        <OfertaFields precio={precio} precioAnterior={precioAnterior} onChange={setPrecioAnterior} />
         <Inp label="Imagen principal *" v={imagen} onC={setImagen} />
         <TA
           label={`Imágenes extra (una por línea) — ${extraList.length}`}
