@@ -308,8 +308,10 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
     await assertAdmin(context as any);
     const rows = await readRange("PRODUCTOS_ADMIN!A2:T2000");
     // Filtrar filas basura (sin ID): evita tarjetas vacías en el panel
-    return rows.filter((r) => (r[0] ?? "").trim() !== "").map((r, i) => ({
-      rowIndex: i + 2,
+    return rows.map((r, i) => ({ rowIndex: i + 2, r }))
+      .filter(({ r }) => (r[0] ?? "").trim() !== "")
+      .map(({ rowIndex, r }) => ({
+      rowIndex,
       id: r[0] ?? "", fecha_revision: r[1] ?? "", url_imagen: r[2] ?? "",
       marca: r[3] ?? "", modelo: r[4] ?? "", categoria: r[5] ?? "",
       subcategoria: r[6] ?? "", descripcion: r[7] ?? "",
