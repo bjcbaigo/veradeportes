@@ -555,6 +555,7 @@ function ProductosView() {
   const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch() });
   const [scheduling, setScheduling] = useState<Producto | null>(null);
   const [publishing, setPublishing] = useState<Producto | null>(null);
+  const [viewingTexts, setViewingTexts] = useState<Producto | null>(null);
 
   const mut = useMutation({
     mutationFn: (v: { rowIndex: number; estado: "APROBADO"|"PUBLICADO"|"DESCARTADO" }) => upd({ data: v }),
