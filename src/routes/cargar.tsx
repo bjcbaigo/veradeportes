@@ -300,7 +300,7 @@ function UploadForm({ pin }: { pin: string }) {
 
       <ChipPicker label="Ideal para (opcional)" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
       <ChipPicker label="Sellos (opcional)" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
-      <ChipPicker label="Talles disponibles (opcional)" options={TALLES_CALZADO_OPTIONS} value={talles} onC={setTalles} />
+      <TallesPicker value={talles} onC={setTalles} />
 
       <Field label="Comentario (opcional)">
         <textarea value={comentario} onChange={(e) => setComentario(e.target.value)} maxLength={500} rows={3}
