@@ -105,6 +105,11 @@ function UploadForm({ pin }: { pin: string }) {
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [modelo, setModelo] = useState("");
+  const [color, setColor] = useState("");
+  const [idealPara, setIdealPara] = useState("");
+  const [sellos, setSellos] = useState("");
+  const [talles, setTalles] = useState("");
   const [comentario, setComentario] = useState("");
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
@@ -170,6 +175,8 @@ function UploadForm({ pin }: { pin: string }) {
         await submit({ data: {
           pin, usuario: usuario.trim(),
           marca: marca.trim(), categoria: categoria.trim(),
+          modelo: modelo.trim(), color: color.trim(),
+          idealPara: idealPara.trim(), sellos: sellos.trim(), talles: talles.trim(),
           comentario: com,
           filename: it.file.name,
           mime: "image/jpeg", dataBase64: b64,
