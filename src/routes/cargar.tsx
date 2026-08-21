@@ -6,6 +6,12 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { submitUpload, verifyUploadPin } from "@/lib/uploads.functions";
 import { optimizeImage, formatBytes, type OptimizedImage } from "@/lib/image-optimize";
+import {
+  IDEAL_PARA_OPTIONS,
+  SELLOS_OPTIONS,
+  TALLES_CALZADO_OPTIONS,
+  splitTags,
+} from "@/lib/product-taxonomy";
 
 export const Route = createFileRoute("/cargar")({
   head: () => ({

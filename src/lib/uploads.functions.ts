@@ -6,6 +6,7 @@ const SHEETS_GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
 const DRIVE_UPLOAD = "https://connector-gateway.lovable.dev/google_drive/upload/drive/v3/files";
 const DRIVE_API = "https://connector-gateway.lovable.dev/google_drive/drive/v3";
 const SHEET_NAME = "CARGAS_USUARIOS";
+const SHEET_RANGE = `${SHEET_NAME}!A:N`;
 
 function env() {
   const lovableKey = process.env.LOVABLE_API_KEY;
@@ -25,6 +26,11 @@ const Input = z.object({
   usuario: z.string().trim().min(1).max(80),
   marca: z.string().trim().max(80).optional().default(""),
   categoria: z.string().trim().max(80).optional().default(""),
+  modelo: z.string().trim().max(120).optional().default(""),
+  color: z.string().trim().max(80).optional().default(""),
+  idealPara: z.string().trim().max(200).optional().default(""),
+  sellos: z.string().trim().max(300).optional().default(""),
+  talles: z.string().trim().max(200).optional().default(""),
   comentario: z.string().trim().max(500).optional().default(""),
   filename: z.string().min(1).max(120),
   mime: z.string().regex(/^image\/(png|jpeg|jpg|webp|heic|heif)$/i),
@@ -102,7 +108,7 @@ export const submitUpload = createServerFn({ method: "POST" })
       hour: "2-digit", minute: "2-digit", hour12: false,
     }).format(new Date());
 
-    const range = `${SHEET_NAME}!A:I`;
+    const range = SHEET_RANGE;
     const appRes = await fetch(
       `${SHEETS_GATEWAY}/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
       {
@@ -119,6 +125,7 @@ export const submitUpload = createServerFn({ method: "POST" })
             id, fecha, data.usuario, publicUrl,
             data.marca, data.categoria, data.comentario,
             "PENDIENTE", viewUrl,
+            data.modelo, data.color, data.idealPara, data.sellos, data.talles,
           ]],
         }),
       },
