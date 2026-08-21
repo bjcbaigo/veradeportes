@@ -136,6 +136,13 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
 
   const initFn = useServerFn(initAdminSheets);
   const resetFn = useServerFn(resetAllSheets);
+  const sheetUrlFn = useServerFn(getSheetUrl);
+  async function openSheet() {
+    try {
+      const { url } = await sheetUrlFn({});
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) { toast.error((e as Error).message); }
+  }
   const qc = useQueryClient();
   const [initBusy, setInitBusy] = useState(false);
   const [resetBusy, setResetBusy] = useState(false);
