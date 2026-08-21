@@ -205,6 +205,7 @@ export type Carga = {
   id: string; fecha: string; usuario: string;
   url_imagen: string; marca: string; categoria: string;
   comentario: string; estado: string; url_drive: string;
+  modelo: string; color: string; idealPara: string; sellos: string; talles: string;
 };
 export type Producto = {
   rowIndex: number;
@@ -225,13 +226,15 @@ export const listCargas = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<Carga[]> => {
     await assertAdmin(context as any);
-    const rows = await readRange("CARGAS_USUARIOS!A2:I2000");
+    const rows = await readRange("CARGAS_USUARIOS!A2:N2000");
     return rows.map((r, i) => ({
       rowIndex: i + 2,
       id: r[0] ?? "", fecha: r[1] ?? "", usuario: r[2] ?? "",
       url_imagen: r[3] ?? "", marca: r[4] ?? "", categoria: r[5] ?? "",
       comentario: r[6] ?? "", estado: (r[7] ?? "PENDIENTE").toUpperCase(),
       url_drive: r[8] ?? "",
+      modelo: r[9] ?? "", color: r[10] ?? "", idealPara: r[11] ?? "",
+      sellos: r[12] ?? "", talles: r[13] ?? "",
     }));
   });
 
