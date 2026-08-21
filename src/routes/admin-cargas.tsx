@@ -146,21 +146,47 @@ function thumb(url: string, size = 400): string {
 // innecesario: el servidor ya cachea 60s, alineamos el cliente con eso.
 const QUERY_OPTS = { staleTime: 60_000, refetchOnWindowFocus: false } as const;
 
+const NAV_ITEMS = [
+  { key: "cargas", label: "Cargas", desc: "Lo que sube el encargado", icon: ImageIcon },
+  { key: "productos", label: "Productos", desc: "Fichas aprobadas", icon: CheckCircle2 },
+  { key: "landing", label: "Landing", desc: "La vidriera pública", icon: ShoppingBag },
+  { key: "agenda", label: "Calendario", desc: "Publicaciones", icon: Calendar },
+] as const;
+
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("cargas");
 
   const initFn = useServerFn(initAdminSheets);
   const resetFn = useServerFn(resetAllSheets);
   const sheetUrlFn = useServerFn(getSheetUrl);
+  const qc = useQueryClient();
+  const [initBusy, setInitBusy] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
+
+  // Contadores para los badges del menú (comparten cache de React Query con las vistas)
+  const fetchCargas = useServerFn(listCargas);
+  const fetchProductos = useServerFn(listProductosAdmin);
+  const fetchLandingList = useServerFn(listSheetProducts);
+  const qCargas = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
+  const qProductos = useQuery({ queryKey: ["productos"], queryFn: () => fetchProductos(), ...QUERY_OPTS });
+  const qLanding = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLandingList(), ...QUERY_OPTS });
+  const counts = useMemo<Record<Tab, number>>(() => ({
+    cargas: new Set(
+      (qCargas.data ?? [])
+        .filter((c) => c.estado === "PENDIENTE")
+        .map((c) => parseGroupId(c.comentario) ?? c.id),
+    ).size,
+    productos: (qProductos.data ?? []).filter((p) => p.id && p.estado !== "DESCARTADO").length,
+    landing: (qLanding.data ?? []).filter((p) => p.activo).length,
+    agenda: 0,
+  }), [qCargas.data, qProductos.data, qLanding.data]);
+
   async function openSheet() {
     try {
       const { url } = await sheetUrlFn({});
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) { toast.error((e as Error).message); }
   }
-  const qc = useQueryClient();
-  const [initBusy, setInitBusy] = useState(false);
-  const [resetBusy, setResetBusy] = useState(false);
   async function doInit() {
     setInitBusy(true);
     try {
@@ -184,55 +210,170 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-4 md:py-6">
-      <header className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-neutral-900">Gestión de cargas</h1>
-          <p className="text-xs text-neutral-500">{email}</p>
+    <div className="min-h-screen bg-neutral-50">
+      {/* ===== Sidebar (desktop) ===== */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-vd-navy md:flex">
+        <div className="border-b border-white/10 px-5 py-5">
+          <p className="text-lg font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
+          <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground/50">
+            Panel de gestión
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link to="/cargar" className="inline-flex items-center gap-1.5 rounded-md bg-orange-500 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-orange-600">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+          {NAV_ITEMS.map(({ key, label, desc, icon: Icon }) => {
+            const active = tab === key;
+            const badge = counts[key];
+            return (
+              <button key={key} onClick={() => setTab(key)}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${
+                  active
+                    ? "bg-primary text-primary-foreground shadow-lg"
+                    : "text-primary-foreground/65 hover:bg-white/5 hover:text-primary-foreground"
+                }`}>
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold leading-tight">{label}</span>
+                  <span className={`block truncate text-[10px] ${active ? "text-primary-foreground/75" : "text-primary-foreground/40"}`}>
+                    {desc}
+                  </span>
+                </span>
+                {badge > 0 && (
+                  <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                    active ? "bg-black/25 text-primary-foreground" : "bg-primary/20 text-primary"
+                  }`}>
+                    {badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="space-y-1 border-t border-white/10 px-3 py-3">
+          <p className="px-1 pb-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground/40">
+            Herramientas
+          </p>
+          <Link to="/cargar"
+            className="flex items-center gap-2.5 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground transition hover:brightness-110">
             <Camera className="h-3.5 w-3.5" /> Cargar fotos
           </Link>
-          <button onClick={openSheet} title="Abrir la planilla de Google Sheets"
-            className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50">
-            <ExternalLink className="h-3.5 w-3.5" /> Abrir planilla
-          </button>
-          <button onClick={doInit} disabled={initBusy} title="Crear pestañas en el Sheet si faltan"
-            className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50 disabled:opacity-60">
-            <Settings className="h-3.5 w-3.5" /> Inicializar
-          </button>
-          <button onClick={doReset} disabled={resetBusy} title="Vaciar cargas, productos y landing"
-            className="inline-flex items-center gap-1.5 rounded-md border border-red-300 bg-white px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50 disabled:opacity-60">
-            <XCircle className="h-3.5 w-3.5" /> {resetBusy ? "Limpiando…" : "Reset total"}
-          </button>
-          <button onClick={onLogout} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs text-neutral-500 hover:bg-neutral-100">
+          <SideTool icon={ExternalLink} label="Abrir planilla" onClick={openSheet} />
+          <SideTool icon={Settings} label={initBusy ? "Inicializando…" : "Inicializar"} onClick={doInit} disabled={initBusy} />
+          <SideTool icon={XCircle} label={resetBusy ? "Limpiando…" : "Reset total"} onClick={doReset} disabled={resetBusy} danger />
+        </div>
+        <div className="border-t border-white/10 px-4 py-3">
+          <p className="truncate text-[11px] text-primary-foreground/50">{email}</p>
+          <button onClick={onLogout}
+            className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground">
             <LogOut className="h-3.5 w-3.5" /> Salir
+          </button>
+        </div>
+      </aside>
+
+      {/* ===== Header + nav (mobile) ===== */}
+      <header className="md:hidden">
+        <div className="flex items-center justify-between bg-vd-navy px-4 pt-3">
+          <div>
+            <p className="text-sm font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-primary-foreground/50">
+              Panel de gestión
+            </p>
+          </div>
+          <button onClick={onLogout} aria-label="Salir"
+            className="rounded-lg p-2 text-primary-foreground/70 hover:bg-white/10">
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
+        <nav className="flex gap-1.5 overflow-x-auto bg-vd-navy px-3 pb-3 pt-2">
+          {NAV_ITEMS.map(({ key, label, icon: Icon }) => {
+            const active = tab === key;
+            const badge = counts[key];
+            return (
+              <button key={key} onClick={() => setTab(key)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                  active ? "bg-primary text-primary-foreground" : "bg-white/10 text-primary-foreground/70"
+                }`}>
+                <Icon className="h-3.5 w-3.5" /> {label}
+                {badge > 0 && (
+                  <span className="rounded-full bg-black/25 px-1.5 text-[10px] font-bold">{badge}</span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="flex gap-1.5 overflow-x-auto border-b border-neutral-200 bg-white px-3 py-2">
+          <Link to="/cargar"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
+            <Camera className="h-3 w-3" /> Cargar fotos
+          </Link>
+          <button onClick={openSheet}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[11px] font-medium text-neutral-700">
+            <ExternalLink className="h-3 w-3" /> Planilla
+          </button>
+          <button onClick={doInit} disabled={initBusy}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[11px] font-medium text-neutral-700 disabled:opacity-50">
+            <Settings className="h-3 w-3" /> Inicializar
+          </button>
+          <button onClick={doReset} disabled={resetBusy}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-300 px-3 py-1.5 text-[11px] font-medium text-red-600 disabled:opacity-50">
+            <XCircle className="h-3 w-3" /> Reset
           </button>
         </div>
       </header>
 
+      {/* ===== Contenido ===== */}
+      <main className="md:pl-64">
+        <div className="mx-auto max-w-6xl px-4 py-5">
+          <FlowHint tab={tab} />
+          {tab === "cargas" && <CargasView />}
+          {tab === "productos" && <ProductosView />}
+          {tab === "landing" && <LandingView />}
+          {tab === "agenda" && <AgendaView />}
+        </div>
+      </main>
+    </div>
+  );
+}
 
-      <nav className="mb-4 flex gap-1 overflow-x-auto border-b border-neutral-200">
-        {([
-          ["cargas","Cargas",ImageIcon],
-          ["productos","Productos",CheckCircle2],
-          ["landing","Landing",ShoppingBag],
-          ["agenda","Calendario",Calendar],
-        ] as const).map(([k, label, Icon]) => (
-          <button key={k} onClick={() => setTab(k)}
-            className={`-mb-px flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition ${
-              tab === k ? "border-orange-500 text-neutral-900" : "border-transparent text-neutral-500 hover:text-neutral-800"
-            }`}>
-            <Icon className="h-4 w-4" /> {label}
-          </button>
-        ))}
-      </nav>
+function SideTool({
+  icon: Icon, label, onClick, disabled, danger,
+}: {
+  icon: typeof Settings; label: string; onClick: () => void; disabled?: boolean; danger?: boolean;
+}) {
+  return (
+    <button onClick={onClick} disabled={disabled}
+      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition disabled:opacity-50 ${
+        danger
+          ? "text-red-300 hover:bg-red-500/10"
+          : "text-primary-foreground/65 hover:bg-white/5 hover:text-primary-foreground"
+      }`}>
+      <Icon className="h-3.5 w-3.5" /> {label}
+    </button>
+  );
+}
 
-      {tab === "cargas" && <CargasView />}
-      {tab === "productos" && <ProductosView />}
-      {tab === "landing" && <LandingView />}
-      {tab === "agenda" && <AgendaView />}
+// Guía del flujo: 1 Revisar → 2 Aprobar → 3 Publicar
+function FlowHint({ tab }: { tab: Tab }) {
+  if (tab === "agenda") return null;
+  const steps = [
+    { key: "cargas", n: 1, label: "Revisar cargas" },
+    { key: "productos", n: 2, label: "Aprobar y preparar" },
+    { key: "landing", n: 3, label: "Publicar y editar" },
+  ] as const;
+  return (
+    <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2">
+      {steps.map((s, i) => (
+        <div key={s.key} className="flex items-center gap-2">
+          <span className={`grid h-5 w-5 place-items-center rounded-full text-[11px] font-bold ${
+            tab === s.key ? "bg-primary text-primary-foreground" : "bg-neutral-200 text-neutral-500"
+          }`}>
+            {s.n}
+          </span>
+          <span className={`text-xs ${tab === s.key ? "font-semibold text-vd-navy" : "text-neutral-500"}`}>
+            {s.label}
+          </span>
+          {i < steps.length - 1 && <span className="text-neutral-300">→</span>}
+        </div>
+      ))}
     </div>
   );
 }
