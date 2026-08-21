@@ -179,6 +179,10 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           <Link to="/cargar" className="inline-flex items-center gap-1.5 rounded-md bg-orange-500 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-orange-600">
             <Camera className="h-3.5 w-3.5" /> Cargar fotos
           </Link>
+          <button onClick={openSheet} title="Abrir la planilla de Google Sheets"
+            className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50">
+            <ExternalLink className="h-3.5 w-3.5" /> Abrir planilla
+          </button>
           <button onClick={doInit} disabled={initBusy} title="Crear pestañas en el Sheet si faltan"
             className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-700 hover:bg-neutral-50 disabled:opacity-60">
             <Settings className="h-3.5 w-3.5" /> Inicializar
