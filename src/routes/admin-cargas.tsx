@@ -132,6 +132,20 @@ function Login() {
 const ESTADOS = ["PENDIENTE","EN_REVISION","ANALIZADO","APROBADO","PUBLICADO","DESCARTADO"] as const;
 type Tab = "cargas" | "productos" | "landing" | "agenda";
 
+// Miniaturas: las fotos de Drive (lh3.googleusercontent.com) pesan varios MB en
+// original; con =s### Google devuelve una versión redimensionada (mucho más rápida).
+function thumb(url: string, size = 400): string {
+  if (!url) return url;
+  if (url.includes("lh3.googleusercontent.com")) {
+    return url.replace(/=s\d+$/, "") + `=s${size}`;
+  }
+  return url;
+}
+
+// Las lecturas de Sheets van por un gateway externo (lentas); evitamos refetch
+// innecesario: el servidor ya cachea 60s, alineamos el cliente con eso.
+const QUERY_OPTS = { staleTime: 60_000, refetchOnWindowFocus: false } as const;
+
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("cargas");
 
@@ -240,7 +254,7 @@ function CargasView() {
   const [filter, setFilter] = useState<typeof ESTADOS[number] | "TODOS">("PENDIENTE");
   const [editing, setEditing] = useState<Carga[] | null>(null);
 
-  const q = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas() });
+  const q = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
 
   const groups = useMemo(() => {
     const all = q.data ?? [];
