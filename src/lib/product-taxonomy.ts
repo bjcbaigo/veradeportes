@@ -13,6 +13,7 @@ export const IDEAL_PARA_OPTIONS = [
 ] as const;
 
 export const SELLOS_OPTIONS = [
+  "Oferta",
   "Liviana",
   "Amortiguación",
   "Uso urbano",
