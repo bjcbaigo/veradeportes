@@ -5,6 +5,9 @@ export const IDEAL_PARA_OPTIONS = [
   "Urbano",
   "Caminar",
   "Pádel",
+  "Tenis",
+  "Fútbol",
+  "Basket",
   "Todo el día",
   "Training",
 ] as const;
