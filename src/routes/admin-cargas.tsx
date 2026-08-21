@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -555,6 +555,7 @@ function ProductosView() {
   const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch() });
   const [scheduling, setScheduling] = useState<Producto | null>(null);
   const [publishing, setPublishing] = useState<Producto | null>(null);
+  const [viewingTexts, setViewingTexts] = useState<Producto | null>(null);
 
   const mut = useMutation({
     mutationFn: (v: { rowIndex: number; estado: "APROBADO"|"PUBLICADO"|"DESCARTADO" }) => upd({ data: v }),
@@ -599,6 +600,11 @@ function ProductosView() {
                     <button onClick={() => setScheduling(p)} className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[11px] font-semibold text-white hover:bg-neutral-800">
                       <Calendar className="h-3 w-3" /> Agendar
                     </button>
+                    {(p.hashtags || p.texto_ig || p.texto_wsp) && (
+                      <button onClick={() => setViewingTexts(p)} className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold text-neutral-700 hover:bg-neutral-50">
+                        <Share2 className="h-3 w-3" /> Textos
+                      </button>
+                    )}
                     <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "DESCARTADO" })} className="rounded-md border border-red-300 bg-white px-2 py-1 text-[11px] text-red-700 hover:bg-red-50">Descartar</button>
                   </div>
                 </div>
@@ -608,6 +614,46 @@ function ProductosView() {
         )}
       {scheduling && <ScheduleDialog producto={scheduling} onClose={() => setScheduling(null)} agendar={(v) => agendar({ data: v })} />}
       {publishing && <PublishDialog producto={publishing} onClose={() => setPublishing(null)} />}
+      {viewingTexts && <TextsDialog producto={viewingTexts} onClose={() => setViewingTexts(null)} />}
+    </div>
+  );
+}
+
+/* ============ Textos para redes (guardados al aprobar) ============ */
+function TextsDialog({ producto, onClose }: { producto: Producto; onClose: () => void }) {
+  async function copy(label: string, text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} copiado`);
+    } catch {
+      toast.error("No se pudo copiar");
+    }
+  }
+  const blocks: { label: string; text: string }[] = [];
+  if (producto.texto_ig) blocks.push({ label: "Texto Instagram", text: producto.texto_ig });
+  if (producto.texto_wsp) blocks.push({ label: "Texto WhatsApp", text: producto.texto_wsp });
+  if (producto.hashtags) blocks.push({ label: "Hashtags", text: producto.hashtags });
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-md space-y-3 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-bold">Textos para redes</h2>
+          <button onClick={onClose} className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100">✕</button>
+        </div>
+        <p className="text-xs text-neutral-500">{producto.marca} {producto.modelo} — guardados al aprobar la carga.</p>
+        {blocks.length === 0 && <p className="py-6 text-center text-sm text-neutral-500">Este producto no tiene textos guardados.</p>}
+        {blocks.map(b => (
+          <div key={b.label} className="rounded-lg border border-neutral-200">
+            <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-3 py-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">{b.label}</span>
+              <button onClick={() => copy(b.label, b.text)} className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold hover:bg-neutral-50">
+                <Copy className="h-3 w-3" /> Copiar
+              </button>
+            </div>
+            <pre className="whitespace-pre-wrap p-3 text-xs text-neutral-800">{b.text}</pre>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
