@@ -516,6 +516,79 @@ function TA({ label, v, onC, span, rows = 3 }: { label: string; v: string; onC: 
     </label>
   );
 }
+function parseMoney(raw: string): number {
+  // Acepta "89000", "$89.000", "89.000" → 89000
+  const n = Number(String(raw).replace(/[^\d]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Precio anterior + % de descuento con cálculo automático en ambos sentidos.
+// El admin carga uno de los dos y el otro se completa solo.
+function OfertaFields({
+  precio,
+  precioAnterior,
+  onChange,
+}: {
+  precio: string;
+  precioAnterior: string;
+  onChange: (precioAnterior: string) => void;
+}) {
+  const [pctDraft, setPctDraft] = useState<string | null>(null);
+  const p = parseMoney(precio);
+  const pa = parseMoney(precioAnterior);
+  const valid = p > 0 && pa > p;
+  const pctCalc = valid ? Math.round((1 - p / pa) * 100) : 0;
+
+  function onPctInput(x: string) {
+    setPctDraft(x);
+    const d = parseMoney(x);
+    if (!x.trim()) { onChange(""); return; }
+    if (p > 0 && d > 0 && d < 100) {
+      onChange(String(Math.round(p / (1 - d / 100))));
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-dashed border-orange-300 bg-orange-50/50 p-3">
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-orange-700">
+        Oferta (opcional)
+      </span>
+      <div className="mt-2 grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="block text-[11px] font-medium text-neutral-600">Precio anterior</span>
+          <input
+            value={precioAnterior}
+            onChange={(e) => { setPctDraft(null); onChange(e.target.value); }}
+            placeholder="ej: 110000"
+            inputMode="numeric"
+            className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[11px] font-medium text-neutral-600">% descuento</span>
+          <input
+            value={pctDraft ?? (valid ? String(pctCalc) : "")}
+            onChange={(e) => onPctInput(e.target.value)}
+            placeholder="ej: 25"
+            inputMode="numeric"
+            className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          />
+        </label>
+      </div>
+      {precioAnterior && !valid && (
+        <p className="mt-1.5 text-[11px] text-red-600">
+          El precio anterior debe ser mayor al precio actual para mostrar el descuento.
+        </p>
+      )}
+      {valid && (
+        <p className="mt-1.5 text-[11px] font-semibold text-orange-700">
+          Se muestra: <span className="line-through">${pa.toLocaleString("es-AR")}</span> → ${p.toLocaleString("es-AR")} · −{pctCalc}%
+        </p>
+      )}
+    </div>
+  );
+}
+
 function TagPicker({
   label,
   options,
