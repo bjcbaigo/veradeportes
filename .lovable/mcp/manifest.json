@@ -246,6 +246,11 @@
             },
             "destacado": {
               "type": "boolean"
+            },
+            "precio_anterior": {
+              "description": "Precio anterior para ofertas (se muestra tachado). Vacío para quitar.",
+              "type": "string",
+              "maxLength": 50
             }
           },
           "required": [

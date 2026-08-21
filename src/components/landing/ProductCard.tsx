@@ -15,8 +15,9 @@ type Props = {
 };
 
 function discountLabel(product: Product) {
-  const current = Number(product.price.replace(/[^\d.-]/g, ""));
-  const old = Number(product.priceOld?.replace(/[^\d.-]/g, "") ?? 0);
+  // Los precios vienen formateados ("$89.000"): solo dígitos para comparar
+  const current = Number(product.price.replace(/[^\d]/g, ""));
+  const old = Number(product.priceOld?.replace(/[^\d]/g, "") ?? 0);
   if (!old || !current || current >= old) return product.badge;
   return `-${Math.round((1 - current / old) * 100)}%`;
 }

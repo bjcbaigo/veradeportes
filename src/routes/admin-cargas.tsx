@@ -516,6 +516,79 @@ function TA({ label, v, onC, span, rows = 3 }: { label: string; v: string; onC: 
     </label>
   );
 }
+function parseMoney(raw: string): number {
+  // Acepta "89000", "$89.000", "89.000" → 89000
+  const n = Number(String(raw).replace(/[^\d]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Precio anterior + % de descuento con cálculo automático en ambos sentidos.
+// El admin carga uno de los dos y el otro se completa solo.
+function OfertaFields({
+  precio,
+  precioAnterior,
+  onChange,
+}: {
+  precio: string;
+  precioAnterior: string;
+  onChange: (precioAnterior: string) => void;
+}) {
+  const [pctDraft, setPctDraft] = useState<string | null>(null);
+  const p = parseMoney(precio);
+  const pa = parseMoney(precioAnterior);
+  const valid = p > 0 && pa > p;
+  const pctCalc = valid ? Math.round((1 - p / pa) * 100) : 0;
+
+  function onPctInput(x: string) {
+    setPctDraft(x);
+    const d = parseMoney(x);
+    if (!x.trim()) { onChange(""); return; }
+    if (p > 0 && d > 0 && d < 100) {
+      onChange(String(Math.round(p / (1 - d / 100))));
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-dashed border-orange-300 bg-orange-50/50 p-3">
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-orange-700">
+        Oferta (opcional)
+      </span>
+      <div className="mt-2 grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="block text-[11px] font-medium text-neutral-600">Precio anterior</span>
+          <input
+            value={precioAnterior}
+            onChange={(e) => { setPctDraft(null); onChange(e.target.value); }}
+            placeholder="ej: 110000"
+            inputMode="numeric"
+            className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[11px] font-medium text-neutral-600">% descuento</span>
+          <input
+            value={pctDraft ?? (valid ? String(pctCalc) : "")}
+            onChange={(e) => onPctInput(e.target.value)}
+            placeholder="ej: 25"
+            inputMode="numeric"
+            className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          />
+        </label>
+      </div>
+      {precioAnterior && !valid && (
+        <p className="mt-1.5 text-[11px] text-red-600">
+          El precio anterior debe ser mayor al precio actual para mostrar el descuento.
+        </p>
+      )}
+      {valid && (
+        <p className="mt-1.5 text-[11px] font-semibold text-orange-700">
+          Se muestra: <span className="line-through">${pa.toLocaleString("es-AR")}</span> → ${p.toLocaleString("es-AR")} · −{pctCalc}%
+        </p>
+      )}
+    </div>
+  );
+}
+
 function TagPicker({
   label,
   options,
@@ -678,6 +751,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [nombre, setNombre] = useState(`${producto.marca} ${producto.modelo}`.trim());
   const [categoria, setCategoria] = useState(producto.categoria || "");
   const [precio, setPrecio] = useState("");
+  const [precioAnterior, setPrecioAnterior] = useState("");
   const [descripcion, setDescripcion] = useState(producto.descripcion || "");
   const [imagen, setImagen] = useState(producto.url_imagen || "");
   const [imagenesExtra, setImagenesExtra] = useState(producto.imagenes_extra || "");
@@ -704,6 +778,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
         sku, marca, color, ideal_para: idealPara, sellos, talles,
+        precio_anterior: precioAnterior,
       }});
 
       toast.success("Publicado en la landing");
@@ -722,6 +797,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         <Inp label="Nombre *" v={nombre} onC={setNombre} />
         <Inp label="Categoría *" v={categoria} onC={setCategoria} />
         <Inp label="Precio * (ej: 89000)" v={precio} onC={setPrecio} />
+        <OfertaFields precio={precio} precioAnterior={precioAnterior} onChange={setPrecioAnterior} />
         <Inp label="Imagen principal *" v={imagen} onC={setImagen} />
         <TA
           label={`Imágenes extra (una por línea) — ${extraList.length}`}
@@ -854,6 +930,7 @@ function LandingView() {
       imagenes_extra: v.imagenes_extra ?? "",
       sku: v.sku ?? "", marca: v.marca ?? "", color: v.color ?? "",
       ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "", talles: v.talles ?? "",
+      precio_anterior: v.precio_anterior ?? "",
     }}),
 
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["sheet-products"] }); toast.success("Landing actualizada"); },
@@ -908,6 +985,11 @@ function LandingView() {
                       {p.activo ? "ACTIVO" : "OCULTO"}
                     </span>
                     {p.destacado && <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700"><Star className="h-3 w-3 fill-orange-500" />DESTACADO</span>}
+                    {parseMoney(p.precio_anterior) > parseMoney(p.precio) && parseMoney(p.precio) > 0 && (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">
+                        −{Math.round((1 - parseMoney(p.precio) / parseMoney(p.precio_anterior)) * 100)}%
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm font-semibold text-neutral-900">{p.nombre}</p>
                   <p className="text-xs text-neutral-500">{p.categoria} · <span className="font-semibold text-neutral-700">{p.precio}</span></p>
@@ -980,6 +1062,7 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
         <Inp label="Nombre" v={v.nombre} onC={x => setV(s => ({ ...s, nombre: x }))} />
         <Inp label="Categoría" v={v.categoria} onC={x => setV(s => ({ ...s, categoria: x }))} />
         <Inp label="Precio" v={v.precio} onC={x => setV(s => ({ ...s, precio: x }))} />
+        <OfertaFields precio={v.precio} precioAnterior={v.precio_anterior ?? ""} onChange={x => setV(s => ({ ...s, precio_anterior: x }))} />
         <ImagePicker label="Imagen principal" value={v.imagen_url} onChange={x => setV(s => ({ ...s, imagen_url: x }))} />
         <div className="space-y-1">
           <label className="text-xs font-medium text-neutral-600">Imágenes extra</label>

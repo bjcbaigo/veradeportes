@@ -39,6 +39,7 @@ export type SheetProduct = {
   ideal_para: string; // pipe-separated
   sellos: string; // pipe-separated
   talles: string; // pipe-separated
+  precio_anterior: string; // precio tachado para ofertas (columna P)
   rowIndex: number; // 1-based sheet row (header = 1)
 };
 
@@ -58,7 +59,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<SheetProduct[]> => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:O1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:P1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) {
@@ -88,6 +89,7 @@ export const listSheetProducts = createServerFn({ method: "GET" }).handler(
       ideal_para: r[12] ?? "",
       sellos: r[13] ?? "",
       talles: r[14] ?? "",
+      precio_anterior: r[15] ?? "",
       rowIndex,
     }));
 
@@ -110,6 +112,7 @@ const UpdateInput = z.object({
   ideal_para: z.string().max(300).default(""),
   sellos: z.string().max(300).default(""),
   talles: z.string().max(200).default(""),
+  precio_anterior: z.string().max(50).default(""),
 });
 
 export const updateSheetProduct = createServerFn({ method: "POST" })
@@ -117,7 +120,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => UpdateInput.parse(data))
   .handler(async ({ data }) => {
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
-    const range = `${SHEET_NAME}!B${data.rowIndex}:O${data.rowIndex}`;
+    const range = `${SHEET_NAME}!B${data.rowIndex}:P${data.rowIndex}`;
     const body = {
       range,
       majorDimension: "ROWS",
@@ -136,6 +139,7 @@ export const updateSheetProduct = createServerFn({ method: "POST" })
         data.ideal_para,
         data.sellos,
         data.talles,
+        data.precio_anterior,
       ]],
     };
 
@@ -164,7 +168,7 @@ export const bulkDeleteByCategories = createServerFn({ method: "POST" })
     const { lovableKey, sheetsKey, sheetId } = sheetEnv();
     // Read all products
     const res = await fetchWithRetry(
-      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:N1000`,
+      `${GATEWAY}/spreadsheets/${sheetId}/values/${SHEET_NAME}!A1:P1000`,
       { headers: gwHeaders(lovableKey, sheetsKey) },
     );
     if (!res.ok) throw new Error(`Sheets read [${res.status}]: ${await res.text()}`);
@@ -178,7 +182,7 @@ export const bulkDeleteByCategories = createServerFn({ method: "POST" })
       const nameLower = (rows[i][1] ?? "").toLowerCase();
       const isOferta = wanted.has("ofertas") && (cat.includes("oferta") || nameLower.includes("oferta"));
       if (wanted.has(cat) || isOferta) {
-        ranges.push(`${SHEET_NAME}!A${i + 1}:N${i + 1}`);
+        ranges.push(`${SHEET_NAME}!A${i + 1}:P${i + 1}`);
       }
     }
     if (ranges.length === 0) return { ok: true, cleared: 0 };
