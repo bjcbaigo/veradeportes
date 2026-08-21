@@ -187,6 +187,7 @@ function UploadForm({ pin }: { pin: string }) {
       localStorage.setItem("vera_uploader", usuario.trim());
       items.forEach((it) => URL.revokeObjectURL(it.previewUrl));
       setItems([]); setMarca(""); setCategoria(""); setComentario("");
+      setModelo(""); setColor(""); setIdealPara(""); setSellos(""); setTalles("");
       setOk(enviadas);
       toast.success(enviadas === 1 ? "¡Foto enviada!" : `¡${enviadas} fotos enviadas!`);
     } catch (err) {
