@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2 } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/admin-cargas.functions";
 
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
+import { listLeads, type Lead } from "@/lib/leads.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
 import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
@@ -130,7 +131,7 @@ function Login() {
 }
 
 const ESTADOS = ["PENDIENTE","EN_REVISION","ANALIZADO","APROBADO","PUBLICADO","DESCARTADO"] as const;
-type Tab = "cargas" | "productos" | "landing" | "agenda";
+type Tab = "cargas" | "productos" | "landing" | "agenda" | "clientes";
 
 // Miniaturas: las fotos de Drive (lh3.googleusercontent.com) pesan varios MB en
 // original; con =s### Google devuelve una versión redimensionada (mucho más rápida).
@@ -151,6 +152,7 @@ const NAV_ITEMS = [
   { key: "productos", label: "Productos", desc: "Fichas aprobadas", icon: CheckCircle2 },
   { key: "landing", label: "Landing", desc: "La vidriera pública", icon: ShoppingBag },
   { key: "agenda", label: "Calendario", desc: "Publicaciones", icon: Calendar },
+  { key: "clientes", label: "Clientes", desc: "Registros de la landing", icon: Users },
 ] as const;
 
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
@@ -167,9 +169,11 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
   const fetchCargas = useServerFn(listCargas);
   const fetchProductos = useServerFn(listProductosAdmin);
   const fetchLandingList = useServerFn(listSheetProducts);
+  const fetchLeads = useServerFn(listLeads);
   const qCargas = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
   const qProductos = useQuery({ queryKey: ["productos"], queryFn: () => fetchProductos(), ...QUERY_OPTS });
   const qLanding = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLandingList(), ...QUERY_OPTS });
+  const qLeads = useQuery({ queryKey: ["leads"], queryFn: () => fetchLeads(), ...QUERY_OPTS });
   const counts = useMemo<Record<Tab, number>>(() => ({
     cargas: new Set(
       (qCargas.data ?? [])
@@ -179,7 +183,8 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
     productos: (qProductos.data ?? []).filter((p) => p.id && p.estado !== "DESCARTADO").length,
     landing: (qLanding.data ?? []).filter((p) => p.activo).length,
     agenda: 0,
-  }), [qCargas.data, qProductos.data, qLanding.data]);
+    clientes: (qLeads.data ?? []).length,
+  }), [qCargas.data, qProductos.data, qLanding.data, qLeads.data]);
 
   async function openSheet() {
     try {
@@ -328,6 +333,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           {tab === "productos" && <ProductosView />}
           {tab === "landing" && <LandingView />}
           {tab === "agenda" && <AgendaView />}
+          {tab === "clientes" && <ClientesView />}
         </div>
       </main>
     </div>
@@ -353,7 +359,7 @@ function SideTool({
 
 // Guía del flujo: 1 Revisar → 2 Aprobar → 3 Publicar
 function FlowHint({ tab }: { tab: Tab }) {
-  if (tab === "agenda") return null;
+  if (tab === "agenda" || tab === "clientes") return null;
   const steps = [
     { key: "cargas", n: 1, label: "Revisar cargas" },
     { key: "productos", n: 2, label: "Aprobar y preparar" },
