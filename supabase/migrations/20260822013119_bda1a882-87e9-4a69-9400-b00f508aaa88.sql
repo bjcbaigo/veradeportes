@@ -1,0 +1,1 @@
+DELETE FROM public.leads WHERE id IN ('a1c6d6dd-f894-4d0b-ae34-c7012d5a0dad','75650489-2426-4d3d-986e-10ed069e3e02','6d6f48cf-0545-4630-a21d-b97bc7293a59','0639c9d8-7560-464f-b0b8-b466bafbe5c7');
