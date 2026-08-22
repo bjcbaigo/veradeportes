@@ -37,7 +37,7 @@ export function Brands() {
           </a>
         </div>
         <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-          <div className="flex gap-2 pb-2 lg:grid lg:grid-cols-6 lg:gap-4">
+          <div className="flex gap-2 pb-2 lg:grid lg:grid-cols-9 lg:gap-3">
             {BRANDS.map((b) => (
               <a
                 key={b.name}
