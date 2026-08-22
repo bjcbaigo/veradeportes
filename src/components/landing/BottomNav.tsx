@@ -7,7 +7,7 @@ const ITEMS = [
   { label: "Buscar", icon: Search, href: "/tienda#buscar" },
   { label: "Ofertas", icon: Tag, href: "/ofertas" },
   { label: "Carrito", icon: ShoppingCart, href: "/carrito" },
-  { label: "Cuenta", icon: User, href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
+  { label: "Registrarme", icon: User, href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
 ];
 
 function activeFromLocation(fallback: string) {
@@ -15,7 +15,7 @@ function activeFromLocation(fallback: string) {
   const { pathname, hash } = window.location;
   if (pathname === "/ofertas") return "Ofertas";
   if (pathname === "/carrito") return "Carrito";
-  if (pathname === "/registro") return "Cuenta";
+  if (pathname === "/registro") return "Registrarme";
   if (pathname === "/tienda" && hash === "#buscar") return "Buscar";
   return fallback;
 }

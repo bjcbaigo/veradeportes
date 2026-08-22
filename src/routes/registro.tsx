@@ -210,7 +210,7 @@ function ComingSoon() {
           {profile ? (
             <div className="mt-5 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-center">
               <p className="text-xs font-bold uppercase tracking-wide text-neutral-500">
-                Mi cuenta
+                Tu registro
               </p>
               <h2 className="mt-1 text-lg font-extrabold">{profile.nombre}</h2>
               <p className="mt-1 text-sm text-neutral-600">WhatsApp: {profile.whatsapp}</p>

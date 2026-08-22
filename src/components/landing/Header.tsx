@@ -12,7 +12,7 @@ const NAV = [
   { label: "Ofertas", href: "/ofertas" },
   { label: "Novedades", href: "/tienda#productos" },
   { label: "Favoritos", href: "/tienda#productos" },
-  { label: "Mi cuenta", href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
+  { label: "Registrarme", href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
   { label: "Mis pedidos", href: "/tienda#pedidos" },
   { label: "Como llegar", href: SITE.maps, external: true },
   { label: "Contactanos", href: "/tienda#whatsapp" },
