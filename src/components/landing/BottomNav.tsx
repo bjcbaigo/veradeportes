@@ -15,7 +15,7 @@ function activeFromLocation(fallback: string) {
   const { pathname, hash } = window.location;
   if (pathname === "/ofertas") return "Ofertas";
   if (pathname === "/carrito") return "Carrito";
-  if (pathname === "/registro") return "Cuenta";
+  if (pathname === "/registro") return "Registrarme";
   if (pathname === "/tienda" && hash === "#buscar") return "Buscar";
   return fallback;
 }
