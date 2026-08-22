@@ -5,6 +5,9 @@ import puma from "@/assets/brands/puma.png.asset.json";
 import topper from "@/assets/brands/topper.svg.asset.json";
 import asics from "@/assets/brands/asics-black.png.asset.json";
 import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
+import onRunning from "@/assets/brands/on-running.png.asset.json";
+import fila from "@/assets/brands/fila.png.asset.json";
+import skechers from "@/assets/brands/skechers-full.png.asset.json";
 
 const BRANDS = [
   { name: "Nike", src: nike.url },
@@ -13,6 +16,9 @@ const BRANDS = [
   { name: "Topper", src: topper.url },
   { name: "Asics", src: asics.url },
   { name: "New Balance", src: nbLogo.url },
+  { name: "On Running", src: onRunning.url },
+  { name: "Fila", src: fila.url },
+  { name: "Skechers", src: skechers.url },
 ];
 
 export function Brands() {
@@ -31,7 +37,7 @@ export function Brands() {
           </a>
         </div>
         <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-          <div className="flex gap-2 pb-2 lg:grid lg:grid-cols-6 lg:gap-4">
+          <div className="flex gap-2 pb-2 lg:grid lg:grid-cols-9 lg:gap-3">
             {BRANDS.map((b) => (
               <a
                 key={b.name}
