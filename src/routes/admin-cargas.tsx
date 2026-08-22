@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2 } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/admin-cargas.functions";
 
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
+import { listLeads, type Lead } from "@/lib/leads.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
 import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
@@ -130,7 +131,7 @@ function Login() {
 }
 
 const ESTADOS = ["PENDIENTE","EN_REVISION","ANALIZADO","APROBADO","PUBLICADO","DESCARTADO"] as const;
-type Tab = "cargas" | "productos" | "landing" | "agenda";
+type Tab = "cargas" | "productos" | "landing" | "agenda" | "clientes";
 
 // Miniaturas: las fotos de Drive (lh3.googleusercontent.com) pesan varios MB en
 // original; con =s### Google devuelve una versión redimensionada (mucho más rápida).
@@ -151,6 +152,7 @@ const NAV_ITEMS = [
   { key: "productos", label: "Productos", desc: "Fichas aprobadas", icon: CheckCircle2 },
   { key: "landing", label: "Landing", desc: "La vidriera pública", icon: ShoppingBag },
   { key: "agenda", label: "Calendario", desc: "Publicaciones", icon: Calendar },
+  { key: "clientes", label: "Clientes", desc: "Registros de la landing", icon: Users },
 ] as const;
 
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
@@ -167,9 +169,11 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
   const fetchCargas = useServerFn(listCargas);
   const fetchProductos = useServerFn(listProductosAdmin);
   const fetchLandingList = useServerFn(listSheetProducts);
+  const fetchLeads = useServerFn(listLeads);
   const qCargas = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
   const qProductos = useQuery({ queryKey: ["productos"], queryFn: () => fetchProductos(), ...QUERY_OPTS });
   const qLanding = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLandingList(), ...QUERY_OPTS });
+  const qLeads = useQuery({ queryKey: ["leads"], queryFn: () => fetchLeads(), ...QUERY_OPTS });
   const counts = useMemo<Record<Tab, number>>(() => ({
     cargas: new Set(
       (qCargas.data ?? [])
@@ -179,7 +183,8 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
     productos: (qProductos.data ?? []).filter((p) => p.id && p.estado !== "DESCARTADO").length,
     landing: (qLanding.data ?? []).filter((p) => p.activo).length,
     agenda: 0,
-  }), [qCargas.data, qProductos.data, qLanding.data]);
+    clientes: (qLeads.data ?? []).length,
+  }), [qCargas.data, qProductos.data, qLanding.data, qLeads.data]);
 
   async function openSheet() {
     try {
@@ -328,6 +333,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           {tab === "productos" && <ProductosView />}
           {tab === "landing" && <LandingView />}
           {tab === "agenda" && <AgendaView />}
+          {tab === "clientes" && <ClientesView />}
         </div>
       </main>
     </div>
@@ -353,7 +359,7 @@ function SideTool({
 
 // Guía del flujo: 1 Revisar → 2 Aprobar → 3 Publicar
 function FlowHint({ tab }: { tab: Tab }) {
-  if (tab === "agenda") return null;
+  if (tab === "agenda" || tab === "clientes") return null;
   const steps = [
     { key: "cargas", n: 1, label: "Revisar cargas" },
     { key: "productos", n: 2, label: "Aprobar y preparar" },
@@ -1241,3 +1247,109 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
   );
 }
 
+
+/* ============ Clientes (leads) ============ */
+function ClientesView() {
+  const fetchLeads = useServerFn(listLeads);
+  const q = useQuery({ queryKey: ["leads"], queryFn: () => fetchLeads(), ...QUERY_OPTS });
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
+
+  const leads = q.data ?? [];
+  const filtrados = useMemo(() => {
+    return leads.filter((l) => {
+      const d = l.created_at.slice(0, 10); // YYYY-MM-DD
+      if (desde && d < desde) return false;
+      if (hasta && d > hasta) return false;
+      return true;
+    });
+  }, [leads, desde, hasta]);
+
+  function exportCSV() {
+    const rows = [
+      ["Nombre", "WhatsApp", "Email", "Fecha"],
+      ...filtrados.map((l) => [l.nombre, l.whatsapp ?? "", l.email ?? "", l.created_at]),
+    ];
+    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `clientes-vera-deportes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  const fmtFecha = (iso: string) =>
+    new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white p-4">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-vd-navy text-primary-foreground">
+            <Users className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm font-bold text-neutral-900">
+              {filtrados.length} de {leads.length} clientes
+            </p>
+            <p className="text-xs text-neutral-500">Registrados desde la landing</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+            Desde
+            <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)}
+              className="rounded-lg border border-neutral-300 px-2 py-1.5 text-xs focus:border-primary focus:outline-none" />
+          </label>
+          <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+            Hasta
+            <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)}
+              className="rounded-lg border border-neutral-300 px-2 py-1.5 text-xs focus:border-primary focus:outline-none" />
+          </label>
+          {(desde || hasta) && (
+            <button onClick={() => { setDesde(""); setHasta(""); }}
+              className="rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-500 hover:underline">
+              Limpiar
+            </button>
+          )}
+          <button onClick={exportCSV} disabled={!filtrados.length}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground disabled:opacity-50">
+            <ExternalLink className="h-3.5 w-3.5" /> Exportar CSV
+          </button>
+        </div>
+      </div>
+
+      {q.isLoading ? (
+        <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
+      ) : filtrados.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-500">
+          No hay clientes en el rango elegido.
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-left text-[11px] font-bold uppercase tracking-wide text-neutral-500">
+                <th className="px-4 py-2.5">Nombre</th>
+                <th className="px-4 py-2.5">WhatsApp</th>
+                <th className="hidden px-4 py-2.5 sm:table-cell">Email</th>
+                <th className="px-4 py-2.5 text-right">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtrados.map((l) => (
+                <tr key={l.id} className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50">
+                  <td className="px-4 py-2.5 font-semibold text-neutral-900">{l.nombre}</td>
+                  <td className="px-4 py-2.5 text-neutral-600">{l.whatsapp || "—"}</td>
+                  <td className="hidden px-4 py-2.5 text-neutral-600 sm:table-cell">{l.email || "—"}</td>
+                  <td className="px-4 py-2.5 text-right text-xs text-neutral-500">{fmtFecha(l.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
