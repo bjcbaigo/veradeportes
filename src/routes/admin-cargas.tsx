@@ -1247,3 +1247,109 @@ function LandingEditor({ producto, onClose, onSave }: { producto: SheetProduct; 
   );
 }
 
+
+/* ============ Clientes (leads) ============ */
+function ClientesView() {
+  const fetchLeads = useServerFn(listLeads);
+  const q = useQuery({ queryKey: ["leads"], queryFn: () => fetchLeads(), ...QUERY_OPTS });
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
+
+  const leads = q.data ?? [];
+  const filtrados = useMemo(() => {
+    return leads.filter((l) => {
+      const d = l.created_at.slice(0, 10); // YYYY-MM-DD
+      if (desde && d < desde) return false;
+      if (hasta && d > hasta) return false;
+      return true;
+    });
+  }, [leads, desde, hasta]);
+
+  function exportCSV() {
+    const rows = [
+      ["Nombre", "WhatsApp", "Email", "Fecha"],
+      ...filtrados.map((l) => [l.nombre, l.whatsapp ?? "", l.email ?? "", l.created_at]),
+    ];
+    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `clientes-vera-deportes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  const fmtFecha = (iso: string) =>
+    new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white p-4">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-vd-navy text-primary-foreground">
+            <Users className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm font-bold text-neutral-900">
+              {filtrados.length} de {leads.length} clientes
+            </p>
+            <p className="text-xs text-neutral-500">Registrados desde la landing</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+            Desde
+            <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)}
+              className="rounded-lg border border-neutral-300 px-2 py-1.5 text-xs focus:border-primary focus:outline-none" />
+          </label>
+          <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+            Hasta
+            <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)}
+              className="rounded-lg border border-neutral-300 px-2 py-1.5 text-xs focus:border-primary focus:outline-none" />
+          </label>
+          {(desde || hasta) && (
+            <button onClick={() => { setDesde(""); setHasta(""); }}
+              className="rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-500 hover:underline">
+              Limpiar
+            </button>
+          )}
+          <button onClick={exportCSV} disabled={!filtrados.length}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground disabled:opacity-50">
+            <ExternalLink className="h-3.5 w-3.5" /> Exportar CSV
+          </button>
+        </div>
+      </div>
+
+      {q.isLoading ? (
+        <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
+      ) : filtrados.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-500">
+          No hay clientes en el rango elegido.
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-left text-[11px] font-bold uppercase tracking-wide text-neutral-500">
+                <th className="px-4 py-2.5">Nombre</th>
+                <th className="px-4 py-2.5">WhatsApp</th>
+                <th className="hidden px-4 py-2.5 sm:table-cell">Email</th>
+                <th className="px-4 py-2.5 text-right">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtrados.map((l) => (
+                <tr key={l.id} className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50">
+                  <td className="px-4 py-2.5 font-semibold text-neutral-900">{l.nombre}</td>
+                  <td className="px-4 py-2.5 text-neutral-600">{l.whatsapp || "—"}</td>
+                  <td className="hidden px-4 py-2.5 text-neutral-600 sm:table-cell">{l.email || "—"}</td>
+                  <td className="px-4 py-2.5 text-right text-xs text-neutral-500">{fmtFecha(l.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
