@@ -44,7 +44,7 @@ function StorefrontPage() {
         <Categories />
         <PromoCarousel />
         <FeaturedOffers />
-        <Products limit={8} />
+        <Products />
         <CommercialBenefits />
         <Brands />
         <WhatsAppHelp />
