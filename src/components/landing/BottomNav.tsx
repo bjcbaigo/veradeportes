@@ -7,7 +7,7 @@ const ITEMS = [
   { label: "Buscar", icon: Search, href: "/tienda#buscar" },
   { label: "Ofertas", icon: Tag, href: "/ofertas" },
   { label: "Carrito", icon: ShoppingCart, href: "/carrito" },
-  { label: "Cuenta", icon: User, href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
+  { label: "Registrarme", icon: User, href: "/registro?intent=cuenta&returnTo=%2Fregistro" },
 ];
 
 function activeFromLocation(fallback: string) {
