@@ -1029,6 +1029,44 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
     finally { setBusy(false); }
   }
 
+  async function runAi() {
+    if (!v.marca.trim()) {
+      toast.error("No hay información suficiente para generar una ficha confiable.");
+      return;
+    }
+    setAiBusy(true);
+    try {
+      const res = await suggestAi({
+        data: {
+          marca: v.marca, modelo: v.modelo, categoria: v.categoria,
+          subcategoria: v.subcategoria, descripcion: v.descripcion,
+          caracteristicas: v.caracteristicas, uso: v.uso, color: v.color,
+          ideal_para: v.ideal_para, sellos: v.sellos, genero: v.genero,
+        },
+      });
+      setAiData(res);
+    } catch (e) {
+      console.error(e);
+      toast.error("No se pudieron generar sugerencias. La ficha no fue modificada.");
+    } finally {
+      setAiBusy(false);
+    }
+  }
+
+  function applyAi(accepted: Record<string, string>, observacion: string, labels: string[]) {
+    setV((s) => {
+      const next = { ...s, ...accepted };
+      if (observacion) {
+        next.observaciones_studio = next.observaciones_studio
+          ? `${next.observaciones_studio} | ${observacion}`
+          : observacion;
+      }
+      return next;
+    });
+    setAiApplied((prev) => [...new Set([...prev, ...labels])]);
+    setAiData(null);
+  }
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-xl">
