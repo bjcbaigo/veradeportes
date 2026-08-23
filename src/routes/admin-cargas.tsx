@@ -2,13 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   initAdminSheets, listCargas, updateCargaEstado,
-  aprobarYCrearProducto, listProductosAdmin, updateProductoEstado,
+  aprobarYCrearProducto, listProductosAdmin, updateProductoEstado, updateProductoAdmin,
   agendarPublicacion, listAgenda, publicarEnLanding, resetAllSheets,
   getSheetUrl,
   type Carga, type Producto,
@@ -18,13 +18,17 @@ import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type She
 import { listLeads, type Lead } from "@/lib/leads.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { optimizeImage } from "@/lib/image-optimize";
-import { IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, splitTags } from "@/lib/product-taxonomy";
+import {
+  IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, GENERO_OPTIONS,
+  ESTADO_IMAGENES_OPTIONS, VALIDACION_MODELO_OPTIONS,
+  splitTags, observacionEsCritica,
+} from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
 
 
 export const Route = createFileRoute("/admin-cargas")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Cargas — Vera Deportes" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Product Studio — Vera Deportes" }, { name: "robots", content: "noindex" }] }),
   component: Page,
 });
 
@@ -114,7 +118,7 @@ function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <h1 className="text-lg font-bold text-neutral-900">Panel — Cargas</h1>
+        <h1 className="text-lg font-bold text-neutral-900">Vera Deportes — Product Studio</h1>
         <input type="email" required placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
           className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
         <input type="password" required minLength={6} placeholder="Contraseña" value={pwd} onChange={e => setPwd(e.target.value)}
@@ -131,7 +135,7 @@ function Login() {
 }
 
 const ESTADOS = ["PENDIENTE","EN_REVISION","ANALIZADO","APROBADO","PUBLICADO","DESCARTADO"] as const;
-type Tab = "cargas" | "productos" | "landing" | "agenda" | "clientes";
+type Tab = "studio" | "catalogo" | "landing" | "agenda" | "clientes";
 
 // Miniaturas: las fotos de Drive (lh3.googleusercontent.com) pesan varios MB en
 // original; con =s### Google devuelve una versión redimensionada (mucho más rápida).
@@ -148,15 +152,15 @@ function thumb(url: string, size = 400): string {
 const QUERY_OPTS = { staleTime: 60_000, refetchOnWindowFocus: false } as const;
 
 const NAV_ITEMS = [
-  { key: "cargas", label: "Cargas", desc: "Lo que sube el encargado", icon: ImageIcon },
-  { key: "productos", label: "Productos", desc: "Fichas aprobadas", icon: CheckCircle2 },
+  { key: "studio", label: "Product Studio", desc: "Revisión y estados", icon: Layers },
+  { key: "catalogo", label: "Catálogo", desc: "Fichas internas", icon: CheckCircle2 },
   { key: "landing", label: "Landing", desc: "La vidriera pública", icon: ShoppingBag },
   { key: "agenda", label: "Calendario", desc: "Publicaciones", icon: Calendar },
   { key: "clientes", label: "Clientes", desc: "Registros de la landing", icon: Users },
 ] as const;
 
 function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) {
-  const [tab, setTab] = useState<Tab>("cargas");
+  const [tab, setTab] = useState<Tab>("studio");
 
   const initFn = useServerFn(initAdminSheets);
   const resetFn = useServerFn(resetAllSheets);
@@ -175,12 +179,12 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
   const qLanding = useQuery({ queryKey: ["sheet-products"], queryFn: () => fetchLandingList(), ...QUERY_OPTS });
   const qLeads = useQuery({ queryKey: ["leads"], queryFn: () => fetchLeads(), ...QUERY_OPTS });
   const counts = useMemo<Record<Tab, number>>(() => ({
-    cargas: new Set(
+    studio: new Set(
       (qCargas.data ?? [])
         .filter((c) => c.estado === "PENDIENTE")
         .map((c) => parseGroupId(c.comentario) ?? c.id),
     ).size,
-    productos: (qProductos.data ?? []).filter((p) => p.id && p.estado !== "DESCARTADO").length,
+    catalogo: (qProductos.data ?? []).filter((p) => p.id && p.estado !== "DESCARTADO").length,
     landing: (qLanding.data ?? []).filter((p) => p.activo).length,
     agenda: 0,
     clientes: (qLeads.data ?? []).length,
@@ -221,7 +225,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
         <div className="border-b border-white/10 px-5 py-5">
           <p className="text-lg font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
           <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground/50">
-            Panel de gestión
+            Product Studio
           </p>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
@@ -280,7 +284,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           <div>
             <p className="text-sm font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
             <p className="text-[9px] font-semibold uppercase tracking-widest text-primary-foreground/50">
-              Panel de gestión
+              Product Studio
             </p>
           </div>
           <button onClick={onLogout} aria-label="Salir"
@@ -329,8 +333,8 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
       <main className="md:pl-64">
         <div className="mx-auto max-w-6xl px-4 py-5">
           <FlowHint tab={tab} />
-          {tab === "cargas" && <CargasView />}
-          {tab === "productos" && <ProductosView />}
+          {tab === "studio" && <StudioView />}
+          {tab === "catalogo" && <CatalogoView />}
           {tab === "landing" && <LandingView />}
           {tab === "agenda" && <AgendaView />}
           {tab === "clientes" && <ClientesView />}
@@ -357,12 +361,12 @@ function SideTool({
   );
 }
 
-// Guía del flujo: 1 Revisar → 2 Aprobar → 3 Publicar
+// Guía del flujo: 1 Revisar → 2 Preparar → 3 Publicar
 function FlowHint({ tab }: { tab: Tab }) {
   if (tab === "agenda" || tab === "clientes") return null;
   const steps = [
-    { key: "cargas", n: 1, label: "Revisar cargas" },
-    { key: "productos", n: 2, label: "Aprobar y preparar" },
+    { key: "studio", n: 1, label: "Revisar y procesar" },
+    { key: "catalogo", n: 2, label: "Preparar fichas" },
     { key: "landing", n: 3, label: "Publicar y editar" },
   ] as const;
   return (
@@ -384,7 +388,7 @@ function FlowHint({ tab }: { tab: Tab }) {
   );
 }
 
-/* ============ Cargas ============ */
+/* ============ Helpers de estado / badges ============ */
 function parseGroupId(comment: string): string | null {
   const m = /\[G-([A-Za-z0-9]+)/.exec(comment || "");
   return m ? `G-${m[1]}` : null;
@@ -394,116 +398,12 @@ function parseGroupPos(comment: string): number {
   return m ? parseInt(m[1], 10) : 999;
 }
 
-function CargasView() {
-  const qc = useQueryClient();
-  const fetchCargas = useServerFn(listCargas);
-  const updEstado = useServerFn(updateCargaEstado);
-  const [filter, setFilter] = useState<typeof ESTADOS[number] | "TODOS">("PENDIENTE");
-  const [editing, setEditing] = useState<Carga[] | null>(null);
-
-  const q = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
-
-  const groups = useMemo(() => {
-    const all = q.data ?? [];
-    const filtered = filter === "TODOS" ? all : all.filter(c => c.estado === filter);
-    const map = new Map<string, Carga[]>();
-    for (const c of filtered) {
-      const key = parseGroupId(c.comentario) ?? `single:${c.id}`;
-      const arr = map.get(key) ?? [];
-      arr.push(c);
-      map.set(key, arr);
-    }
-    return Array.from(map.entries()).map(([key, items]) => ({
-      key,
-      items: items.sort((a, b) => parseGroupPos(a.comentario) - parseGroupPos(b.comentario)),
-    }));
-  }, [q.data, filter]);
-
-  const mut = useMutation({
-    mutationFn: (v: { rowIndex: number; estado: typeof ESTADOS[number] }) => updEstado({ data: v }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["cargas"] }); toast.success("Estado actualizado"); },
-    onError: (e) => toast.error((e as Error).message),
-  });
-
-  async function descartarGrupo(items: Carga[]) {
-    for (const c of items) await mut.mutateAsync({ rowIndex: c.rowIndex, estado: "DESCARTADO" });
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
-          <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
-        </button>
-        <div className="flex flex-wrap gap-1">
-          {(["TODOS", ...ESTADOS] as const).map(e => (
-            <button key={e} onClick={() => setFilter(e as any)}
-              className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
-                filter === e ? "border-orange-500 bg-orange-50 text-orange-700" : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
-              }`}>{e}</button>
-          ))}
-        </div>
-        <span className="ml-auto text-xs text-neutral-500">{groups.length} producto{groups.length !== 1 ? "s" : ""}</span>
-      </div>
-
-      {q.isLoading ? (
-        <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
-      ) : groups.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">Sin cargas.</div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {groups.map(({ key, items }) => {
-            const primary = items[0];
-            const isGroup = items.length > 1;
-            return (
-              <div key={key} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-                <div className="relative aspect-square bg-[#e5e7eb]">
-                  {primary.url_imagen ? (
-                    <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
-                      <img src={thumb(primary.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-                    </a>
-                  ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
-                  {isGroup && (
-                    <span className="absolute right-2 top-2 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[10px] font-bold text-white">
-                      {items.length} fotos
-                    </span>
-                  )}
-                </div>
-                {isGroup && (
-                  <div className="flex gap-1 overflow-x-auto border-t border-neutral-100 bg-neutral-50 px-2 py-1.5">
-                    {items.map(c => (
-                      <img key={c.id} src={thumb(c.url_imagen, 200)} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
-                    ))}
-                  </div>
-                )}
-                <div className="space-y-1.5 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(primary.estado)}`}>{primary.estado}</span>
-                    <span className="text-[11px] text-neutral-500">{primary.fecha}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-neutral-900">{primary.marca || "—"} <span className="font-normal text-neutral-500">/ {primary.categoria || "—"}</span></p>
-                  <p className="text-xs text-neutral-500">por {primary.usuario || "—"}</p>
-                  {primary.comentario && <p className="text-xs text-neutral-700 line-clamp-2">{primary.comentario}</p>}
-                  <div className="flex flex-wrap gap-1.5 pt-2">
-                    <button onClick={() => setEditing(items)}
-                      className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
-                      <Edit3 className="h-3 w-3" /> {isGroup ? "Aprobar grupo" : "Editar / Aprobar"}
-                    </button>
-                    <button onClick={() => isGroup ? descartarGrupo(items) : mut.mutate({ rowIndex: primary.rowIndex, estado: "DESCARTADO" })}
-                      className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[11px] text-red-600 hover:bg-red-50">
-                      <XCircle className="h-3 w-3" /> Descartar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {editing && <ProductoEditor cargas={editing} onClose={() => setEditing(null)} />}
-    </div>
-  );
+// Filas históricas pueden tener la fecha como serial numérico de Excel (46256.28…);
+// en ese caso no mostramos nada (placeholder visual, no se escribe en la Sheet).
+function fmtFechaSheet(raw: string): string {
+  if (!raw) return "";
+  if (/^\d{5}(\.\d+)?$/.test(raw.trim())) return "";
+  return raw;
 }
 
 function badgeColor(e: string) {
@@ -518,7 +418,412 @@ function badgeColor(e: string) {
   }
 }
 
-/* ============ Editor / aprobador ============ */
+// Estado imágenes: aprobado → verde; pendiente/revisar → amarillo; error → rojo.
+function badgeImagenes(e: string) {
+  switch ((e || "PENDIENTE").toUpperCase()) {
+    case "APROBADAS": return "bg-green-100 text-green-800";
+    case "ERROR": return "bg-red-100 text-red-800";
+    case "PENDIENTE":
+    case "PROCESANDO":
+    case "REVISAR": return "bg-amber-100 text-amber-800";
+    default: return "bg-neutral-100 text-neutral-700";
+  }
+}
+
+// Validación modelo: exacto → verde; probable/pendiente → amarillo; rechazado → rojo.
+function badgeValidacion(v: string) {
+  switch ((v || "PENDIENTE").toUpperCase()) {
+    case "EXACTO": return "bg-green-100 text-green-800";
+    case "RECHAZADO": return "bg-red-100 text-red-800";
+    case "PROBABLE":
+    case "PENDIENTE": return "bg-amber-100 text-amber-800";
+    default: return "bg-neutral-100 text-neutral-700";
+  }
+}
+
+// Un producto "con problemas" suma señales de imágenes, validación u observaciones críticas.
+function productoTieneProblema(p: Producto): boolean {
+  const ei = (p.estado_imagenes || "").toUpperCase();
+  const vm = (p.validacion_modelo || "").toUpperCase();
+  return ei === "ERROR" || ei === "REVISAR" || vm === "RECHAZADO" || observacionEsCritica(p.observaciones_studio);
+}
+
+/* ============ Product Studio (pipeline unificado) ============ */
+type StudioFilter = "todos" | "pendientes" | "revision" | "aprobados" | "publicados" | "problemas";
+
+const STUDIO_FILTERS: { key: StudioFilter; label: string }[] = [
+  { key: "todos", label: "Todos" },
+  { key: "pendientes", label: "Pendientes" },
+  { key: "revision", label: "Para revisar" },
+  { key: "aprobados", label: "Aprobados" },
+  { key: "publicados", label: "Publicados" },
+  { key: "problemas", label: "Con problemas" },
+];
+
+function StudioView() {
+  const qc = useQueryClient();
+  const fetchCargas = useServerFn(listCargas);
+  const fetchProductos = useServerFn(listProductosAdmin);
+  const updEstado = useServerFn(updateCargaEstado);
+  const [filter, setFilter] = useState<StudioFilter>("todos");
+  const [editingCarga, setEditingCarga] = useState<Carga[] | null>(null);
+
+  const qCargas = useQuery({ queryKey: ["cargas"], queryFn: () => fetchCargas(), ...QUERY_OPTS });
+  const qProductos = useQuery({ queryKey: ["productos"], queryFn: () => fetchProductos(), ...QUERY_OPTS });
+
+  // Grupos de cargas (mismo criterio que siempre: [G-xxx] en el comentario)
+  const cargaGroups = useMemo(() => {
+    const map = new Map<string, Carga[]>();
+    for (const c of qCargas.data ?? []) {
+      const key = parseGroupId(c.comentario) ?? `single:${c.id}`;
+      const arr = map.get(key) ?? [];
+      arr.push(c);
+      map.set(key, arr);
+    }
+    return Array.from(map.entries()).map(([key, items]) => ({
+      key,
+      items: items.sort((a, b) => parseGroupPos(a.comentario) - parseGroupPos(b.comentario)),
+    }));
+  }, [qCargas.data]);
+
+  const gruposPendientes = useMemo(
+    () => cargaGroups.filter((g) => g.items[0].estado === "PENDIENTE"),
+    [cargaGroups],
+  );
+  const gruposRevision = useMemo(
+    () => cargaGroups.filter((g) => g.items[0].estado === "EN_REVISION" || g.items[0].estado === "ANALIZADO"),
+    [cargaGroups],
+  );
+
+  const productos = useMemo(() => (qProductos.data ?? []).filter((p) => p.id), [qProductos.data]);
+  const aprobados = productos.filter((p) => p.estado === "APROBADO");
+  const publicados = productos.filter((p) => p.estado === "PUBLICADO");
+  const conProblemas = productos.filter((p) => p.estado !== "DESCARTADO" && productoTieneProblema(p));
+
+  // Dashboard compacto: se calcula de los datasets ya cacheados (sin lecturas extra).
+  const dashboard: { key: StudioFilter; label: string; count: number; tone: string }[] = [
+    { key: "pendientes", label: "Pendientes", count: gruposPendientes.length, tone: "text-amber-700" },
+    { key: "revision", label: "Para revisar", count: gruposRevision.length, tone: "text-blue-700" },
+    { key: "aprobados", label: "Aprobados", count: aprobados.length, tone: "text-green-700" },
+    { key: "publicados", label: "Publicados", count: publicados.length, tone: "text-emerald-700" },
+    { key: "problemas", label: "Con problemas", count: conProblemas.length, tone: "text-red-700" },
+  ];
+
+  const mutCarga = useMutation({
+    mutationFn: (v: { rowIndex: number; estado: typeof ESTADOS[number] }) => updEstado({ data: v }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["cargas"] }); toast.success("Estado actualizado"); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  async function descartarGrupo(items: Carga[]) {
+    for (const c of items) await mutCarga.mutateAsync({ rowIndex: c.rowIndex, estado: "DESCARTADO" });
+  }
+
+  const showCargasPend = filter === "todos" || filter === "pendientes";
+  const showCargasRev = filter === "todos" || filter === "revision";
+  const showAprobados = filter === "todos" || filter === "aprobados";
+  const showPublicados = filter === "todos" || filter === "publicados";
+  const showProblemas = filter === "problemas";
+
+  const isLoading = qCargas.isLoading || qProductos.isLoading;
+  const vacio =
+    !isLoading &&
+    (showCargasPend ? gruposPendientes.length : 0) +
+      (showCargasRev ? gruposRevision.length : 0) +
+      (showProblemas ? conProblemas.length : (showAprobados ? aprobados.length : 0) + (showPublicados ? publicados.length : 0)) === 0;
+
+  return (
+    <div className="space-y-4">
+      {/* Dashboard compacto */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        {dashboard.map((d) => (
+          <button key={d.key} onClick={() => setFilter(d.key)}
+            className={`rounded-xl border bg-white px-3 py-2.5 text-left transition hover:shadow-sm ${
+              filter === d.key ? "border-primary ring-1 ring-primary/30" : "border-neutral-200"
+            }`}>
+            <p className={`text-xl font-extrabold leading-none ${d.tone}`}>{d.count}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-neutral-500">{d.label}</p>
+          </button>
+        ))}
+      </div>
+
+      {/* Filtros */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button onClick={() => { qCargas.refetch(); qProductos.refetch(); }}
+          className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
+          <RefreshCw className={`h-3.5 w-3.5 ${qCargas.isFetching || qProductos.isFetching ? "animate-spin" : ""}`} /> Refrescar
+        </button>
+        <div className="flex flex-wrap gap-1">
+          {STUDIO_FILTERS.map((f) => (
+            <button key={f.key} onClick={() => setFilter(f.key)}
+              className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
+                filter === f.key ? "border-orange-500 bg-orange-50 text-orange-700" : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+              }`}>{f.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {isLoading ? (
+        <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
+      ) : vacio ? (
+        <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">
+          Nada por aquí con este filtro.
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {showProblemas && conProblemas.length > 0 && (
+            <StudioSection title="Con problemas" tone="text-red-700">
+              {conProblemas.map((p) => <StudioCard key={p.id} producto={p} />)}
+            </StudioSection>
+          )}
+          {showCargasPend && gruposPendientes.length > 0 && (
+            <StudioSection title="Pendientes" tone="text-amber-700">
+              {gruposPendientes.map((g) => (
+                <CargaCard key={g.key} items={g.items} onEdit={() => setEditingCarga(g.items)} onDescartar={() => descartarGrupo(g.items)} />
+              ))}
+            </StudioSection>
+          )}
+          {showCargasRev && gruposRevision.length > 0 && (
+            <StudioSection title="Para revisar" tone="text-blue-700">
+              {gruposRevision.map((g) => (
+                <CargaCard key={g.key} items={g.items} onEdit={() => setEditingCarga(g.items)} onDescartar={() => descartarGrupo(g.items)} />
+              ))}
+            </StudioSection>
+          )}
+          {showAprobados && aprobados.length > 0 && (
+            <StudioSection title="Aprobados" tone="text-green-700">
+              {aprobados.map((p) => <StudioCard key={p.id} producto={p} />)}
+            </StudioSection>
+          )}
+          {showPublicados && publicados.length > 0 && (
+            <StudioSection title="Publicados" tone="text-emerald-700">
+              {publicados.map((p) => <StudioCard key={p.id} producto={p} />)}
+            </StudioSection>
+          )}
+        </div>
+      )}
+
+      {editingCarga && <ProductoEditor cargas={editingCarga} onClose={() => setEditingCarga(null)} />}
+    </div>
+  );
+}
+
+function StudioSection({ title, tone, children }: { title: string; tone: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h3 className={`mb-2 text-xs font-bold uppercase tracking-widest ${tone}`}>{title}</h3>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{children}</div>
+    </section>
+  );
+}
+
+/* ============ Tarjeta de carga (inbox del encargado) ============ */
+function CargaCard({ items, onEdit, onDescartar }: { items: Carga[]; onEdit: () => void; onDescartar: () => void }) {
+  const primary = items[0];
+  const isGroup = items.length > 1;
+  return (
+    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
+      <div className="relative aspect-square bg-[#e5e7eb]">
+        {primary.url_imagen ? (
+          <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
+            <img src={thumb(primary.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+          </a>
+        ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
+        {isGroup && (
+          <span className="absolute right-2 top-2 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[10px] font-bold text-white">
+            {items.length} fotos
+          </span>
+        )}
+      </div>
+      {isGroup && (
+        <div className="flex gap-1 overflow-x-auto border-t border-neutral-100 bg-neutral-50 px-2 py-1.5">
+          {items.map(c => (
+            <img key={c.id} src={thumb(c.url_imagen, 200)} alt="" className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 bg-white object-contain" loading="lazy" />
+          ))}
+        </div>
+      )}
+      <div className="space-y-1.5 p-3">
+        <div className="flex items-center justify-between gap-2">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(primary.estado)}`}>{primary.estado}</span>
+          <span className="text-[11px] text-neutral-500">{fmtFechaSheet(primary.fecha)}</span>
+        </div>
+        <p className="text-sm font-semibold text-neutral-900">{primary.marca || "—"} <span className="font-normal text-neutral-500">/ {primary.categoria || "—"}</span></p>
+        <p className="text-xs text-neutral-500">por {primary.usuario || "—"}</p>
+        {primary.comentario && <p className="text-xs text-neutral-700 line-clamp-2">{primary.comentario}</p>}
+        <div className="flex flex-wrap gap-1.5 pt-2">
+          <button onClick={onEdit}
+            className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+            <Edit3 className="h-3 w-3" /> {isGroup ? "Aprobar grupo" : "Revisar / Aprobar"}
+          </button>
+          <button onClick={onDescartar}
+            className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[11px] text-red-600 hover:bg-red-50">
+            <XCircle className="h-3 w-3" /> Descartar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Tarjeta Product Studio (PRODUCTOS_ADMIN) ============ */
+function StudioCard({ producto: p }: { producto: Producto }) {
+  const qc = useQueryClient();
+  const upd = useServerFn(updateProductoEstado);
+  const agendar = useServerFn(agendarPublicacion);
+  const [editing, setEditing] = useState(false);
+  const [scheduling, setScheduling] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [viewingTexts, setViewingTexts] = useState(false);
+
+  const mut = useMutation({
+    mutationFn: (v: { rowIndex: number; estado: "APROBADO"|"PUBLICADO"|"DESCARTADO" }) => upd({ data: v }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["productos"] }); toast.success("Actualizado"); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  const talles = splitTags(p.talles);
+  const idealPara = splitTags(p.ideal_para);
+  const critica = observacionEsCritica(p.observaciones_studio);
+  const esDuplicado = (p.observaciones_studio || "").toUpperCase().includes("DUPLICADO");
+  const archivado = p.estado === "DESCARTADO";
+
+  return (
+    <div className={`overflow-hidden rounded-xl border bg-white shadow-sm ${archivado ? "border-neutral-200 opacity-60" : "border-neutral-200"}`}>
+      <div className="relative aspect-square bg-[#e5e7eb]">
+        {p.url_imagen ? (
+          <img src={thumb(p.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+        ) : (
+          <div className="grid h-full place-items-center text-xs font-semibold text-neutral-400">Foto faltante</div>
+        )}
+        {(critica || esDuplicado) && (
+          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+            <AlertTriangle className="h-3 w-3" /> {esDuplicado ? "Posible duplicado" : "Requiere atención"}
+          </span>
+        )}
+      </div>
+      <div className="space-y-1.5 p-3">
+        <div className="flex items-center justify-between gap-2">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(p.estado)}`}>{p.estado}</span>
+          <span className="text-[11px] text-neutral-500">{fmtFechaSheet(p.fecha_revision)}</span>
+        </div>
+        <p className="text-sm font-semibold text-neutral-900">{p.marca} {p.modelo}</p>
+        <p className="text-[11px] text-neutral-500">
+          SKU: <span className="font-mono font-semibold text-neutral-700">{p.sku || "Sin SKU"}</span>
+        </p>
+        <p className="text-xs text-neutral-600">
+          {p.color || "—"} · {p.genero || "Sin género"}
+        </p>
+        {talles.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {talles.slice(0, 8).map((t) => (
+              <span key={t} className="rounded border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-[10px] font-semibold text-neutral-600">{t}</span>
+            ))}
+            {talles.length > 8 && <span className="px-1 text-[10px] text-neutral-400">+{talles.length - 8}</span>}
+          </div>
+        )}
+        {idealPara.length > 0 && (
+          <p className="text-[11px] text-neutral-500">Ideal para: <span className="font-medium text-neutral-700">{idealPara.join(" · ")}</span></p>
+        )}
+        <div className="flex flex-wrap gap-1 pt-0.5">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeImagenes(p.estado_imagenes)}`}>
+            Img: {(p.estado_imagenes || "PENDIENTE").toUpperCase()}
+          </span>
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeValidacion(p.validacion_modelo)}`}>
+            {(p.validacion_modelo || "Pendiente de validación").toUpperCase()}
+          </span>
+        </div>
+        {p.observaciones_studio && (
+          <p className={`rounded-md px-2 py-1 text-[11px] ${critica ? "bg-red-50 font-semibold text-red-700" : "bg-neutral-50 text-neutral-600"}`}>
+            {p.observaciones_studio}
+          </p>
+        )}
+
+        {/* Acciones según estado */}
+        <div className="flex flex-wrap gap-1.5 pt-2">
+          <button onClick={() => setEditing(true)}
+            className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[11px] font-semibold text-white hover:bg-neutral-800">
+            <Edit3 className="h-3 w-3" /> Ver / Editar
+          </button>
+          {p.estado === "APROBADO" && (
+            <>
+              <button onClick={() => setPublishing(true)}
+                className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+                <Globe className="h-3 w-3" /> Publicar
+              </button>
+              <button onClick={() => setScheduling(true)}
+                className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold text-neutral-700 hover:bg-neutral-50">
+                <Calendar className="h-3 w-3" /> Agendar
+              </button>
+            </>
+          )}
+          {(p.hashtags || p.texto_ig || p.texto_wsp) && !archivado && (
+            <button onClick={() => setViewingTexts(true)}
+              className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold text-neutral-700 hover:bg-neutral-50">
+              <Share2 className="h-3 w-3" /> Textos
+            </button>
+          )}
+          {!archivado ? (
+            <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "DESCARTADO" })}
+              className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2 py-1 text-[11px] text-red-700 hover:bg-red-50">
+              <Archive className="h-3 w-3" /> Archivar
+            </button>
+          ) : (
+            <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "APROBADO" })}
+              className="inline-flex items-center gap-1 rounded-md border border-green-300 bg-white px-2 py-1 text-[11px] font-semibold text-green-700 hover:bg-green-50">
+              <RotateCcw className="h-3 w-3" /> Restaurar
+            </button>
+          )}
+        </div>
+      </div>
+
+      {editing && <StudioEditor producto={p} onClose={() => setEditing(false)} />}
+      {scheduling && <ScheduleDialog producto={p} onClose={() => setScheduling(false)} agendar={(v) => agendar({ data: v })} />}
+      {publishing && <PublishDialog producto={p} onClose={() => setPublishing(false)} />}
+      {viewingTexts && <TextsDialog producto={p} onClose={() => setViewingTexts(false)} />}
+    </div>
+  );
+}
+
+/* ============ Catálogo (todas las fichas internas) ============ */
+function CatalogoView() {
+  const fetch = useServerFn(listProductosAdmin);
+  const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch(), ...QUERY_OPTS });
+  const [verArchivados, setVerArchivados] = useState(false);
+
+  const productos = (q.data ?? []).filter((p) => p.id);
+  const activos = productos.filter((p) => p.estado !== "DESCARTADO");
+  const archivados = productos.filter((p) => p.estado === "DESCARTADO");
+  const visibles = verArchivados ? archivados : activos;
+
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
+          <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
+        </button>
+        <button onClick={() => setVerArchivados(!verArchivados)}
+          className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
+            verArchivados ? "border-red-400 bg-red-50 text-red-700" : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+          }`}>
+          {verArchivados ? `Archivados (${archivados.length})` : `Ver archivados (${archivados.length})`}
+        </button>
+        <span className="ml-auto text-xs text-neutral-500">{visibles.length} ficha{visibles.length !== 1 ? "s" : ""}</span>
+      </div>
+      {q.isLoading ? <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
+        : !visibles.length ? (
+          <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">
+            {verArchivados ? "No hay fichas archivadas." : "Sin productos aprobados todavía."}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {visibles.map(p => <StudioCard key={p.id} producto={p} />)}
+          </div>
+        )}
+    </div>
+  );
+}
+
+/* ============ Editor / aprobador (desde cargas) ============ */
 function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => void }) {
   const qc = useQueryClient();
   const aprobar = useServerFn(aprobarYCrearProducto);
@@ -638,6 +943,182 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
           <button onClick={save} disabled={busy}
             className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} Guardar producto
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Editor Product Studio (ficha completa, edición in-place) ============ */
+function EditorSection({ letra, titulo, children }: { letra: string; titulo: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-xl border border-neutral-200">
+      <header className="flex items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-4 py-2">
+        <span className="grid h-5 w-5 place-items-center rounded-md bg-vd-navy text-[11px] font-extrabold text-primary-foreground">{letra}</span>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-700">{titulo}</h3>
+      </header>
+      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">{children}</div>
+    </section>
+  );
+}
+
+function Sel({ label, v, onC, options, placeholder }: { label: string; v: string; onC: (x: string) => void; options: readonly string[]; placeholder?: string }) {
+  return (
+    <label className="block">
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <select value={v} onChange={(e) => onC(e.target.value)}
+        className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200">
+        <option value="">{placeholder ?? "— Sin definir —"}</option>
+        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+}
+
+function LinkFuente({ url }: { url: string }) {
+  if (!url) return null;
+  return (
+    <a href={url} target="_blank" rel="noreferrer"
+      className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline">
+      <ExternalLink className="h-3 w-3" /> Abrir fuente
+    </a>
+  );
+}
+
+function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: () => void }) {
+  const qc = useQueryClient();
+  const update = useServerFn(updateProductoAdmin);
+  const [busy, setBusy] = useState(false);
+
+  const [v, setV] = useState({
+    url_imagen: p.url_imagen, marca: p.marca, modelo: p.modelo,
+    categoria: p.categoria, subcategoria: p.subcategoria,
+    descripcion: p.descripcion, caracteristicas: p.caracteristicas, uso: p.uso,
+    hashtags: p.hashtags, texto_ig: p.texto_ig, texto_wsp: p.texto_wsp,
+    estado: (p.estado === "PUBLICADO" || p.estado === "DESCARTADO" ? p.estado : "APROBADO") as "APROBADO"|"PUBLICADO"|"DESCARTADO",
+    carga_id: p.carga_id,
+    imagenes_extra: p.imagenes_extra,
+    color: p.color, ideal_para: p.ideal_para, sellos: p.sellos, talles: p.talles,
+    sku: p.sku, genero: p.genero,
+    fuente_imagen: p.fuente_imagen, fuente_imagen_extra: p.fuente_imagen_extra,
+    estado_imagenes: p.estado_imagenes, validacion_modelo: p.validacion_modelo,
+    observaciones_studio: p.observaciones_studio,
+    slug: p.slug, seo_titulo: p.seo_titulo, seo_descripcion: p.seo_descripcion,
+  });
+
+  const extraList = v.imagenes_extra.split("|").map((s) => s.trim()).filter(Boolean);
+  const critica = observacionEsCritica(v.observaciones_studio);
+
+  async function save() {
+    if (!v.marca.trim()) { toast.error("Marca obligatoria"); return; }
+    setBusy(true);
+    try {
+      await update({ data: { rowIndex: p.rowIndex, ...v } });
+      toast.success("Ficha actualizada");
+      qc.invalidateQueries({ queryKey: ["productos"] });
+      onClose();
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-neutral-200 bg-white px-5 py-3">
+          <div className="min-w-0">
+            <h2 className="truncate text-base font-bold text-neutral-900">{p.marca} {p.modelo}</h2>
+            <p className="text-[11px] text-neutral-500">
+              <span className="font-mono">{p.id}</span> · fila {p.rowIndex}
+            </p>
+          </div>
+          <button onClick={onClose} className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100">✕</button>
+        </div>
+
+        <div className="space-y-4 p-4 sm:p-5">
+          {critica && (
+            <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
+              <div>
+                <p className="text-xs font-bold text-red-700">Requiere atención</p>
+                <p className="text-xs text-red-600">{v.observaciones_studio}</p>
+              </div>
+            </div>
+          )}
+
+          {/* A. Identificación */}
+          <EditorSection letra="A" titulo="Identificación">
+            <Inp label="Marca *" v={v.marca} onC={x => setV(s => ({ ...s, marca: x }))} />
+            <Inp label="Modelo" v={v.modelo} onC={x => setV(s => ({ ...s, modelo: x }))} />
+            <Inp label="SKU" v={v.sku} onC={x => setV(s => ({ ...s, sku: x }))} />
+            <Sel label="Género" v={v.genero} onC={x => setV(s => ({ ...s, genero: x }))} options={GENERO_OPTIONS} placeholder="Sin género" />
+            <Inp label="Categoría" v={v.categoria} onC={x => setV(s => ({ ...s, categoria: x }))} />
+            <Inp label="Subcategoría" v={v.subcategoria} onC={x => setV(s => ({ ...s, subcategoria: x }))} />
+            <Inp label="Color" v={v.color} onC={x => setV(s => ({ ...s, color: x }))} />
+          </EditorSection>
+
+          {/* B. Información comercial */}
+          <EditorSection letra="B" titulo="Información comercial">
+            <div className="sm:col-span-2"><TallesPicker value={v.talles} onC={x => setV(s => ({ ...s, talles: x }))} /></div>
+            <div className="sm:col-span-2"><TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={v.ideal_para} onC={x => setV(s => ({ ...s, ideal_para: x }))} /></div>
+            <div className="sm:col-span-2"><TagPicker label="Sellos" options={SELLOS_OPTIONS} value={v.sellos} onC={x => setV(s => ({ ...s, sellos: x }))} /></div>
+            <TA label="Descripción comercial" v={v.descripcion} onC={x => setV(s => ({ ...s, descripcion: x }))} span />
+            <TA label="Características" v={v.caracteristicas} onC={x => setV(s => ({ ...s, caracteristicas: x }))} span />
+            <Inp label="Uso recomendado" v={v.uso} onC={x => setV(s => ({ ...s, uso: x }))} span />
+          </EditorSection>
+
+          {/* C. Fotografías */}
+          <EditorSection letra="C" titulo="Fotografías">
+            <ImagePicker label="Imagen principal" value={v.url_imagen} onChange={x => setV(s => ({ ...s, url_imagen: x }))} />
+            <ImagePicker
+              label="Imagen secundaria"
+              value={extraList[0] ?? ""}
+              onChange={(nu) => setV(s => {
+                const arr = extraList.slice();
+                if (!nu) arr.splice(0, 1); else arr[0] = nu;
+                return { ...s, imagenes_extra: arr.join("|") };
+              })}
+            />
+            {extraList.length > 1 && (
+              <div className="sm:col-span-2">
+                <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">Otras extras ({extraList.length - 1})</span>
+                <div className="mt-1 flex gap-1.5 overflow-x-auto">
+                  {extraList.slice(1).map((u, i) => (
+                    <img key={i} src={thumb(u, 200)} alt="" className="h-14 w-14 shrink-0 rounded border border-neutral-200 bg-neutral-50 object-contain" loading="lazy" />
+                  ))}
+                </div>
+              </div>
+            )}
+            <div>
+              <Inp label="Fuente imagen" v={v.fuente_imagen} onC={x => setV(s => ({ ...s, fuente_imagen: x }))} />
+              <LinkFuente url={v.fuente_imagen} />
+            </div>
+            <div>
+              <Inp label="Fuente imagen extra" v={v.fuente_imagen_extra} onC={x => setV(s => ({ ...s, fuente_imagen_extra: x }))} />
+              <LinkFuente url={v.fuente_imagen_extra} />
+            </div>
+            <Sel label="Estado imágenes" v={v.estado_imagenes} onC={x => setV(s => ({ ...s, estado_imagenes: x }))} options={ESTADO_IMAGENES_OPTIONS} placeholder="Pendiente" />
+            <Sel label="Validación modelo" v={v.validacion_modelo} onC={x => setV(s => ({ ...s, validacion_modelo: x }))} options={VALIDACION_MODELO_OPTIONS} placeholder="Pendiente de validación" />
+            <TA label="Observaciones Studio" v={v.observaciones_studio} onC={x => setV(s => ({ ...s, observaciones_studio: x }))} span rows={2} />
+          </EditorSection>
+
+          {/* D. Publicación */}
+          <EditorSection letra="D" titulo="Publicación">
+            <Inp label="Hashtags" v={v.hashtags} onC={x => setV(s => ({ ...s, hashtags: x }))} span />
+            <TA label="Texto Instagram" v={v.texto_ig} onC={x => setV(s => ({ ...s, texto_ig: x }))} span rows={4} />
+            <TA label="Texto WhatsApp" v={v.texto_wsp} onC={x => setV(s => ({ ...s, texto_wsp: x }))} span rows={4} />
+            <Inp label="Slug" v={v.slug} onC={x => setV(s => ({ ...s, slug: x }))} />
+            <Inp label="SEO Título" v={v.seo_titulo} onC={x => setV(s => ({ ...s, seo_titulo: x }))} />
+            <TA label="SEO Descripción" v={v.seo_descripcion} onC={x => setV(s => ({ ...s, seo_descripcion: x }))} span rows={2} />
+            <Sel label="Estado publicación" v={v.estado} onC={x => setV(s => ({ ...s, estado: x as any }))} options={["APROBADO","PUBLICADO","DESCARTADO"]} />
+          </EditorSection>
+        </div>
+
+        <div className="sticky bottom-0 flex justify-end gap-2 border-t border-neutral-200 bg-white px-5 py-3">
+          <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50">Cancelar</button>
+          <button onClick={save} disabled={busy}
+            className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+            {busy && <Loader2 className="h-4 w-4 animate-spin" />} Guardar cambios
           </button>
         </div>
       </div>
@@ -778,81 +1259,6 @@ function TagPicker({
   );
 }
 
-
-
-/* ============ Productos ============ */
-function ProductosView() {
-  const qc = useQueryClient();
-  const fetch = useServerFn(listProductosAdmin);
-  const upd = useServerFn(updateProductoEstado);
-  const agendar = useServerFn(agendarPublicacion);
-  const q = useQuery({ queryKey: ["productos"], queryFn: () => fetch(), ...QUERY_OPTS });
-  const [scheduling, setScheduling] = useState<Producto | null>(null);
-  const [publishing, setPublishing] = useState<Producto | null>(null);
-  const [viewingTexts, setViewingTexts] = useState<Producto | null>(null);
-
-  const mut = useMutation({
-    mutationFn: (v: { rowIndex: number; estado: "APROBADO"|"PUBLICADO"|"DESCARTADO" }) => upd({ data: v }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["productos"] }); toast.success("Actualizado"); },
-    onError: (e) => toast.error((e as Error).message),
-  });
-
-  // Ocultar descartados y filas sin datos (id o imagen vacíos)
-  const visibles = (q.data ?? []).filter((p) => p.estado !== "DESCARTADO" && p.id);
-
-  return (
-    <div>
-      <div className="mb-3 flex items-center gap-2">
-        <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
-          <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
-        </button>
-        <span className="ml-auto text-xs text-neutral-500">{visibles.length}</span>
-      </div>
-      {q.isLoading ? <Centered><Loader2 className="h-5 w-5 animate-spin text-neutral-400" /></Centered>
-        : !visibles.length ? (
-          <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-sm text-neutral-500">Sin productos aprobados todavía.</div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {visibles.map(p => (
-              <div key={p.id} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-                <div className="relative aspect-square bg-[#e5e7eb]">
-                  {p.url_imagen && <img src={thumb(p.url_imagen, 600)} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
-                </div>
-                <div className="space-y-1.5 p-3">
-                  <div className="flex items-center justify-between">
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(p.estado)}`}>{p.estado}</span>
-                    <span className="text-[11px] text-neutral-500">{p.fecha_revision}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-neutral-900">{p.marca} {p.modelo}</p>
-                  <p className="text-xs text-neutral-500">{p.categoria} {p.subcategoria && `/ ${p.subcategoria}`}</p>
-                  <p className="line-clamp-2 text-xs text-neutral-700">{p.descripcion}</p>
-                  <div className="flex flex-wrap gap-1.5 pt-2">
-                    <button onClick={() => setPublishing(p)} disabled={p.estado === "PUBLICADO"}
-                      className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600 disabled:opacity-50">
-                      <Globe className="h-3 w-3" /> Publicar en landing
-                    </button>
-                    <button onClick={() => setScheduling(p)} className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[11px] font-semibold text-white hover:bg-neutral-800">
-                      <Calendar className="h-3 w-3" /> Agendar
-                    </button>
-                    {(p.hashtags || p.texto_ig || p.texto_wsp) && (
-                      <button onClick={() => setViewingTexts(p)} className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold text-neutral-700 hover:bg-neutral-50">
-                        <Share2 className="h-3 w-3" /> Textos
-                      </button>
-                    )}
-                    <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "DESCARTADO" })} className="rounded-md border border-red-300 bg-white px-2 py-1 text-[11px] text-red-700 hover:bg-red-50">Descartar</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      {scheduling && <ScheduleDialog producto={scheduling} onClose={() => setScheduling(null)} agendar={(v) => agendar({ data: v })} />}
-      {publishing && <PublishDialog producto={publishing} onClose={() => setPublishing(null)} />}
-      {viewingTexts && <TextsDialog producto={viewingTexts} onClose={() => setViewingTexts(null)} />}
-    </div>
-  );
-}
-
 /* ============ Textos para redes (guardados al aprobar) ============ */
 function TextsDialog({ producto, onClose }: { producto: Producto; onClose: () => void }) {
   async function copy(label: string, text: string) {
@@ -903,9 +1309,11 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
   const [imagen, setImagen] = useState(producto.url_imagen || "");
   const [imagenesExtra, setImagenesExtra] = useState(producto.imagenes_extra || "");
   const [destacado, setDestacado] = useState(false);
-  const [sku, setSku] = useState("");
+  // Precargados desde PRODUCTOS_ADMIN (Fase 3): el admin puede corregirlos antes de publicar.
+  const [sku, setSku] = useState(producto.sku || "");
   const [marca, setMarca] = useState(producto.marca || "");
   const [color, setColor] = useState(producto.color || "");
+  const [genero, setGenero] = useState(producto.genero || "");
   const [idealPara, setIdealPara] = useState(producto.ideal_para || "");
   const [sellos, setSellos] = useState(producto.sellos || "");
   const [talles, setTalles] = useState(producto.talles || "");
@@ -925,7 +1333,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
         sku, marca, color, ideal_para: idealPara, sellos, talles,
-        genero: producto.genero || "",
+        genero,
         precio_anterior: precioAnterior,
       }});
 
@@ -965,6 +1373,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
           <Inp label="Marca" v={marca} onC={setMarca} />
           <Inp label="SKU" v={sku} onC={setSku} />
           <Inp label="Color" v={color} onC={setColor} />
+          <Sel label="Género" v={genero} onC={setGenero} options={GENERO_OPTIONS} placeholder="Sin género" />
         </div>
         <TagPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
         <TagPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
@@ -1062,6 +1471,7 @@ function AgendaView() {
     </div>
   );
 }
+
 
 /* ============ Landing (pestaña Productos del Sheet) ============ */
 function LandingView() {
@@ -1187,7 +1597,13 @@ function ImagePicker({ label, value, onChange }: { label: string; value: string;
     <div className="space-y-1">
       <label className="text-xs font-medium text-neutral-600">{label}</label>
       <div className="flex items-start gap-2">
-        {value && <img src={thumb(value, 200)} alt="" className="h-16 w-16 rounded border border-neutral-200 bg-neutral-100 object-contain" loading="lazy" />}
+        {value ? (
+          <img src={thumb(value, 200)} alt="" className="h-16 w-16 rounded border border-neutral-200 bg-neutral-100 object-contain" loading="lazy" />
+        ) : (
+          <div className="grid h-16 w-16 place-items-center rounded border border-dashed border-neutral-300 bg-neutral-50 text-[9px] font-semibold text-neutral-400">
+            Sin foto
+          </div>
+        )}
         <div className="flex-1 space-y-1">
           <input value={value} onChange={(e) => onChange(e.target.value)} className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-xs" placeholder="URL..." />
           <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs font-medium hover:bg-neutral-50">
