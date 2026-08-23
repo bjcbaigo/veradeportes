@@ -1169,13 +1169,28 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
           </EditorSection>
         </div>
 
-        <div className="sticky bottom-0 flex justify-end gap-2 border-t border-neutral-200 bg-white px-5 py-3">
-          <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50">Cancelar</button>
-          <button onClick={save} disabled={busy}
-            className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
-            {busy && <Loader2 className="h-4 w-4 animate-spin" />} Guardar cambios
+        <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-neutral-200 bg-white px-5 py-3">
+          <button onClick={runAi} disabled={aiBusy || busy}
+            className="inline-flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-60">
+            {aiBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {aiBusy ? "Analizando…" : "✨ Completar con IA"}
           </button>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50">Cancelar</button>
+            <button onClick={save} disabled={busy || aiBusy}
+              className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />} Guardar cambios
+            </button>
+          </div>
         </div>
+        {aiData && (
+          <AiSuggestionsDialog
+            sug={aiData}
+            current={{ ...v }}
+            onApply={applyAi}
+            onClose={() => setAiData(null)}
+          />
+        )}
       </div>
     </div>
   );
