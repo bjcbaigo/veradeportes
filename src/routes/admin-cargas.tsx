@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw, Sparkles, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,10 +17,13 @@ import {
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 import { listLeads, type Lead } from "@/lib/leads.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
+import { suggestProductMetadata } from "@/lib/product-studio-ai.functions";
+import type { AiSuggestion } from "@/lib/product-studio-ai.server";
 import { optimizeImage } from "@/lib/image-optimize";
 import {
   IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, GENERO_OPTIONS,
   ESTADO_IMAGENES_OPTIONS, VALIDACION_MODELO_OPTIONS,
+  CATEGORIAS_CATALOGO,
   splitTags, observacionEsCritica,
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
@@ -989,7 +992,11 @@ function LinkFuente({ url }: { url: string }) {
 function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: () => void }) {
   const qc = useQueryClient();
   const update = useServerFn(updateProductoAdmin);
+  const suggestAi = useServerFn(suggestProductMetadata);
   const [busy, setBusy] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiData, setAiData] = useState<AiSuggestion | null>(null);
+  const [aiApplied, setAiApplied] = useState<string[]>([]);
 
   const [v, setV] = useState({
     url_imagen: p.url_imagen, marca: p.marca, modelo: p.modelo,
@@ -1022,6 +1029,44 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
     finally { setBusy(false); }
   }
 
+  async function runAi() {
+    if (!v.marca.trim()) {
+      toast.error("No hay información suficiente para generar una ficha confiable.");
+      return;
+    }
+    setAiBusy(true);
+    try {
+      const res = await suggestAi({
+        data: {
+          marca: v.marca, modelo: v.modelo, categoria: v.categoria,
+          subcategoria: v.subcategoria, descripcion: v.descripcion,
+          caracteristicas: v.caracteristicas, uso: v.uso, color: v.color,
+          ideal_para: v.ideal_para, sellos: v.sellos, genero: v.genero,
+        },
+      });
+      setAiData(res);
+    } catch (e) {
+      console.error(e);
+      toast.error("No se pudieron generar sugerencias. La ficha no fue modificada.");
+    } finally {
+      setAiBusy(false);
+    }
+  }
+
+  function applyAi(accepted: Record<string, string>, observacion: string, labels: string[]) {
+    setV((s) => {
+      const next = { ...s, ...accepted };
+      if (observacion) {
+        next.observaciones_studio = next.observaciones_studio
+          ? `${next.observaciones_studio} | ${observacion}`
+          : observacion;
+      }
+      return next;
+    });
+    setAiApplied((prev) => [...new Set([...prev, ...labels])]);
+    setAiData(null);
+  }
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-xl">
@@ -1043,6 +1088,16 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
                 <p className="text-xs font-bold text-red-700">Requiere atención</p>
                 <p className="text-xs text-red-600">{v.observaciones_studio}</p>
               </div>
+            </div>
+          )}
+
+          {aiApplied.length > 0 && (
+            <div className="flex items-start gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5">
+              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
+              <p className="text-xs text-violet-700">
+                <span className="font-bold">Sugerencia IA aplicada:</span> {aiApplied.join(", ")}.
+                Revisá los campos y guardá para confirmar.
+              </p>
             </div>
           )}
 
@@ -1114,12 +1169,211 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
           </EditorSection>
         </div>
 
-        <div className="sticky bottom-0 flex justify-end gap-2 border-t border-neutral-200 bg-white px-5 py-3">
-          <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50">Cancelar</button>
-          <button onClick={save} disabled={busy}
-            className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
-            {busy && <Loader2 className="h-4 w-4 animate-spin" />} Guardar cambios
+        <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-neutral-200 bg-white px-5 py-3">
+          <button onClick={runAi} disabled={aiBusy || busy}
+            className="inline-flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-60">
+            {aiBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {aiBusy ? "Analizando…" : "✨ Completar con IA"}
           </button>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50">Cancelar</button>
+            <button onClick={save} disabled={busy || aiBusy}
+              className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />} Guardar cambios
+            </button>
+          </div>
+        </div>
+        {aiData && (
+          <AiSuggestionsDialog
+            sug={aiData}
+            current={{ ...v }}
+            onApply={applyAi}
+            onClose={() => setAiData(null)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ===== Asistente IA (Fase 4A) =====
+// Mapeo campo sugerido por IA → campo de la ficha.
+// NUNCA incluye sku, precio, precio_anterior, talles ni fotos (la IA no los propone).
+const AI_FIELDS = [
+  { key: "modelo", label: "Modelo", vKey: "modelo", arr: false },
+  { key: "genero", label: "Género", vKey: "genero", arr: false },
+  { key: "categoria", label: "Categoría", vKey: "categoria", arr: false },
+  { key: "subcategoria", label: "Subcategoría", vKey: "subcategoria", arr: false },
+  { key: "color", label: "Color", vKey: "color", arr: false },
+  { key: "ideal_para", label: "Ideal para", vKey: "ideal_para", arr: true },
+  { key: "sellos", label: "Sellos", vKey: "sellos", arr: true },
+  { key: "descripcion_comercial", label: "Descripción comercial", vKey: "descripcion", arr: false },
+  { key: "caracteristicas", label: "Características", vKey: "caracteristicas", arr: false },
+  { key: "uso_recomendado", label: "Uso recomendado", vKey: "uso", arr: false },
+  { key: "slug", label: "Slug", vKey: "slug", arr: false },
+  { key: "seo_titulo", label: "SEO Título", vKey: "seo_titulo", arr: false },
+  { key: "seo_descripcion", label: "SEO Descripción", vKey: "seo_descripcion", arr: false },
+  { key: "hashtags", label: "Hashtags", vKey: "hashtags", arr: false },
+  { key: "texto_instagram", label: "Texto Instagram", vKey: "texto_ig", arr: false },
+  { key: "texto_whatsapp", label: "Texto WhatsApp", vKey: "texto_wsp", arr: false },
+] as const;
+
+function ConfChip({ c }: { c: string }) {
+  const styles =
+    c === "alta" ? "bg-emerald-100 text-emerald-700"
+    : c === "media" ? "bg-amber-100 text-amber-700"
+    : "bg-neutral-200 text-neutral-500";
+  return <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${styles}`}>{c}</span>;
+}
+
+function AiSuggestionsDialog({
+  sug,
+  current,
+  onApply,
+  onClose,
+}: {
+  sug: AiSuggestion;
+  current: Record<string, string>;
+  onApply: (accepted: Record<string, string>, observacion: string, labels: string[]) => void;
+  onClose: () => void;
+}) {
+  const rows = AI_FIELDS.map((f) => {
+    const raw = (sug as unknown as Record<string, { value?: unknown; confidence?: string } | undefined>)[f.key];
+    let vals: string[] = [];
+    if (f.arr) {
+      vals = Array.isArray(raw?.value) ? (raw.value as string[]).map((s) => String(s).trim()).filter(Boolean) : [];
+    } else {
+      vals = [String(raw?.value ?? "").trim()];
+    }
+    // Filtrar tokens fuera de la taxonomía (la IA solo propone; la taxonomía manda)
+    let dropped: string[] = [];
+    if (f.key === "ideal_para") {
+      dropped = vals.filter((s) => !(IDEAL_PARA_OPTIONS as readonly string[]).includes(s));
+      vals = vals.filter((s) => (IDEAL_PARA_OPTIONS as readonly string[]).includes(s));
+    }
+    if (f.key === "sellos") {
+      dropped = vals.filter((s) => !(SELLOS_OPTIONS as readonly string[]).includes(s));
+      vals = vals.filter((s) => (SELLOS_OPTIONS as readonly string[]).includes(s));
+    }
+    const val = vals.join("|").trim();
+    return { ...f, val, dropped, conf: raw?.confidence ?? "baja", actual: current[f.vKey] ?? "" };
+  }).filter((r) => r.val || r.dropped.length > 0);
+
+  const observacion = sug.observacion_sugerida?.value?.trim() ?? "";
+  const warnings = (sug.warnings ?? []).filter(Boolean);
+
+  function invalidReason(r: (typeof rows)[number]): string | null {
+    if (r.key === "genero" && !(GENERO_OPTIONS as readonly string[]).includes(r.val)) return "Fuera de la lista de géneros";
+    if (r.key === "categoria" && !(CATEGORIAS_CATALOGO as readonly string[]).includes(r.val)) return "Fuera del catálogo";
+    return null;
+  }
+
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [acceptObs, setAcceptObs] = useState(false);
+
+  const toggle = (key: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+
+  const acceptAll = () =>
+    setSelected(new Set(rows.filter((r) => !invalidReason(r)).map((r) => r.key)));
+
+  function apply() {
+    const accepted: Record<string, string> = {};
+    const labels: string[] = [];
+    for (const r of rows) {
+      if (!selected.has(r.key)) continue;
+      accepted[r.vKey] = r.val;
+      labels.push(r.label);
+    }
+    if (labels.length === 0 && !(acceptObs && observacion)) {
+      toast.info("No seleccionaste ninguna sugerencia");
+      return;
+    }
+    onApply(accepted, acceptObs ? observacion : "", labels);
+    toast.success("Sugerencias aplicadas a la ficha — revisá y guardá para confirmar");
+  }
+
+  return (
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/60 p-3" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="border-b border-neutral-200 px-5 py-3">
+          <h3 className="flex items-center gap-2 text-sm font-bold text-neutral-900">
+            <Sparkles className="h-4 w-4 text-violet-600" /> Sugerencias de IA
+          </h3>
+          <p className="mt-0.5 text-[11px] text-neutral-500">
+            La IA propone, vos decidís. Nada se modifica hasta que aceptes y guardes la ficha.
+          </p>
+        </div>
+
+        <div className="flex-1 space-y-3 overflow-y-auto p-4">
+          {warnings.length > 0 && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-amber-700">Advertencias</p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-amber-800">
+                {warnings.map((w, i) => <li key={i}>{w}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {observacion && (
+            <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5">
+              <input type="checkbox" checked={acceptObs} onChange={(e) => setAcceptObs(e.target.checked)} className="mt-0.5 accent-orange-500" />
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">Observación sugerida</p>
+                <p className="text-xs text-neutral-700">{observacion}</p>
+              </div>
+            </label>
+          )}
+
+          {rows.length === 0 && (
+            <p className="py-6 text-center text-sm text-neutral-500">La IA no generó sugerencias para esta ficha.</p>
+          )}
+
+          {rows.map((r) => {
+            const invalid = invalidReason(r);
+            const checked = selected.has(r.key);
+            return (
+              <label key={r.key} className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 ${invalid ? "border-amber-200 bg-amber-50/40" : checked ? "border-violet-300 bg-violet-50/50" : "border-neutral-200"}`}>
+                <input type="checkbox" checked={checked} onChange={() => toggle(r.key)} className="mt-1 accent-violet-600" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-neutral-800">{r.label}</span>
+                    <ConfChip c={r.conf} />
+                    {invalid && <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">{invalid}</span>}
+                  </div>
+                  <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-neutral-400">Actual</p>
+                      <p className="whitespace-pre-wrap text-xs text-neutral-500">{r.actual || <span className="italic">vacío</span>}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-violet-500">Sugerido</p>
+                      <p className="whitespace-pre-wrap text-xs font-medium text-neutral-800">{r.arr ? r.val.split("|").join(" · ") : r.val || "—"}</p>
+                    </div>
+                  </div>
+                  {r.dropped.length > 0 && (
+                    <p className="mt-1 text-[10px] text-amber-600">Ignorado por taxonomía: {r.dropped.join(", ")}</p>
+                  )}
+                </div>
+              </label>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center justify-between gap-2 border-t border-neutral-200 bg-neutral-50 px-5 py-3">
+          <button onClick={acceptAll} className="inline-flex items-center gap-1.5 rounded-md border border-violet-300 px-3 py-2 text-xs font-semibold text-violet-700 hover:bg-violet-50">
+            <Check className="h-3.5 w-3.5" /> Aceptar todo
+          </button>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-100">Cancelar</button>
+            <button onClick={apply} className="rounded-md bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700">
+              Aceptar seleccionadas{selected.size > 0 ? ` (${selected.size})` : ""}
+            </button>
+          </div>
         </div>
       </div>
     </div>

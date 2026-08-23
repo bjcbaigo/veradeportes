@@ -66,6 +66,15 @@ export function splitTags(raw?: string): string[] {
 // --- Product Studio ---
 export const GENERO_OPTIONS = ["Hombre", "Mujer", "Unisex", "Kids"] as const;
 
+// Catálogo normalizado de categorías (asistente IA y fichas).
+export const CATEGORIAS_CATALOGO = [
+  "Zapatillas",
+  "Botines",
+  "Ojotas",
+  "Indumentaria",
+  "Accesorios",
+] as const;
+
 export const ESTADO_IMAGENES_OPTIONS = [
   "PENDIENTE",
   "PROCESANDO",
