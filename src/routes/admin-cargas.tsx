@@ -23,6 +23,7 @@ import { optimizeImage } from "@/lib/image-optimize";
 import {
   IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, GENERO_OPTIONS,
   ESTADO_IMAGENES_OPTIONS, VALIDACION_MODELO_OPTIONS,
+  CATEGORIAS_CATALOGO,
   splitTags, observacionEsCritica,
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
