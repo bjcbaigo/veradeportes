@@ -32,7 +32,7 @@ export function FeaturedOffers() {
         </div>
 
         {offers.length === 0 ? (
-          <div className="rounded-xl border border-border bg-secondary p-5 text-sm text-muted-foreground">
+          <div className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs text-muted-foreground">
             No hay ofertas activas por el momento.
           </div>
         ) : (

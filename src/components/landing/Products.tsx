@@ -177,7 +177,7 @@ export function Products({ limit }: { limit?: number }) {
             No encontramos productos para esa busqueda.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-4 lg:gap-x-4 lg:gap-y-6 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 md:grid-cols-4 lg:gap-x-4 lg:gap-y-5 xl:grid-cols-5">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} onSelect={handleSelect} />
             ))}
