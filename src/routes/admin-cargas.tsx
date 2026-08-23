@@ -18,7 +18,7 @@ import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type She
 import { listLeads, type Lead } from "@/lib/leads.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
 import { suggestProductMetadata } from "@/lib/product-studio-ai.functions";
-import { CATEGORIAS_CATALOGO, type AiSuggestion } from "@/lib/product-studio-ai.server";
+import type { AiSuggestion } from "@/lib/product-studio-ai.server";
 import { optimizeImage } from "@/lib/image-optimize";
 import {
   IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, GENERO_OPTIONS,

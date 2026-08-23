@@ -5,15 +5,8 @@ import {
   IDEAL_PARA_OPTIONS,
   SELLOS_OPTIONS,
   GENERO_OPTIONS,
+  CATEGORIAS_CATALOGO,
 } from "./product-taxonomy";
-
-export const CATEGORIAS_CATALOGO = [
-  "Zapatillas",
-  "Botines",
-  "Ojotas",
-  "Indumentaria",
-  "Accesorios",
-] as const;
 
 const confidence = z.enum(["alta", "media", "baja"]);
 const strField = z.object({ value: z.string().default(""), confidence: confidence.default("baja") });
