@@ -113,14 +113,19 @@ async function appendRow(sheetName: string, cols: string, values: (string | numb
 }
 
 async function updateCell(sheetName: string, cell: string, value: string) {
+  await updateRange(sheetName, cell, [[value]]);
+}
+
+// Escritura de rango exacto (una fila). Nunca hace append: edita celdas existentes.
+async function updateRange(sheetName: string, rangeOnly: string, values: (string | number)[][]) {
   const { lovableKey, sheetsKey, sheetId } = env();
-  const range = `${sheetName}!${cell}`;
+  const range = `${sheetName}!${rangeOnly}`;
   const res = await fetchWithRetry(
     `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=USER_ENTERED`,
     {
       method: "PUT",
       headers: headers(lovableKey, sheetsKey),
-      body: JSON.stringify({ range, majorDimension: "ROWS", values: [[value]] }),
+      body: JSON.stringify({ range, majorDimension: "ROWS", values }),
     },
   );
   if (!res.ok) throw new Error(`Sheets update [${res.status}]: ${await res.text()}`);
@@ -396,6 +401,61 @@ export const updateProductoEstado = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     await updateCell("PRODUCTOS_ADMIN", `N${data.rowIndex}`, data.estado);
+    return { ok: true };
+  });
+
+/* ============ Product Studio — edición completa del registro existente ============
+   Escribe B:AD de la fila indicada (nunca append). A (ID) no se toca:
+   1 Carga_ID = 1 registro administrativo activo. */
+const ProductoUpdateInput = z.object({
+  rowIndex: z.number().int().min(2).max(2000),
+  url_imagen: z.string().max(500),
+  marca: z.string().min(1).max(80),
+  modelo: z.string().max(120).default(""),
+  categoria: z.string().max(80).default(""),
+  subcategoria: z.string().max(80).default(""),
+  descripcion: z.string().max(2000).default(""),
+  caracteristicas: z.string().max(2000).default(""),
+  uso: z.string().max(500).default(""),
+  hashtags: z.string().max(500).default(""),
+  texto_ig: z.string().max(2200).default(""),
+  texto_wsp: z.string().max(2000).default(""),
+  estado: z.enum(["APROBADO","PUBLICADO","DESCARTADO"]),
+  carga_id: z.string().max(80).default(""),
+  imagenes_extra: z.string().max(3000).default(""),
+  color: z.string().max(80).default(""),
+  ideal_para: z.string().max(300).default(""),
+  sellos: z.string().max(300).default(""),
+  talles: z.string().max(200).default(""),
+  sku: z.string().max(80).default(""),
+  genero: z.string().max(40).default(""),
+  fuente_imagen: z.string().max(500).default(""),
+  fuente_imagen_extra: z.string().max(3000).default(""),
+  estado_imagenes: z.string().max(80).default(""),
+  validacion_modelo: z.string().max(80).default(""),
+  observaciones_studio: z.string().max(2000).default(""),
+  slug: z.string().max(200).default(""),
+  seo_titulo: z.string().max(200).default(""),
+  seo_descripcion: z.string().max(300).default(""),
+});
+
+export const updateProductoAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => ProductoUpdateInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as any);
+    // C:AD = 28 columnas (url_imagen … seo_descripcion), incluida O = Carga_ID.
+    // A (ID) y B (fecha_revision) quedan intactas: edición in-place, nunca append.
+    await updateRange("PRODUCTOS_ADMIN", `C${data.rowIndex}:AD${data.rowIndex}`, [[
+      data.url_imagen, data.marca, data.modelo,
+      data.categoria, data.subcategoria, data.descripcion,
+      data.caracteristicas, data.uso, data.hashtags,
+      data.texto_ig, data.texto_wsp, data.estado, data.carga_id,
+      data.imagenes_extra, data.color, data.ideal_para, data.sellos, data.talles,
+      data.sku, data.genero, data.fuente_imagen, data.fuente_imagen_extra,
+      data.estado_imagenes, data.validacion_modelo, data.observaciones_studio,
+      data.slug, data.seo_titulo, data.seo_descripcion,
+    ]]);
     return { ok: true };
   });
 

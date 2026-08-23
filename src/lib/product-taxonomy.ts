@@ -62,3 +62,29 @@ export function splitTags(raw?: string): string[] {
     .map((s) => s.trim())
     .filter(Boolean);
 }
+
+// --- Product Studio ---
+export const GENERO_OPTIONS = ["Hombre", "Mujer", "Unisex", "Kids"] as const;
+
+export const ESTADO_IMAGENES_OPTIONS = [
+  "PENDIENTE",
+  "PROCESANDO",
+  "REVISAR",
+  "APROBADAS",
+  "ERROR",
+] as const;
+
+export const VALIDACION_MODELO_OPTIONS = [
+  "EXACTO",
+  "PROBABLE",
+  "PENDIENTE",
+  "RECHAZADO",
+] as const;
+
+// Palabras clave en Observaciones_Studio que marcan "Requiere atención".
+export const OBS_CRITICAS = ["DUPLICADO", "REVISAR MODELO", "IMAGEN NO EXACTA", "FALTA SKU"] as const;
+
+export function observacionEsCritica(obs?: string): boolean {
+  const up = (obs || "").toUpperCase();
+  return OBS_CRITICAS.some((k) => up.includes(k));
+}
