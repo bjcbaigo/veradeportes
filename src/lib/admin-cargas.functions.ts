@@ -14,6 +14,17 @@ function env() {
   return { lovableKey, sheetsKey, sheetId };
 }
 
+// Letra de columna 1-indexed (1=A … 26=Z, 27=AA … 30=AD).
+function colLetter(n: number): string {
+  let s = "";
+  while (n > 0) {
+    const m = (n - 1) % 26;
+    s = String.fromCharCode(65 + m) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
 function headers(lovableKey: string, sheetsKey: string) {
   return {
     Authorization: `Bearer ${lovableKey}`,
@@ -129,7 +140,7 @@ export const getSheetUrl = createServerFn({ method: "GET" })
 /* ============ Inicializar pestañas ============ */
 const TAB_HEADERS = {
   CARGAS_USUARIOS: ["ID","Fecha","Usuario","URL_Imagen","Marca_Sugerida","Categoria_Sugerida","Comentario","Estado","URL_Drive","Modelo_Sugerido","Color","Ideal_Para","Sellos","Talles"],
-  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID","Imagenes_Extra","Color","Ideal_Para","Sellos","Talles"],
+  PRODUCTOS_ADMIN: ["ID","Fecha_Revision","URL_Imagen","Marca","Modelo","Categoria","Subcategoria","Descripcion_Comercial","Caracteristicas","Uso_Recomendado","Hashtags","Texto_Instagram","Texto_WhatsApp","Estado_Publicacion","Carga_ID","Imagenes_Extra","Color","Ideal_Para","Sellos","Talles","SKU","Genero","Fuente_Imagen","Fuente_Imagen_Extra","Estado_Imagenes","Validacion_Modelo","Observaciones_Studio","Slug","SEO_Titulo","SEO_Descripcion"],
   CALENDARIO_PUBLICACIONES: ["ID","Producto_ID","Fecha_Publicacion","Canal","Tipo_Publicacion","Estado"],
 } as const;
 
@@ -163,7 +174,7 @@ export const initAdminSheets = createServerFn({ method: "POST" })
     for (const [name, cols] of Object.entries(TAB_HEADERS)) {
       const first = await readRange(`${name}!A1:A1`);
       if (!first[0] || !first[0][0]) {
-        const endCol = String.fromCharCode("A".charCodeAt(0) + cols.length - 1);
+        const endCol = colLetter(cols.length);
         const range = `${name}!A1:${endCol}1`;
         const res = await fetch(
           `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
@@ -175,6 +186,27 @@ export const initAdminSheets = createServerFn({ method: "POST" })
         );
         if (!res.ok) throw new Error(`headers ${name} [${res.status}]: ${await res.text()}`);
       }
+    }
+
+    // Asegurar encabezados U–AD en PRODUCTOS_ADMIN (Fase 2 — Product Studio).
+    // Las filas históricas ya tienen A1:T1, así que este bloque escribe solo lo nuevo.
+    const paHead = await readRange("PRODUCTOS_ADMIN!U1:AD1");
+    if ((paHead[0] ?? []).filter(Boolean).length < 10) {
+      const range = "PRODUCTOS_ADMIN!U1:AD1";
+      const res = await fetch(
+        `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
+        {
+          method: "PUT",
+          headers: headers(lovableKey, sheetsKey),
+          body: JSON.stringify({
+            range,
+            majorDimension: "ROWS",
+            values: [["SKU","Genero","Fuente_Imagen","Fuente_Imagen_Extra","Estado_Imagenes","Validacion_Modelo","Observaciones_Studio","Slug","SEO_Titulo","SEO_Descripcion"]],
+          }),
+        },
+      );
+      if (!res.ok) throw new Error(`headers PRODUCTOS_ADMIN U:AD [${res.status}]: ${await res.text()}`);
+      invalidateReadCache("PRODUCTOS_ADMIN");
     }
 
     // Asegurar encabezados nuevos J–P en la pestaña Productos (landing)
@@ -218,6 +250,11 @@ export type Producto = {
   hashtags: string; texto_ig: string; texto_wsp: string;
   estado: string; carga_id: string; imagenes_extra: string;
   color: string; ideal_para: string; sellos: string; talles: string;
+  // Fase 2 — Product Studio (columnas U:AD). Defaults seguros "" para filas históricas.
+  sku: string; genero: string;
+  fuente_imagen: string; fuente_imagen_extra: string; estado_imagenes: string;
+  validacion_modelo: string; observaciones_studio: string;
+  slug: string; seo_titulo: string; seo_descripcion: string;
 };
 export type Agenda = {
   rowIndex: number;
@@ -277,6 +314,17 @@ const ProductoInput = z.object({
   ideal_para: z.string().max(300).default(""),
   sellos: z.string().max(300).default(""),
   talles: z.string().max(200).default(""),
+  // Fase 2 — Product Studio (columnas U:AD)
+  sku: z.string().max(80).default(""),
+  genero: z.string().max(40).default(""),
+  fuente_imagen: z.string().max(500).default(""),
+  fuente_imagen_extra: z.string().max(3000).default(""),
+  estado_imagenes: z.string().max(80).default(""),
+  validacion_modelo: z.string().max(80).default(""),
+  observaciones_studio: z.string().max(2000).default(""),
+  slug: z.string().max(200).default(""),
+  seo_titulo: z.string().max(200).default(""),
+  seo_descripcion: z.string().max(300).default(""),
 });
 
 export const aprobarYCrearProducto = createServerFn({ method: "POST" })
@@ -291,12 +339,15 @@ export const aprobarYCrearProducto = createServerFn({ method: "POST" })
       hour: "2-digit", minute: "2-digit", hour12: false,
     }).format(new Date());
 
-    await appendRow("PRODUCTOS_ADMIN", "A:T", [
+    await appendRow("PRODUCTOS_ADMIN", "A:AD", [
       id, fecha, data.url_imagen, data.marca, data.modelo,
       data.categoria, data.subcategoria, data.descripcion,
       data.caracteristicas, data.uso, data.hashtags,
       data.texto_ig, data.texto_wsp, data.estado, data.carga_id,
       data.imagenes_extra, data.color, data.ideal_para, data.sellos, data.talles,
+      data.sku, data.genero, data.fuente_imagen, data.fuente_imagen_extra,
+      data.estado_imagenes, data.validacion_modelo, data.observaciones_studio,
+      data.slug, data.seo_titulo, data.seo_descripcion,
     ]);
 
     if (data.carga_rowIndex) {
@@ -309,7 +360,7 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<Producto[]> => {
     await assertAdmin(context as any);
-    const rows = await readRange("PRODUCTOS_ADMIN!A2:T2000");
+    const rows = await readRange("PRODUCTOS_ADMIN!A2:AD2000");
     // Filtrar filas basura (sin ID): evita tarjetas vacías en el panel
     return rows.map((r, i) => ({ rowIndex: i + 2, r }))
       .filter(({ r }) => (r[0] ?? "").trim() !== "")
@@ -323,6 +374,11 @@ export const listProductosAdmin = createServerFn({ method: "GET" })
       estado: (r[13] ?? "APROBADO").toUpperCase(), carga_id: r[14] ?? "",
       imagenes_extra: r[15] ?? "",
       color: r[16] ?? "", ideal_para: r[17] ?? "", sellos: r[18] ?? "", talles: r[19] ?? "",
+      sku: r[20] ?? "", genero: r[21] ?? "",
+      fuente_imagen: r[22] ?? "", fuente_imagen_extra: r[23] ?? "",
+      estado_imagenes: r[24] ?? "", validacion_modelo: r[25] ?? "",
+      observaciones_studio: r[26] ?? "",
+      slug: r[27] ?? "", seo_titulo: r[28] ?? "", seo_descripcion: r[29] ?? "",
     }));
   });
 
@@ -425,7 +481,7 @@ export const resetAllSheets = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context as any);
     await clearRows("CARGAS_USUARIOS", "N");
-    await clearRows("PRODUCTOS_ADMIN", "T");
+    await clearRows("PRODUCTOS_ADMIN", "AD");
     await clearRows("Productos", "P");
     return { ok: true };
   });
