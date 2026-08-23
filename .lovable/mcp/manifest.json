@@ -247,8 +247,13 @@
             "destacado": {
               "type": "boolean"
             },
+            "genero": {
+              "description": "Género (columna P). Vacío para quitar.",
+              "type": "string",
+              "maxLength": 40
+            },
             "precio_anterior": {
-              "description": "Precio anterior para ofertas (se muestra tachado). Vacío para quitar.",
+              "description": "Precio anterior para ofertas (columna Q, se muestra tachado). Vacío para quitar.",
               "type": "string",
               "maxLength": 50
             }
