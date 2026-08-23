@@ -16,7 +16,8 @@ export default defineTool({
     imagen_url: z.string().max(500).optional(),
     activo: z.boolean().optional(),
     destacado: z.boolean().optional(),
-    precio_anterior: z.string().max(50).optional().describe("Precio anterior para ofertas (se muestra tachado). Vacío para quitar."),
+    genero: z.string().max(40).optional().describe("Género (columna P). Vacío para quitar."),
+    precio_anterior: z.string().max(50).optional().describe("Precio anterior para ofertas (columna Q, se muestra tachado). Vacío para quitar."),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   handler: async (input, ctx) => {
@@ -50,8 +51,11 @@ export default defineTool({
       activo ? "TRUE" : "FALSE",
       destacado ? "TRUE" : "FALSE",
     ]);
+    if (input.genero !== undefined) {
+      await updateRow("Productos", `P${input.rowIndex}`, [input.genero]);
+    }
     if (input.precio_anterior !== undefined) {
-      await updateRow("Productos", `P${input.rowIndex}`, [input.precio_anterior]);
+      await updateRow("Productos", `Q${input.rowIndex}`, [input.precio_anterior]);
     }
     return {
       content: [{ type: "text", text: `Producto fila ${input.rowIndex} actualizado` }],

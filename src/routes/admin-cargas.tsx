@@ -925,6 +925,7 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
         nombre, categoria, precio, descripcion, imagen_url: imagen, destacado,
         imagenes_extra: extraList.join("|"),
         sku, marca, color, ideal_para: idealPara, sellos, talles,
+        genero: producto.genero || "",
         precio_anterior: precioAnterior,
       }});
 
@@ -1077,6 +1078,7 @@ function LandingView() {
       imagenes_extra: v.imagenes_extra ?? "",
       sku: v.sku ?? "", marca: v.marca ?? "", color: v.color ?? "",
       ideal_para: v.ideal_para ?? "", sellos: v.sellos ?? "", talles: v.talles ?? "",
+      genero: v.genero ?? "",
       precio_anterior: v.precio_anterior ?? "",
     }}),
 
