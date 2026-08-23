@@ -1091,6 +1091,16 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
             </div>
           )}
 
+          {aiApplied.length > 0 && (
+            <div className="flex items-start gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5">
+              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
+              <p className="text-xs text-violet-700">
+                <span className="font-bold">Sugerencia IA aplicada:</span> {aiApplied.join(", ")}.
+                Revisá los campos y guardá para confirmar.
+              </p>
+            </div>
+          )}
+
           {/* A. Identificación */}
           <EditorSection letra="A" titulo="Identificación">
             <Inp label="Marca *" v={v.marca} onC={x => setV(s => ({ ...s, marca: x }))} />
