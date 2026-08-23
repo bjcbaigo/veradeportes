@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw, Sparkles, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,8 @@ import {
 import { listSheetProducts, updateSheetProduct, bulkDeleteByCategories, type SheetProduct } from "@/lib/sheet-products.functions";
 import { listLeads, type Lead } from "@/lib/leads.functions";
 import { uploadImageAdmin } from "@/lib/uploads.functions";
+import { suggestProductMetadata } from "@/lib/product-studio-ai.functions";
+import { CATEGORIAS_CATALOGO, type AiSuggestion } from "@/lib/product-studio-ai.server";
 import { optimizeImage } from "@/lib/image-optimize";
 import {
   IDEAL_PARA_OPTIONS, SELLOS_OPTIONS, GENERO_OPTIONS,
