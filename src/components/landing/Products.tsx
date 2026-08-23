@@ -114,7 +114,7 @@ export function Products({ limit }: { limit?: number }) {
   }
 
   return (
-    <section ref={sectionRef} id="productos" className="bg-white py-4 lg:py-8">
+    <section ref={sectionRef} id="productos" className="bg-white py-3 lg:py-6">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-center justify-between lg:mb-4">
           <h2 className="text-[17px] font-black uppercase tracking-normal text-foreground lg:text-xl">
@@ -177,7 +177,7 @@ export function Products({ limit }: { limit?: number }) {
             No encontramos productos para esa busqueda.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-4 lg:gap-x-4 lg:gap-y-6 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 md:grid-cols-4 lg:gap-x-4 lg:gap-y-5 xl:grid-cols-5">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} onSelect={handleSelect} />
             ))}

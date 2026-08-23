@@ -17,7 +17,7 @@ export function FeaturedOffers() {
   }
 
   return (
-    <section id="ofertas" className="bg-white py-4 lg:py-7">
+    <section id="ofertas" className="bg-white py-2 lg:py-4">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-center justify-between lg:mb-4">
           <h2 className="text-[17px] font-black uppercase tracking-normal text-foreground lg:text-xl">
@@ -32,7 +32,7 @@ export function FeaturedOffers() {
         </div>
 
         {offers.length === 0 ? (
-          <div className="rounded-xl border border-border bg-secondary p-5 text-sm text-muted-foreground">
+          <div className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs text-muted-foreground">
             No hay ofertas activas por el momento.
           </div>
         ) : (
