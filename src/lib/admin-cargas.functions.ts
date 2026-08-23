@@ -209,11 +209,14 @@ export const initAdminSheets = createServerFn({ method: "POST" })
       invalidateReadCache("PRODUCTOS_ADMIN");
     }
 
-    // Asegurar encabezados nuevos J–P en la pestaña Productos (landing)
-    const prodHead = await readRange("Productos!J1:P1");
-    const hasNew = (prodHead[0] ?? []).filter(Boolean).length === 7;
-    if (!hasNew) {
-      const range = "Productos!J1:P1";
+    // Asegurar encabezados J–Q en la pestaña Productos (landing).
+    // Esquema vigente: P = Genero, Q = Precio_Anterior.
+    // NUNCA sobrescribir P con Precio_Anterior (layout histórico ya corregido).
+    const prodHead = await readRange("Productos!J1:Q1");
+    const ph = prodHead[0] ?? [];
+    // J:O históricos — completar solo si faltan.
+    if (ph.slice(0, 6).filter(Boolean).length < 6) {
+      const range = "Productos!J1:O1";
       const res = await fetch(
         `${GATEWAY}/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`,
         {
@@ -222,13 +225,15 @@ export const initAdminSheets = createServerFn({ method: "POST" })
           body: JSON.stringify({
             range,
             majorDimension: "ROWS",
-            values: [["SKU", "Marca", "Color", "Ideal_Para", "Sellos", "Talles", "Precio_Anterior"]],
+            values: [["SKU", "Marca", "Color", "Ideal_Para", "Sellos", "Talles"]],
           }),
         },
       );
-      if (!res.ok) throw new Error(`headers Productos [${res.status}]: ${await res.text()}`);
+      if (!res.ok) throw new Error(`headers Productos J:O [${res.status}]: ${await res.text()}`);
       invalidateReadCache("Productos");
     }
+    if ((ph[6] ?? "") !== "Genero") await updateCell("Productos", "P1", "Genero");
+    if ((ph[7] ?? "") !== "Precio_Anterior") await updateCell("Productos", "Q1", "Precio_Anterior");
 
     return { ok: true, created: toCreate };
   });
@@ -442,6 +447,7 @@ const PublicarInput = z.object({
   ideal_para: z.string().max(300).default(""),
   sellos: z.string().max(300).default(""),
   talles: z.string().max(200).default(""),
+  genero: z.string().max(40).default(""),
   precio_anterior: z.string().max(50).default(""),
 });
 
@@ -451,11 +457,12 @@ export const publicarEnLanding = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     const id = `L-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-    await appendRow("Productos", "A:P", [
+    // Productos A:Q — P = Genero, Q = Precio_Anterior ("" si no hay oferta).
+    await appendRow("Productos", "A:Q", [
       id, data.nombre, data.categoria, data.precio, data.descripcion,
       data.imagen_url, "TRUE", data.destacado ? "TRUE" : "FALSE",
       data.imagenes_extra, data.sku, data.marca, data.color,
-      data.ideal_para, data.sellos, data.talles, data.precio_anterior,
+      data.ideal_para, data.sellos, data.talles, data.genero, data.precio_anterior,
     ]);
     await updateCell("PRODUCTOS_ADMIN", `N${data.producto_rowIndex}`, "PUBLICADO");
     return { ok: true, id };
@@ -482,7 +489,7 @@ export const resetAllSheets = createServerFn({ method: "POST" })
     await assertAdmin(context as any);
     await clearRows("CARGAS_USUARIOS", "N");
     await clearRows("PRODUCTOS_ADMIN", "AD");
-    await clearRows("Productos", "P");
+    await clearRows("Productos", "Q");
     return { ok: true };
   });
 
