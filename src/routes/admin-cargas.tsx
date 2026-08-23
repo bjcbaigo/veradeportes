@@ -992,7 +992,11 @@ function LinkFuente({ url }: { url: string }) {
 function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: () => void }) {
   const qc = useQueryClient();
   const update = useServerFn(updateProductoAdmin);
+  const suggestAi = useServerFn(suggestProductMetadata);
   const [busy, setBusy] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiData, setAiData] = useState<AiSuggestion | null>(null);
+  const [aiApplied, setAiApplied] = useState<string[]>([]);
 
   const [v, setV] = useState({
     url_imagen: p.url_imagen, marca: p.marca, modelo: p.modelo,
