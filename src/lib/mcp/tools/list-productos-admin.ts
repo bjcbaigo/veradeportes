@@ -15,7 +15,7 @@ export default defineTool({
   handler: async ({ estado, limite }, ctx) => {
     const check = await assertAdmin(ctx);
     if (!check.ok) return { content: [{ type: "text", text: check.message }], isError: true };
-    const rows = await readRange("PRODUCTOS_ADMIN!A2:O2000");
+    const rows = await readRange("PRODUCTOS_ADMIN!A2:AD2000");
     const items = rows.map((r, i) => ({
       rowIndex: i + 2,
       id: r[0] ?? "",
@@ -33,6 +33,13 @@ export default defineTool({
       texto_wsp: r[12] ?? "",
       estado: (r[13] ?? "APROBADO").toUpperCase(),
       carga_id: r[14] ?? "",
+      imagenes_extra: r[15] ?? "",
+      color: r[16] ?? "", ideal_para: r[17] ?? "", sellos: r[18] ?? "", talles: r[19] ?? "",
+      sku: r[20] ?? "", genero: r[21] ?? "",
+      fuente_imagen: r[22] ?? "", fuente_imagen_extra: r[23] ?? "",
+      estado_imagenes: r[24] ?? "", validacion_modelo: r[25] ?? "",
+      observaciones_studio: r[26] ?? "",
+      slug: r[27] ?? "", seo_titulo: r[28] ?? "", seo_descripcion: r[29] ?? "",
     }));
     const filtered = estado ? items.filter((p) => p.estado === estado) : items;
     const out = filtered.slice(0, limite ?? 100);
