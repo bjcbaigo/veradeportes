@@ -109,15 +109,35 @@ function Login() {
     try {
       if (mode === "in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
-        if (error) throw error;
+        if (error) {
+          // Usuario inexistente / clave incorrecta → ofrecer registro directo.
+          if (/invalid login credentials|email not confirmed/i.test(error.message)) {
+            setMode("up");
+            toast.info("No encontramos esa cuenta. Completá la contraseña y tocá “Crear cuenta”.");
+            return;
+          }
+          throw error;
+        }
       } else {
-        const { error } = await supabase.auth.signUp({ email, password: pwd, options: { emailRedirectTo: `${window.location.origin}/admin-cargas` }});
-        if (error) throw error;
-        toast.success("Cuenta creada. El admin debe asignarte el rol.");
+        const { data, error } = await supabase.auth.signUp({ email, password: pwd, options: { emailRedirectTo: `${window.location.origin}/admin-cargas` }});
+        if (error) {
+          if (/already registered|already been registered/i.test(error.message)) {
+            setMode("in");
+            toast.info("Ese email ya tiene cuenta. Ingresá con tu contraseña.");
+            return;
+          }
+          throw error;
+        }
+        if (!data.session) {
+          toast.success("Cuenta creada. Revisá tu email para confirmarla.");
+        } else {
+          toast.success("Cuenta creada. El admin debe asignarte el rol.");
+        }
       }
     } catch (err) { toast.error((err as Error).message); }
     finally { setBusy(false); }
   }
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
