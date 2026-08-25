@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { ProductDetailDialog } from "@/components/landing/ProductDetailDialog";
 import { ProductCard } from "@/components/landing/ProductCard";
-import { isOfferProduct, useProductsData } from "@/lib/product-data";
+import { useProductsData } from "@/lib/product-data";
 import type { Product } from "@/lib/products";
 
 export function FeaturedOffers() {
