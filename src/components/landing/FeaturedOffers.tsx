@@ -2,14 +2,15 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { ProductDetailDialog } from "@/components/landing/ProductDetailDialog";
 import { ProductCard } from "@/components/landing/ProductCard";
-import { isOfferProduct, useProductsData } from "@/lib/product-data";
+import { useProductsData } from "@/lib/product-data";
 import type { Product } from "@/lib/products";
 
 export function FeaturedOffers() {
   const { products } = useProductsData();
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
-  const offers = products.filter(isOfferProduct).slice(0, 5);
+  // Solo los marcados como "Destacado" en el panel (columna H de la planilla).
+  const offers = products.filter((p) => p.badge === "Destacado").slice(0, 5);
 
   function handleSelect(product: Product) {
     setSelected(product);
