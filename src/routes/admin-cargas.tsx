@@ -247,7 +247,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-vd-navy md:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <p className="text-lg font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
-          <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground/50">
+          <p className="mt-0.5 text-[12px] font-semibold uppercase tracking-widest text-primary-foreground/50">
             Product Studio
           </p>
         </div>
@@ -265,12 +265,12 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
                 <Icon className="h-4 w-4 shrink-0" />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-semibold leading-tight">{label}</span>
-                  <span className={`block truncate text-[10px] ${active ? "text-primary-foreground/75" : "text-primary-foreground/40"}`}>
+                  <span className={`block truncate text-[12px] ${active ? "text-primary-foreground/75" : "text-primary-foreground/40"}`}>
                     {desc}
                   </span>
                 </span>
                 {badge > 0 && (
-                  <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                  <span className={`rounded-full px-1.5 py-0.5 text-[12px] font-bold ${
                     active ? "bg-black/25 text-primary-foreground" : "bg-primary/20 text-primary"
                   }`}>
                     {badge}
@@ -281,7 +281,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           })}
         </nav>
         <div className="space-y-1 border-t border-white/10 px-3 py-3">
-          <p className="px-1 pb-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground/40">
+          <p className="px-1 pb-1 text-[12px] font-bold uppercase tracking-widest text-primary-foreground/40">
             Herramientas
           </p>
           <Link to="/cargar"
@@ -293,7 +293,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           <SideTool icon={XCircle} label={resetBusy ? "Limpiando…" : "Reset total"} onClick={doReset} disabled={resetBusy} danger />
         </div>
         <div className="border-t border-white/10 px-4 py-3">
-          <p className="truncate text-[11px] text-primary-foreground/50">{email}</p>
+          <p className="truncate text-[12px] text-primary-foreground/50">{email}</p>
           <button onClick={onLogout}
             className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground">
             <LogOut className="h-3.5 w-3.5" /> Salir
@@ -306,7 +306,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
         <div className="flex items-center justify-between bg-vd-navy px-4 pt-3">
           <div>
             <p className="text-sm font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-primary-foreground/50">
+            <p className="text-[12px] font-semibold uppercase tracking-widest text-primary-foreground/50">
               Product Studio
             </p>
           </div>
@@ -326,7 +326,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
                 }`}>
                 <Icon className="h-3.5 w-3.5" /> {label}
                 {badge > 0 && (
-                  <span className="rounded-full bg-black/25 px-1.5 text-[10px] font-bold">{badge}</span>
+                  <span className="rounded-full bg-black/25 px-1.5 text-[12px] font-bold">{badge}</span>
                 )}
               </button>
             );
@@ -334,19 +334,19 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
         </nav>
         <div className="flex gap-1.5 overflow-x-auto border-b border-neutral-200 bg-white px-3 py-2">
           <Link to="/cargar"
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[12px] font-bold text-primary-foreground">
             <Camera className="h-3 w-3" /> Cargar fotos
           </Link>
           <button onClick={openSheet}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[11px] font-medium text-neutral-700">
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[12px] font-medium text-neutral-700">
             <ExternalLink className="h-3 w-3" /> Planilla
           </button>
           <button onClick={doInit} disabled={initBusy}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[11px] font-medium text-neutral-700 disabled:opacity-50">
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[12px] font-medium text-neutral-700 disabled:opacity-50">
             <Settings className="h-3 w-3" /> Inicializar
           </button>
           <button onClick={doReset} disabled={resetBusy}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-300 px-3 py-1.5 text-[11px] font-medium text-red-600 disabled:opacity-50">
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-300 px-3 py-1.5 text-[12px] font-medium text-red-600 disabled:opacity-50">
             <XCircle className="h-3 w-3" /> Reset
           </button>
         </div>
@@ -396,7 +396,7 @@ function FlowHint({ tab }: { tab: Tab }) {
     <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2">
       {steps.map((s, i) => (
         <div key={s.key} className="flex items-center gap-2">
-          <span className={`grid h-5 w-5 place-items-center rounded-full text-[11px] font-bold ${
+          <span className={`grid h-5 w-5 place-items-center rounded-full text-[12px] font-bold ${
             tab === s.key ? "bg-primary text-primary-foreground" : "bg-neutral-200 text-neutral-500"
           }`}>
             {s.n}
@@ -565,7 +565,7 @@ function StudioView() {
               filter === d.key ? "border-primary ring-1 ring-primary/30" : "border-neutral-200"
             }`}>
             <p className={`text-xl font-extrabold leading-none ${d.tone}`}>{d.count}</p>
-            <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-neutral-500">{d.label}</p>
+            <p className="mt-1 text-[12px] font-bold uppercase tracking-wide text-neutral-500">{d.label}</p>
           </button>
         ))}
       </div>
@@ -653,7 +653,7 @@ function CargaCard({ items, onEdit, onDescartar }: { items: Carga[]; onEdit: () 
           </a>
         ) : <div className="grid h-full place-items-center text-xs text-neutral-400">sin imagen</div>}
         {isGroup && (
-          <span className="absolute right-2 top-2 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[10px] font-bold text-white">
+          <span className="absolute right-2 top-2 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[12px] font-bold text-white">
             {items.length} fotos
           </span>
         )}
@@ -667,19 +667,19 @@ function CargaCard({ items, onEdit, onDescartar }: { items: Carga[]; onEdit: () 
       )}
       <div className="space-y-1.5 p-3">
         <div className="flex items-center justify-between gap-2">
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(primary.estado)}`}>{primary.estado}</span>
-          <span className="text-[11px] text-neutral-500">{fmtFechaSheet(primary.fecha)}</span>
+          <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${badgeColor(primary.estado)}`}>{primary.estado}</span>
+          <span className="text-[12px] text-neutral-500">{fmtFechaSheet(primary.fecha)}</span>
         </div>
         <p className="text-sm font-semibold text-neutral-900">{primary.marca || "—"} <span className="font-normal text-neutral-500">/ {primary.categoria || "—"}</span></p>
         <p className="text-xs text-neutral-500">por {primary.usuario || "—"}</p>
         {primary.comentario && <p className="text-xs text-neutral-700 line-clamp-2">{primary.comentario}</p>}
         <div className="flex flex-wrap gap-1.5 pt-2">
           <button onClick={onEdit}
-            className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+            className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[12px] font-semibold text-white hover:bg-orange-600">
             <Edit3 className="h-3 w-3" /> {isGroup ? "Aprobar grupo" : "Revisar / Aprobar"}
           </button>
           <button onClick={onDescartar}
-            className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[11px] text-red-600 hover:bg-red-50">
+            className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[12px] text-red-600 hover:bg-red-50">
             <XCircle className="h-3 w-3" /> Descartar
           </button>
         </div>
@@ -719,18 +719,18 @@ function StudioCard({ producto: p }: { producto: Producto }) {
           <div className="grid h-full place-items-center text-xs font-semibold text-neutral-400">Foto faltante</div>
         )}
         {(critica || esDuplicado) && (
-          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[12px] font-bold text-white">
             <AlertTriangle className="h-3 w-3" /> {esDuplicado ? "Posible duplicado" : "Requiere atención"}
           </span>
         )}
       </div>
       <div className="space-y-1.5 p-3">
         <div className="flex items-center justify-between gap-2">
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(p.estado)}`}>{p.estado}</span>
-          <span className="text-[11px] text-neutral-500">{fmtFechaSheet(p.fecha_revision)}</span>
+          <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${badgeColor(p.estado)}`}>{p.estado}</span>
+          <span className="text-[12px] text-neutral-500">{fmtFechaSheet(p.fecha_revision)}</span>
         </div>
         <p className="text-sm font-semibold text-neutral-900">{p.marca} {p.modelo}</p>
-        <p className="text-[11px] text-neutral-500">
+        <p className="text-[12px] text-neutral-500">
           SKU: <span className="font-mono font-semibold text-neutral-700">{p.sku || "Sin SKU"}</span>
         </p>
         <p className="text-xs text-neutral-600">
@@ -739,24 +739,24 @@ function StudioCard({ producto: p }: { producto: Producto }) {
         {talles.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {talles.slice(0, 8).map((t) => (
-              <span key={t} className="rounded border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-[10px] font-semibold text-neutral-600">{t}</span>
+              <span key={t} className="rounded border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-[12px] font-semibold text-neutral-600">{t}</span>
             ))}
-            {talles.length > 8 && <span className="px-1 text-[10px] text-neutral-400">+{talles.length - 8}</span>}
+            {talles.length > 8 && <span className="px-1 text-[12px] text-neutral-400">+{talles.length - 8}</span>}
           </div>
         )}
         {idealPara.length > 0 && (
-          <p className="text-[11px] text-neutral-500">Ideal para: <span className="font-medium text-neutral-700">{idealPara.join(" · ")}</span></p>
+          <p className="text-[12px] text-neutral-500">Ideal para: <span className="font-medium text-neutral-700">{idealPara.join(" · ")}</span></p>
         )}
         <div className="flex flex-wrap gap-1 pt-0.5">
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeImagenes(p.estado_imagenes)}`}>
+          <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${badgeImagenes(p.estado_imagenes)}`}>
             Img: {(p.estado_imagenes || "PENDIENTE").toUpperCase()}
           </span>
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeValidacion(p.validacion_modelo)}`}>
+          <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${badgeValidacion(p.validacion_modelo)}`}>
             {(p.validacion_modelo || "Pendiente de validación").toUpperCase()}
           </span>
         </div>
         {p.observaciones_studio && (
-          <p className={`rounded-md px-2 py-1 text-[11px] ${critica ? "bg-red-50 font-semibold text-red-700" : "bg-neutral-50 text-neutral-600"}`}>
+          <p className={`rounded-md px-2 py-1 text-[12px] ${critica ? "bg-red-50 font-semibold text-red-700" : "bg-neutral-50 text-neutral-600"}`}>
             {p.observaciones_studio}
           </p>
         )}
@@ -764,35 +764,35 @@ function StudioCard({ producto: p }: { producto: Producto }) {
         {/* Acciones según estado */}
         <div className="flex flex-wrap gap-1.5 pt-2">
           <button onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[11px] font-semibold text-white hover:bg-neutral-800">
+            className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[12px] font-semibold text-white hover:bg-neutral-800">
             <Edit3 className="h-3 w-3" /> Ver / Editar
           </button>
           {p.estado === "APROBADO" && (
             <>
               <button onClick={() => setPublishing(true)}
-                className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+                className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[12px] font-semibold text-white hover:bg-orange-600">
                 <Globe className="h-3 w-3" /> Publicar
               </button>
               <button onClick={() => setScheduling(true)}
-                className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold text-neutral-700 hover:bg-neutral-50">
+                className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] font-semibold text-neutral-700 hover:bg-neutral-50">
                 <Calendar className="h-3 w-3" /> Agendar
               </button>
             </>
           )}
           {(p.hashtags || p.texto_ig || p.texto_wsp) && !archivado && (
             <button onClick={() => setViewingTexts(true)}
-              className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold text-neutral-700 hover:bg-neutral-50">
+              className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] font-semibold text-neutral-700 hover:bg-neutral-50">
               <Share2 className="h-3 w-3" /> Textos
             </button>
           )}
           {!archivado ? (
             <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "DESCARTADO" })}
-              className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2 py-1 text-[11px] text-red-700 hover:bg-red-50">
+              className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2 py-1 text-[12px] text-red-700 hover:bg-red-50">
               <Archive className="h-3 w-3" /> Archivar
             </button>
           ) : (
             <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "APROBADO" })}
-              className="inline-flex items-center gap-1 rounded-md border border-green-300 bg-white px-2 py-1 text-[11px] font-semibold text-green-700 hover:bg-green-50">
+              className="inline-flex items-center gap-1 rounded-md border border-green-300 bg-white px-2 py-1 text-[12px] font-semibold text-green-700 hover:bg-green-50">
               <RotateCcw className="h-3 w-3" /> Restaurar
             </button>
           )}
@@ -917,7 +917,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
             {primary.url_imagen && <img src={thumb(primary.url_imagen, 1200)} alt="" className="aspect-square w-full rounded-lg border border-neutral-200 object-contain bg-neutral-100" />}
             {isGroup && (
               <>
-                <p className="text-[11px] font-semibold text-neutral-700">Elegí la foto principal:</p>
+                <p className="text-[12px] font-semibold text-neutral-700">Elegí la foto principal:</p>
                 <div className="grid grid-cols-4 gap-1.5">
                   {cargas.map((c, i) => (
                     <button key={c.id} type="button" onClick={() => setPrimaryIdx(i)}
@@ -928,10 +928,10 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-neutral-500">Solo la principal aparece en la landing. Las demás quedan archivadas con el mismo estado.</p>
+                <p className="text-[12px] text-neutral-500">Solo la principal aparece en la landing. Las demás quedan archivadas con el mismo estado.</p>
               </>
             )}
-            <p className="text-[11px] text-neutral-500">{primary.fecha} · {primary.usuario}</p>
+            <p className="text-[12px] text-neutral-500">{primary.fecha} · {primary.usuario}</p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Inp label="Marca *" v={v.marca} onC={x => setV(s => ({ ...s, marca: x }))} />
@@ -951,7 +951,7 @@ function ProductoEditor({ cargas, onClose }: { cargas: Carga[]; onClose: () => v
             <TA label="Texto Instagram" v={v.texto_ig} onC={x => setV(s => ({ ...s, texto_ig: x }))} span rows={4} />
             <TA label="Texto WhatsApp" v={v.texto_wsp} onC={x => setV(s => ({ ...s, texto_wsp: x }))} span rows={4} />
             <label className="sm:col-span-2 block">
-              <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">Estado</span>
+              <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Estado</span>
               <select value={v.estado} onChange={e => setV(s => ({ ...s, estado: e.target.value as any }))}
                 className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm">
                 <option value="APROBADO">APROBADO</option>
@@ -978,7 +978,7 @@ function EditorSection({ letra, titulo, children }: { letra: string; titulo: str
   return (
     <section className="rounded-xl border border-neutral-200">
       <header className="flex items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-4 py-2">
-        <span className="grid h-5 w-5 place-items-center rounded-md bg-vd-navy text-[11px] font-extrabold text-primary-foreground">{letra}</span>
+        <span className="grid h-5 w-5 place-items-center rounded-md bg-vd-navy text-[12px] font-extrabold text-primary-foreground">{letra}</span>
         <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-700">{titulo}</h3>
       </header>
       <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">{children}</div>
@@ -989,7 +989,7 @@ function EditorSection({ letra, titulo, children }: { letra: string; titulo: str
 function Sel({ label, v, onC, options, placeholder }: { label: string; v: string; onC: (x: string) => void; options: readonly string[]; placeholder?: string }) {
   return (
     <label className="block">
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
       <select value={v} onChange={(e) => onC(e.target.value)}
         className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200">
         <option value="">{placeholder ?? "— Sin definir —"}</option>
@@ -1003,7 +1003,7 @@ function LinkFuente({ url }: { url: string }) {
   if (!url) return null;
   return (
     <a href={url} target="_blank" rel="noreferrer"
-      className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:underline">
+      className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-blue-600 hover:underline">
       <ExternalLink className="h-3 w-3" /> Abrir fuente
     </a>
   );
@@ -1093,7 +1093,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-neutral-200 bg-white px-5 py-3">
           <div className="min-w-0">
             <h2 className="truncate text-base font-bold text-neutral-900">{p.marca} {p.modelo}</h2>
-            <p className="text-[11px] text-neutral-500">
+            <p className="text-[12px] text-neutral-500">
               <span className="font-mono">{p.id}</span> · fila {p.rowIndex}
             </p>
           </div>
@@ -1156,7 +1156,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
             />
             {extraList.length > 1 && (
               <div className="sm:col-span-2">
-                <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">Otras extras ({extraList.length - 1})</span>
+                <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Otras extras ({extraList.length - 1})</span>
                 <div className="mt-1 flex gap-1.5 overflow-x-auto">
                   {extraList.slice(1).map((u, i) => (
                     <img key={i} src={thumb(u, 200)} alt="" className="h-14 w-14 shrink-0 rounded border border-neutral-200 bg-neutral-50 object-contain" loading="lazy" />
@@ -1243,7 +1243,7 @@ function ConfChip({ c }: { c: string }) {
     c === "alta" ? "bg-emerald-100 text-emerald-700"
     : c === "media" ? "bg-amber-100 text-amber-700"
     : "bg-neutral-200 text-neutral-500";
-  return <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${styles}`}>{c}</span>;
+  return <span className={`rounded-full px-1.5 py-0.5 text-[12px] font-bold ${styles}`}>{c}</span>;
 }
 
 function AiSuggestionsDialog({
@@ -1324,7 +1324,7 @@ function AiSuggestionsDialog({
           <h3 className="flex items-center gap-2 text-sm font-bold text-neutral-900">
             <Sparkles className="h-4 w-4 text-violet-600" /> Sugerencias de IA
           </h3>
-          <p className="mt-0.5 text-[11px] text-neutral-500">
+          <p className="mt-0.5 text-[12px] text-neutral-500">
             La IA propone, vos decidís. Nada se modifica hasta que aceptes y guardes la ficha.
           </p>
         </div>
@@ -1332,7 +1332,7 @@ function AiSuggestionsDialog({
         <div className="flex-1 space-y-3 overflow-y-auto p-4">
           {warnings.length > 0 && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-amber-700">Advertencias</p>
+              <p className="text-[12px] font-bold uppercase tracking-wide text-amber-700">Advertencias</p>
               <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-amber-800">
                 {warnings.map((w, i) => <li key={i}>{w}</li>)}
               </ul>
@@ -1343,7 +1343,7 @@ function AiSuggestionsDialog({
             <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5">
               <input type="checkbox" checked={acceptObs} onChange={(e) => setAcceptObs(e.target.checked)} className="mt-0.5 accent-orange-500" />
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">Observación sugerida</p>
+                <p className="text-[12px] font-bold uppercase tracking-wide text-neutral-600">Observación sugerida</p>
                 <p className="text-xs text-neutral-700">{observacion}</p>
               </div>
             </label>
@@ -1363,20 +1363,20 @@ function AiSuggestionsDialog({
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-neutral-800">{r.label}</span>
                     <ConfChip c={r.conf} />
-                    {invalid && <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">{invalid}</span>}
+                    {invalid && <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[12px] font-bold text-amber-700">{invalid}</span>}
                   </div>
                   <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wide text-neutral-400">Actual</p>
+                      <p className="text-[12px] font-bold uppercase tracking-wide text-neutral-400">Actual</p>
                       <p className="whitespace-pre-wrap text-xs text-neutral-500">{r.actual || <span className="italic">vacío</span>}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wide text-violet-500">Sugerido</p>
+                      <p className="text-[12px] font-bold uppercase tracking-wide text-violet-500">Sugerido</p>
                       <p className="whitespace-pre-wrap text-xs font-medium text-neutral-800">{r.arr ? r.val.split("|").join(" · ") : r.val || "—"}</p>
                     </div>
                   </div>
                   {r.dropped.length > 0 && (
-                    <p className="mt-1 text-[10px] text-amber-600">Ignorado por taxonomía: {r.dropped.join(", ")}</p>
+                    <p className="mt-1 text-[12px] text-amber-600">Ignorado por taxonomía: {r.dropped.join(", ")}</p>
                   )}
                 </div>
               </label>
@@ -1403,7 +1403,7 @@ function AiSuggestionsDialog({
 function Inp({ label, v, onC, span }: { label: string; v: string; onC: (x: string) => void; span?: boolean }) {
   return (
     <label className={`block ${span ? "sm:col-span-2" : ""}`}>
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
       <input value={v} onChange={e => onC(e.target.value)}
         className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
     </label>
@@ -1412,7 +1412,7 @@ function Inp({ label, v, onC, span }: { label: string; v: string; onC: (x: strin
 function TA({ label, v, onC, span, rows = 3 }: { label: string; v: string; onC: (x: string) => void; span?: boolean; rows?: number }) {
   return (
     <label className={`block ${span ? "sm:col-span-2" : ""}`}>
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
       <textarea value={v} onChange={e => onC(e.target.value)} rows={rows}
         className="mt-1 w-full resize-y rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
     </label>
@@ -1452,12 +1452,12 @@ function OfertaFields({
 
   return (
     <div className="rounded-lg border border-dashed border-orange-300 bg-orange-50/50 p-3">
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-orange-700">
+      <span className="block text-[12px] font-bold uppercase tracking-wide text-orange-700">
         Oferta (opcional)
       </span>
       <div className="mt-2 grid grid-cols-2 gap-3">
         <label className="block">
-          <span className="block text-[11px] font-medium text-neutral-600">Precio anterior</span>
+          <span className="block text-[12px] font-medium text-neutral-600">Precio anterior</span>
           <input
             value={precioAnterior}
             onChange={(e) => { setPctDraft(null); onChange(e.target.value); }}
@@ -1467,7 +1467,7 @@ function OfertaFields({
           />
         </label>
         <label className="block">
-          <span className="block text-[11px] font-medium text-neutral-600">% descuento</span>
+          <span className="block text-[12px] font-medium text-neutral-600">% descuento</span>
           <input
             value={pctDraft ?? (valid ? String(pctCalc) : "")}
             onChange={(e) => onPctInput(e.target.value)}
@@ -1478,12 +1478,12 @@ function OfertaFields({
         </label>
       </div>
       {precioAnterior && !valid && (
-        <p className="mt-1.5 text-[11px] text-red-600">
+        <p className="mt-1.5 text-[12px] text-red-600">
           El precio anterior debe ser mayor al precio actual para mostrar el descuento.
         </p>
       )}
       {valid && (
-        <p className="mt-1.5 text-[11px] font-semibold text-orange-700">
+        <p className="mt-1.5 text-[12px] font-semibold text-orange-700">
           Se muestra: <span className="line-through">${pa.toLocaleString("es-AR")}</span> → ${p.toLocaleString("es-AR")} · −{pctCalc}%
         </p>
       )}
@@ -1509,7 +1509,7 @@ function TagPicker({
   };
   return (
     <div className="block">
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
+      <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">{label}</span>
       <div className="mt-1 flex flex-wrap gap-1.5">
         {options.map((tag) => {
           const on = selected.includes(tag);
@@ -1518,7 +1518,7 @@ function TagPicker({
               key={tag}
               type="button"
               onClick={() => toggle(tag)}
-              className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+              className={`rounded-full border px-2.5 py-1 text-[12px] font-semibold transition ${
                 on
                   ? "border-orange-500 bg-orange-500 text-white"
                   : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
@@ -1559,8 +1559,8 @@ function TextsDialog({ producto, onClose }: { producto: Producto; onClose: () =>
         {blocks.map(b => (
           <div key={b.label} className="rounded-lg border border-neutral-200">
             <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-3 py-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">{b.label}</span>
-              <button onClick={() => copy(b.label, b.text)} className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] font-semibold hover:bg-neutral-50">
+              <span className="text-[12px] font-bold uppercase tracking-wide text-neutral-600">{b.label}</span>
+              <button onClick={() => copy(b.label, b.text)} className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] font-semibold hover:bg-neutral-50">
                 <Copy className="h-3 w-3" /> Copiar
               </button>
             </div>
@@ -1689,13 +1689,13 @@ function ScheduleDialog({ producto, onClose, agendar }: { producto: Producto; on
       <div onClick={e => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl">
         <h2 className="text-base font-bold">Agendar publicación</h2>
         <p className="text-xs text-neutral-500">{producto.marca} {producto.modelo}</p>
-        <label className="block"><span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">Fecha</span>
+        <label className="block"><span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Fecha</span>
           <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" /></label>
-        <label className="block"><span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">Canal</span>
+        <label className="block"><span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Canal</span>
           <select value={canal} onChange={e => setCanal(e.target.value as any)} className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm">
             <option>Instagram</option><option>WhatsApp</option><option>Facebook</option><option>Otro</option>
           </select></label>
-        <label className="block"><span className="block text-[11px] font-bold uppercase tracking-wide text-neutral-600">Tipo</span>
+        <label className="block"><span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Tipo</span>
           <input value={tipo} onChange={e => setTipo(e.target.value)} className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" /></label>
         <div className="flex justify-end gap-2 pt-2">
           <button onClick={onClose} className="rounded-md border border-neutral-300 px-3 py-2 text-sm">Cancelar</button>
@@ -1735,7 +1735,7 @@ function AgendaView() {
                     <td className="px-3 py-2 font-mono text-xs">{a.producto_id}</td>
                     <td className="px-3 py-2">{a.canal}</td>
                     <td className="px-3 py-2">{a.tipo}</td>
-                    <td className="px-3 py-2"><span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badgeColor(a.estado)}`}>{a.estado}</span></td>
+                    <td className="px-3 py-2"><span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${badgeColor(a.estado)}`}>{a.estado}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -1814,12 +1814,12 @@ function LandingView() {
                 </div>
                 <div className="space-y-1.5 p-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${p.activo ? "bg-emerald-100 text-emerald-800" : "bg-neutral-200 text-neutral-600"}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${p.activo ? "bg-emerald-100 text-emerald-800" : "bg-neutral-200 text-neutral-600"}`}>
                       {p.activo ? "ACTIVO" : "OCULTO"}
                     </span>
-                    {p.destacado && <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700"><Star className="h-3 w-3 fill-orange-500" />DESTACADO</span>}
+                    {p.destacado && <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-100 px-2 py-0.5 text-[12px] font-bold text-orange-700"><Star className="h-3 w-3 fill-orange-500" />DESTACADO</span>}
                     {parseMoney(p.precio_anterior) > parseMoney(p.precio) && parseMoney(p.precio) > 0 && (
-                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[12px] font-bold text-red-700">
                         −{Math.round((1 - parseMoney(p.precio) / parseMoney(p.precio_anterior)) * 100)}%
                       </span>
                     )}
@@ -1827,15 +1827,15 @@ function LandingView() {
                   <p className="text-sm font-semibold text-neutral-900">{p.nombre}</p>
                   <p className="text-xs text-neutral-500">{p.categoria} · <span className="font-semibold text-neutral-700">{p.precio}</span></p>
                   <div className="flex flex-wrap gap-1.5 pt-2">
-                    <button onClick={() => setEditing(p)} className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-orange-600">
+                    <button onClick={() => setEditing(p)} className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[12px] font-semibold text-white hover:bg-orange-600">
                       <Edit3 className="h-3 w-3" /> Editar
                     </button>
                     <button onClick={() => mut.mutate({ ...p, activo: !p.activo })}
-                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] hover:bg-neutral-50">
+                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] hover:bg-neutral-50">
                       {p.activo ? "Ocultar" : "Activar"}
                     </button>
                     <button onClick={() => mut.mutate({ ...p, destacado: !p.destacado })}
-                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] hover:bg-neutral-50">
+                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] hover:bg-neutral-50">
                       {p.destacado ? "Quitar destacado" : "Destacar"}
                     </button>
                   </div>
@@ -1874,7 +1874,7 @@ function ImagePicker({ label, value, onChange }: { label: string; value: string;
         {value ? (
           <img src={thumb(value, 200)} alt="" className="h-16 w-16 rounded border border-neutral-200 bg-neutral-100 object-contain" loading="lazy" />
         ) : (
-          <div className="grid h-16 w-16 place-items-center rounded border border-dashed border-neutral-300 bg-neutral-50 text-[9px] font-semibold text-neutral-400">
+          <div className="grid h-16 w-16 place-items-center rounded border border-dashed border-neutral-300 bg-neutral-50 text-[12px] font-semibold text-neutral-400">
             Sin foto
           </div>
         )}
@@ -2022,7 +2022,7 @@ function ClientesView() {
         <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50 text-left text-[11px] font-bold uppercase tracking-wide text-neutral-500">
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-left text-[12px] font-bold uppercase tracking-wide text-neutral-500">
                 <th className="px-4 py-2.5">Nombre</th>
                 <th className="px-4 py-2.5">WhatsApp</th>
                 <th className="hidden px-4 py-2.5 sm:table-cell">Email</th>
