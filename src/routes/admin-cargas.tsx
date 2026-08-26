@@ -255,7 +255,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-vd-navy md:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <p className="text-lg font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
-          <p className="mt-0.5 text-[12px] font-semibold uppercase tracking-widest text-primary-foreground/50">
+          <p className="mt-0.5 text-[12px] font-semibold uppercase tracking-widest text-primary-foreground/70">
             Product Studio
           </p>
         </div>
@@ -268,12 +268,12 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${
                   active
                     ? "bg-primary text-primary-foreground shadow-lg"
-                    : "text-primary-foreground/65 hover:bg-white/5 hover:text-primary-foreground"
+                    : "text-primary-foreground/75 hover:bg-white/5 hover:text-primary-foreground"
                 }`}>
                 <Icon className="h-4 w-4 shrink-0" />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-semibold leading-tight">{label}</span>
-                  <span className={`block truncate text-[12px] ${active ? "text-primary-foreground/75" : "text-primary-foreground/40"}`}>
+                  <span className={`block truncate text-[12px] ${active ? "text-primary-foreground/75" : "text-primary-foreground/60"}`}>
                     {desc}
                   </span>
                 </span>
@@ -289,7 +289,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           })}
         </nav>
         <div className="space-y-1 border-t border-white/10 px-3 py-3">
-          <p className="px-1 pb-1 text-[12px] font-bold uppercase tracking-widest text-primary-foreground/40">
+          <p className="px-1 pb-1 text-[12px] font-bold uppercase tracking-widest text-primary-foreground/60">
             Herramientas
           </p>
           <Link to="/cargar"
@@ -301,7 +301,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
           <SideTool icon={XCircle} label={resetBusy ? "Limpiando…" : "Reset total"} onClick={doReset} disabled={resetBusy} danger />
         </div>
         <div className="border-t border-white/10 px-4 py-3">
-          <p className="truncate text-[12px] text-primary-foreground/50">{email}</p>
+          <p className="truncate text-[12px] text-primary-foreground/70">{email}</p>
           <button onClick={onLogout}
             className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground">
             <LogOut className="h-3.5 w-3.5" /> Salir
@@ -314,7 +314,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
         <div className="flex items-center justify-between bg-vd-navy px-4 pt-3">
           <div>
             <p className="text-sm font-extrabold tracking-tight text-primary-foreground">Vera Deportes</p>
-            <p className="text-[12px] font-semibold uppercase tracking-widest text-primary-foreground/50">
+            <p className="text-[12px] font-semibold uppercase tracking-widest text-primary-foreground/70">
               Product Studio
             </p>
           </div>
@@ -329,7 +329,7 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
             const badge = counts[key];
             return (
               <button key={key} onClick={() => setTab(key)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                className={`flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition ${
                   active ? "bg-primary text-primary-foreground" : "bg-white/10 text-primary-foreground/70"
                 }`}>
                 <Icon className="h-3.5 w-3.5" /> {label}
@@ -342,19 +342,19 @@ function AdminUI({ email, onLogout }: { email?: string; onLogout: () => void }) 
         </nav>
         <div className="flex gap-1.5 overflow-x-auto border-b border-neutral-200 bg-white px-3 py-2">
           <Link to="/cargar"
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[12px] font-bold text-primary-foreground">
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-primary px-3.5 text-[13px] font-bold text-primary-foreground">
             <Camera className="h-3 w-3" /> Cargar fotos
           </Link>
           <button onClick={openSheet}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[12px] font-medium text-neutral-700">
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[#DDE3EA] bg-white px-3.5 text-[13px] font-medium text-neutral-700">
             <ExternalLink className="h-3 w-3" /> Planilla
           </button>
           <button onClick={doInit} disabled={initBusy}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-3 py-1.5 text-[12px] font-medium text-neutral-700 disabled:opacity-50">
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[#DDE3EA] bg-white px-3.5 text-[13px] font-medium text-neutral-700 disabled:opacity-50">
             <Settings className="h-3 w-3" /> Inicializar
           </button>
           <button onClick={doReset} disabled={resetBusy}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-300 px-3 py-1.5 text-[12px] font-medium text-red-600 disabled:opacity-50">
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-red-300 bg-white px-3.5 text-[13px] font-medium text-red-600 disabled:opacity-50">
             <XCircle className="h-3 w-3" /> Reset
           </button>
         </div>
@@ -385,7 +385,7 @@ function SideTool({
       className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition disabled:opacity-50 ${
         danger
           ? "text-red-300 hover:bg-red-500/10"
-          : "text-primary-foreground/65 hover:bg-white/5 hover:text-primary-foreground"
+          : "text-primary-foreground/75 hover:bg-white/5 hover:text-primary-foreground"
       }`}>
       <Icon className="h-3.5 w-3.5" /> {label}
     </button>
@@ -401,7 +401,7 @@ function FlowHint({ tab }: { tab: Tab }) {
     { key: "landing", n: 3, label: "Publicar y editar" },
   ] as const;
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2">
+    <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-[#DDE3EA] bg-white px-3 py-2.5">
       {steps.map((s, i) => (
         <div key={s.key} className="flex items-center gap-2">
           <span className={`grid h-5 w-5 place-items-center rounded-full text-[12px] font-bold ${
@@ -572,8 +572,8 @@ function StudioView() {
             className={`rounded-xl border bg-white px-3 py-2.5 text-left transition hover:shadow-sm ${
               filter === d.key ? "border-primary ring-1 ring-primary/30" : "border-neutral-200"
             }`}>
-            <p className={`text-xl font-extrabold leading-none ${d.tone}`}>{d.count}</p>
-            <p className="mt-1 text-[12px] font-bold uppercase tracking-wide text-neutral-500">{d.label}</p>
+            <p className={`text-[26px] font-extrabold leading-none sm:text-2xl ${d.tone}`}>{d.count}</p>
+            <p className="mt-1.5 text-[12px] font-bold uppercase tracking-wide text-neutral-600">{d.label}</p>
           </button>
         ))}
       </div>
@@ -653,7 +653,7 @@ function CargaCard({ items, onEdit, onDescartar }: { items: Carga[]; onEdit: () 
   const primary = items[0];
   const isGroup = items.length > 1;
   return (
-    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-[#DDE3EA] bg-white shadow-[0_3px_10px_rgba(7,27,59,0.08)]">
       <div className="relative aspect-square bg-[#e5e7eb]">
         {primary.url_imagen ? (
           <a href={primary.url_drive || primary.url_imagen} target="_blank" rel="noreferrer">
@@ -683,11 +683,11 @@ function CargaCard({ items, onEdit, onDescartar }: { items: Carga[]; onEdit: () 
         {primary.comentario && <p className="text-xs text-neutral-700 line-clamp-2">{primary.comentario}</p>}
         <div className="flex flex-wrap gap-1.5 pt-2">
           <button onClick={onEdit}
-            className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[12px] font-semibold text-white hover:bg-orange-600">
+            className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md bg-orange-500 px-3 py-2 text-[13px] font-semibold text-white hover:bg-orange-600">
             <Edit3 className="h-3 w-3" /> {isGroup ? "Aprobar grupo" : "Revisar / Aprobar"}
           </button>
           <button onClick={onDescartar}
-            className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2 py-1 text-[12px] text-red-600 hover:bg-red-50">
+            className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-red-200 bg-white px-3 py-2 text-[13px] text-red-600 hover:bg-red-50">
             <XCircle className="h-3 w-3" /> Descartar
           </button>
         </div>
@@ -772,35 +772,35 @@ function StudioCard({ producto: p }: { producto: Producto }) {
         {/* Acciones según estado */}
         <div className="flex flex-wrap gap-1.5 pt-2">
           <button onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 rounded-md bg-neutral-900 px-2 py-1 text-[12px] font-semibold text-white hover:bg-neutral-800">
+            className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md bg-neutral-900 px-3 py-2 text-[13px] font-semibold text-white hover:bg-neutral-800">
             <Edit3 className="h-3 w-3" /> Ver / Editar
           </button>
           {p.estado === "APROBADO" && (
             <>
               <button onClick={() => setPublishing(true)}
-                className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[12px] font-semibold text-white hover:bg-orange-600">
+                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md bg-orange-500 px-3 py-2 text-[13px] font-semibold text-white hover:bg-orange-600">
                 <Globe className="h-3 w-3" /> Publicar
               </button>
               <button onClick={() => setScheduling(true)}
-                className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] font-semibold text-neutral-700 hover:bg-neutral-50">
+                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-[#DDE3EA] bg-white px-3 py-2 text-[13px] font-semibold text-neutral-700 hover:bg-neutral-50">
                 <Calendar className="h-3 w-3" /> Agendar
               </button>
             </>
           )}
           {(p.hashtags || p.texto_ig || p.texto_wsp) && !archivado && (
             <button onClick={() => setViewingTexts(true)}
-              className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-2 py-1 text-[12px] font-semibold text-neutral-700 hover:bg-neutral-50">
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-[#DDE3EA] bg-white px-3 py-2 text-[13px] font-semibold text-neutral-700 hover:bg-neutral-50">
               <Share2 className="h-3 w-3" /> Textos
             </button>
           )}
           {!archivado ? (
             <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "DESCARTADO" })}
-              className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2 py-1 text-[12px] text-red-700 hover:bg-red-50">
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-red-300 bg-white px-3 py-2 text-[13px] text-red-700 hover:bg-red-50">
               <Archive className="h-3 w-3" /> Archivar
             </button>
           ) : (
             <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "APROBADO" })}
-              className="inline-flex items-center gap-1 rounded-md border border-green-300 bg-white px-2 py-1 text-[12px] font-semibold text-green-700 hover:bg-green-50">
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-green-300 bg-white px-3 py-2 text-[13px] font-semibold text-green-700 hover:bg-green-50">
               <RotateCcw className="h-3 w-3" /> Restaurar
             </button>
           )}
@@ -1835,7 +1835,7 @@ function LandingView() {
                   <p className="text-sm font-semibold text-neutral-900">{p.nombre}</p>
                   <p className="text-xs text-neutral-500">{p.categoria} · <span className="font-semibold text-neutral-700">{p.precio}</span></p>
                   <div className="flex flex-wrap gap-1.5 pt-2">
-                    <button onClick={() => setEditing(p)} className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2 py-1 text-[12px] font-semibold text-white hover:bg-orange-600">
+                    <button onClick={() => setEditing(p)} className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md bg-orange-500 px-3 py-2 text-[13px] font-semibold text-white hover:bg-orange-600">
                       <Edit3 className="h-3 w-3" /> Editar
                     </button>
                     <button onClick={() => mut.mutate({ ...p, activo: !p.activo })}
