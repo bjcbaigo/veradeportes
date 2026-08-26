@@ -33,7 +33,7 @@ export function HomeSearch() {
             />
             <button
               type="submit"
-              className="inline-flex h-8 items-center justify-center rounded-full bg-ink px-3 text-[11px] font-black uppercase text-ink-foreground"
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-ink px-3.5 text-[11px] font-black uppercase text-ink-foreground"
             >
               Buscar
             </button>

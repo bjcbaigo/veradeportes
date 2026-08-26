@@ -26,7 +26,7 @@ export function FeaturedOffers() {
           </h2>
           <a
             href="/ofertas"
-            className="inline-flex items-center gap-1 text-xs font-bold text-primary lg:text-sm"
+            className="-mr-1 inline-flex min-h-[40px] items-center gap-1 px-1 text-xs font-bold text-primary lg:text-sm"
           >
             Ver mas <ArrowRight className="h-3.5 w-3.5" />
           </a>

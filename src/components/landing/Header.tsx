@@ -46,7 +46,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-[58px] max-w-6xl grid-cols-[44px_1fr_auto] items-center px-4 sm:h-16 xl:max-w-7xl xl:px-6">
+      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[44px_1fr_auto] items-center px-4 xl:max-w-7xl xl:px-6">
         <button
           type="button"
           className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
@@ -63,11 +63,11 @@ export function Header() {
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-9 w-auto shrink-0 sm:h-11"
+            className="h-10 w-auto shrink-0 min-[360px]:h-11"
             width={160}
             height={160}
           />
-          <span className="font-display text-[12px] font-black leading-none text-foreground sm:text-sm">
+          <span className="font-display text-sm font-black leading-none text-foreground">
             <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>

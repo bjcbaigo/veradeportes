@@ -40,8 +40,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-[13px] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.08)] focus-within:ring-2 focus-within:ring-primary/40 ${
-        compact ? "w-[154px] sm:w-[184px] lg:w-full" : ""
+      className={`group relative flex flex-col overflow-hidden rounded-[13px] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.08)] focus-within:ring-2 focus-within:ring-primary/40 ${
+        compact ? "w-[154px] shrink-0 sm:w-[184px] lg:w-full" : "w-full"
       }`}
       onClick={() => onSelect(product)}
       role="button"
@@ -94,11 +94,15 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             }
             setFavorite(toggleFavorite(product.id));
           }}
-          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 transition ${
+          className={`absolute right-1.5 top-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 transition ${
             favorite ? "text-primary" : "text-foreground/70 hover:text-primary"
           }`}
         >
-          <Heart className="h-4 w-4" strokeWidth={1.8} fill={favorite ? "currentColor" : "none"} />
+          <Heart
+            className="h-[18px] w-[18px]"
+            strokeWidth={1.8}
+            fill={favorite ? "currentColor" : "none"}
+          />
         </button>
       </div>
 
@@ -106,13 +110,13 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         <p className="truncate text-[10px] font-black uppercase tracking-[0.03em] text-foreground">
           {product.brand}
         </p>
-        <h3 className="line-clamp-2 min-h-[34px] text-[12px] font-medium leading-snug text-foreground sm:text-[13px] lg:text-sm">
+        <h3 className="line-clamp-2 min-h-[34px] text-[13px] font-medium leading-tight text-foreground lg:text-sm">
           {product.name}
         </h3>
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-1">
           <p className="text-[14px] font-black text-primary lg:text-base">{product.price}</p>
           {product.priceOld && (
-            <p className="text-[10px] text-muted-foreground line-through">{product.priceOld}</p>
+            <p className="text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
         </div>
       </div>

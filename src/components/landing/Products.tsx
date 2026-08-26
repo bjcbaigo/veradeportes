@@ -39,7 +39,6 @@ export function Products({ limit }: { limit?: number }) {
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(!limit);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const searchRef = useRef<HTMLInputElement | null>(null);
   const { products: allProducts } = useProductsData();
 
   function focusSearch() {
@@ -47,7 +46,6 @@ export function Products({ limit }: { limit?: number }) {
     setShowAll(true);
     window.requestAnimationFrame(() => {
       sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.setTimeout(() => searchRef.current?.focus(), 250);
     });
   }
 
@@ -116,38 +114,35 @@ export function Products({ limit }: { limit?: number }) {
   return (
     <section ref={sectionRef} id="productos" className="bg-white py-3 lg:py-6">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="mb-3 flex items-center justify-between lg:mb-4">
+        <div className="mb-2 flex items-center justify-between lg:mb-4">
           <h2 className="text-[17px] font-black uppercase tracking-normal text-foreground lg:text-xl">
             Productos
           </h2>
           <button
             type="button"
             onClick={handleShowAllProducts}
-            className="inline-flex items-center gap-1 text-xs font-bold text-primary lg:text-sm"
+            className="-mr-1 inline-flex min-h-[40px] items-center gap-1 px-1 text-xs font-bold text-primary lg:text-sm"
           >
             Ver todos <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
 
-        <div id="buscar" className="mb-3 lg:mb-4">
-          <label className="sr-only" htmlFor="product-search">
-            Buscar productos
-          </label>
-          <div className="flex h-11 items-center gap-2 rounded-2xl border border-border bg-secondary px-3 text-foreground focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/15">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <input
-              ref={searchRef}
-              id="product-search"
-              type="search"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setShowAll(true);
-              }}
-              placeholder="Buscar zapatillas, marca o categoria"
-              className="h-full min-w-0 flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground"
-            />
-          </div>
+        <div id="buscar" className="scroll-mt-24">
+          {query.trim() && (
+            <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-border bg-secondary px-3 py-2">
+              <p className="min-w-0 truncate text-xs font-semibold text-foreground">
+                <Search className="mr-1 inline h-3.5 w-3.5 text-muted-foreground" />
+                Resultados para "{query.trim()}"
+              </p>
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="shrink-0 rounded-full px-2 py-1.5 text-xs font-bold text-primary"
+              >
+                Limpiar
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="vd-scroll-x -mx-4 mb-3 px-4 lg:mx-0 lg:mb-5 lg:overflow-visible lg:px-0">
@@ -160,7 +155,7 @@ export function Products({ limit }: { limit?: number }) {
                   setCat(c);
                   setShowAll(true);
                 }}
-                className={`rounded-full border px-3 py-1.5 text-xs font-bold transition ${
+                className={`inline-flex h-[37px] items-center rounded-full border px-3.5 text-xs font-bold transition ${
                   cat === c
                     ? "border-ink bg-ink text-ink-foreground"
                     : "border-border bg-white text-muted-foreground hover:border-primary/50 hover:text-foreground"
@@ -171,6 +166,7 @@ export function Products({ limit }: { limit?: number }) {
             ))}
           </div>
         </div>
+
 
         {products.length === 0 ? (
           <div className="rounded-xl border border-border bg-secondary p-6 text-center text-sm text-muted-foreground">
