@@ -27,6 +27,8 @@ import {
   splitTags, observacionEsCritica,
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
+import logoVera from "@/assets/logo-vera.png";
+
 
 
 export const Route = createFileRoute("/admin-cargas")({
