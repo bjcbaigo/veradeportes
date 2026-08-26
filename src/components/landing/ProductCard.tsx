@@ -40,7 +40,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-[13px] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.08)] focus-within:ring-2 focus-within:ring-primary/40 ${
+      className={`group relative flex flex-col overflow-hidden rounded-[13px] border border-[#E7EBF0] bg-white text-left shadow-[0_3px_10px_rgba(7,27,59,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.1)] focus-within:ring-2 focus-within:ring-primary/40 ${
         compact ? "w-[154px] shrink-0 sm:w-[184px] lg:w-full" : "w-full"
       }`}
       onClick={() => onSelect(product)}
@@ -53,8 +53,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative rounded-[13px] bg-secondary p-2">
-        <div className="relative aspect-square w-full overflow-hidden rounded-[12px] bg-secondary">
+      <div className="relative rounded-[13px] bg-[#F4F6F9] p-2">
+        <div className="relative aspect-square w-full overflow-hidden rounded-[12px] bg-[#F4F6F9]">
           {product.image ? (
             <img
               src={product.image}
@@ -114,7 +114,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
           {product.name}
         </h3>
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-1">
-          <p className="text-[14px] font-black text-primary lg:text-base">{product.price}</p>
+          <p className="text-[14px] font-black tracking-tight text-primary lg:text-base">{product.price}</p>
           {product.priceOld && (
             <p className="text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
