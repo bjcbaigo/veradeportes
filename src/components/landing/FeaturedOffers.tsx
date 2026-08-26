@@ -6,16 +6,17 @@ import { useProductsData } from "@/lib/product-data";
 import type { Product } from "@/lib/products";
 
 export function FeaturedOffers() {
-  const { products } = useProductsData();
+  const { products, isLoading, isError } = useProductsData();
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
-  // Solo los marcados como "Destacado" en el panel (columna H de la planilla).
   const offers = products.filter((p) => p.badge === "Destacado").slice(0, 5);
 
   function handleSelect(product: Product) {
     setSelected(product);
     setOpen(true);
   }
+
+  if (isLoading || isError || offers.length === 0) return null;
 
   return (
     <section id="ofertas" className="bg-white py-2 lg:py-4">
@@ -32,19 +33,13 @@ export function FeaturedOffers() {
           </a>
         </div>
 
-        {offers.length === 0 ? (
-          <div className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs text-muted-foreground">
-            No hay ofertas activas por el momento.
+        <div className="vd-scroll-x -mx-4 px-4 lg:mx-0 lg:overflow-visible lg:px-0">
+          <div className="flex gap-3 pb-2 lg:grid lg:grid-cols-5 lg:gap-4">
+            {offers.map((product) => (
+              <ProductCard key={product.id} product={product} onSelect={handleSelect} compact />
+            ))}
           </div>
-        ) : (
-          <div className="vd-scroll-x -mx-4 px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-            <div className="flex gap-3 pb-2 lg:grid lg:grid-cols-5 lg:gap-4">
-              {offers.map((product) => (
-                <ProductCard key={product.id} product={product} onSelect={handleSelect} compact />
-              ))}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
       <ProductDetailDialog product={selected} open={open} onOpenChange={setOpen} />
     </section>
