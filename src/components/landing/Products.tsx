@@ -39,7 +39,6 @@ export function Products({ limit }: { limit?: number }) {
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(!limit);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const searchRef = useRef<HTMLInputElement | null>(null);
   const { products: allProducts } = useProductsData();
 
   function focusSearch() {
@@ -47,7 +46,6 @@ export function Products({ limit }: { limit?: number }) {
     setShowAll(true);
     window.requestAnimationFrame(() => {
       sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.setTimeout(() => searchRef.current?.focus(), 250);
     });
   }
 
