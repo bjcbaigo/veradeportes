@@ -94,11 +94,15 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             }
             setFavorite(toggleFavorite(product.id));
           }}
-          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 transition ${
+          className={`absolute right-1.5 top-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 transition ${
             favorite ? "text-primary" : "text-foreground/70 hover:text-primary"
           }`}
         >
-          <Heart className="h-4 w-4" strokeWidth={1.8} fill={favorite ? "currentColor" : "none"} />
+          <Heart
+            className="h-[18px] w-[18px]"
+            strokeWidth={1.8}
+            fill={favorite ? "currentColor" : "none"}
+          />
         </button>
       </div>
 
