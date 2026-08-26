@@ -6,7 +6,6 @@ import { listSheetProducts, type SheetProduct } from "@/lib/sheet-products.funct
 import { matchesCategory, type CategoryKey } from "@/lib/category-filter";
 import { splitTags } from "@/lib/product-taxonomy";
 
-
 const fmt = (raw: string) => {
   const n = Number(String(raw).replace(/[^\d.-]/g, ""));
   if (!Number.isFinite(n) || n <= 0) return raw || "";
@@ -41,16 +40,14 @@ export function sheetToProduct(s: SheetProduct): Product {
   };
 }
 
-
 function priceNumber(raw?: string) {
   return Number((raw || "").replace(/[^\d]/g, "")) || 0;
 }
 
 export function isOfferProduct(product: Product) {
-  // Es oferta si: tiene sello "Oferta", la categoría/nombre lo dice,
-  // o tiene precio anterior mayor al actual (descuento real).
   const hasOfferSeal = (product.seals ?? []).some((s) => s.toLowerCase() === "oferta");
-  const hasRealDiscount = priceNumber(product.priceOld) > priceNumber(product.price) && priceNumber(product.price) > 0;
+  const hasRealDiscount =
+    priceNumber(product.priceOld) > priceNumber(product.price) && priceNumber(product.price) > 0;
   return (
     hasOfferSeal ||
     hasRealDiscount ||
@@ -64,10 +61,15 @@ export function useProductsData() {
     data: sheetRows,
     isLoading,
     isError,
+    error,
+    refetch,
+    isFetching,
   } = useQuery({
     queryKey: ["sheet-products"],
     queryFn: () => fetchSheet(),
     staleTime: 5 * 60_000,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 4000),
   });
 
   const products = useMemo<Product[]>(() => {
@@ -79,7 +81,7 @@ export function useProductsData() {
       .sort((a, b) => Number(b.badge === "Destacado") - Number(a.badge === "Destacado"));
   }, [sheetRows]);
 
-  return { products, isLoading, isError };
+  return { products, isLoading, isError, error, refetch, isFetching };
 }
 
 export function filterProducts(products: Product[], cat: CategoryKey) {
