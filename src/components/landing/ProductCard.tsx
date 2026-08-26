@@ -15,7 +15,6 @@ type Props = {
 };
 
 function discountLabel(product: Product) {
-  // Los precios vienen formateados ("$89.000"): solo dígitos para comparar
   const current = Number(product.price.replace(/[^\d]/g, ""));
   const old = Number(product.priceOld?.replace(/[^\d]/g, "") ?? 0);
   if (!old || !current || current >= old) return product.badge;
@@ -26,6 +25,11 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
   const discount = discountLabel(product);
   const extraCount = (product.images?.length ?? 0) > 1 ? product.images!.length - 1 : 0;
   const [favorite, setFavorite] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [product.image]);
 
   useEffect(() => {
     const sync = () => setFavorite(isFavorite(product.id));
@@ -55,21 +59,25 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
     >
       <div className="relative rounded-[13px] bg-secondary p-2">
         <div className="relative aspect-square w-full overflow-hidden rounded-[12px] bg-secondary">
-          {product.image ? (
+          {product.image && !imageFailed ? (
             <img
               src={product.image}
               alt={product.name}
               loading="lazy"
               width={360}
               height={300}
+              onError={() => setImageFailed(true)}
               className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.035]"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-              Sin imagen
+            <div className="flex h-full w-full flex-col items-center justify-center px-3 text-center">
+              <span className="text-[11px] font-black uppercase tracking-[0.08em] text-foreground">
+                Vera Deportes
+              </span>
+              <span className="mt-1 text-[10px] text-muted-foreground">Imagen próximamente</span>
             </div>
           )}
-          {extraCount > 0 && (
+          {extraCount > 0 && !imageFailed && (
             <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-[10px] font-bold text-white">
               +{extraCount}
             </span>
