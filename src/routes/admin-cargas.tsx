@@ -160,9 +160,6 @@ function Login() {
         </button>
       </form>
     </div>
-
-      </form>
-    </div>
   );
 }
 
