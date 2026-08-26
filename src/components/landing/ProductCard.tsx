@@ -40,7 +40,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-[13px] border border-[#E7EBF0] bg-white text-left shadow-[0_3px_10px_rgba(7,27,59,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.1)] focus-within:ring-2 focus-within:ring-primary/40 ${
+      className={`group relative flex flex-col overflow-hidden rounded-[13px] border border-[#DDE3EA] bg-white text-left shadow-[0_3px_10px_rgba(7,27,59,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.12)] focus-within:ring-2 focus-within:ring-primary/40 ${
         compact ? "w-[154px] shrink-0 sm:w-[184px] lg:w-full" : "w-full"
       }`}
       onClick={() => onSelect(product)}
@@ -53,8 +53,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative rounded-[13px] bg-[#F4F6F9] p-2">
-        <div className="relative aspect-square w-full overflow-hidden rounded-[12px] bg-[#F4F6F9]">
+      <div className="relative rounded-[13px] bg-[#EEF2F6] p-2">
+        <div className="relative aspect-square w-full overflow-hidden rounded-[12px] bg-[#EEF2F6]">
           {product.image ? (
             <img
               src={product.image}
