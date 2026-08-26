@@ -139,19 +139,28 @@ function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <h1 className="text-lg font-bold text-neutral-900">Vera Deportes — Product Studio</h1>
+    <div className="flex min-h-screen items-center justify-center bg-[#EEF2F6] p-4">
+      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl border border-[#DDE3EA] bg-white p-6 shadow-[0_3px_10px_rgba(7,27,59,0.08)]">
+        <div className="flex items-center gap-3">
+          <img src={logoVera} alt="Vera Deportes" className="h-11 w-auto shrink-0 md:h-12" />
+          <div className="min-w-0">
+            <h1 className="text-[17px] font-extrabold leading-tight tracking-tight text-neutral-900 md:text-lg">Panel de administración</h1>
+            <p className="text-[12px] font-medium text-neutral-500">Gestión de cargas y catálogo</p>
+          </div>
+        </div>
         <input type="email" required placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
+          className="h-12 w-full rounded-lg border border-[#DDE3EA] px-3 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 md:h-11 md:text-sm" />
         <input type="password" required minLength={6} placeholder="Contraseña" value={pwd} onChange={e => setPwd(e.target.value)}
-          className="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200" />
-        <button type="submit" disabled={busy} className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800 disabled:opacity-60">
+          className="h-12 w-full rounded-lg border border-[#DDE3EA] px-3 text-base focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 md:h-11 md:text-sm" />
+        <button type="submit" disabled={busy} className="h-12 w-full rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white hover:bg-neutral-800 disabled:opacity-60 md:h-11">
           {busy ? "…" : mode === "in" ? "Ingresar" : "Crear cuenta"}
         </button>
-        <button type="button" onClick={() => setMode(mode === "in" ? "up" : "in")} className="block w-full text-center text-xs text-neutral-500 hover:underline">
+        <button type="button" onClick={() => setMode(mode === "in" ? "up" : "in")} className="block min-h-[40px] w-full text-center text-[12px] text-neutral-500 hover:underline">
           {mode === "in" ? "¿No tenés cuenta? Registrate" : "Ya tengo cuenta"}
         </button>
+      </form>
+    </div>
+
       </form>
     </div>
   );
