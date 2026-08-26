@@ -157,7 +157,7 @@ export function Products({ limit }: { limit?: number }) {
                 }}
                 className={`inline-flex h-[37px] items-center rounded-full border px-3.5 text-xs font-bold transition ${
                   cat === c
-                    ? "border-ink bg-ink text-ink-foreground"
+                    ? "border-ink bg-ink text-white shadow-[0_2px_6px_rgba(7,27,59,0.25)]"
                     : "border-border bg-white text-muted-foreground hover:border-primary/50 hover:text-foreground"
                 }`}
               >
