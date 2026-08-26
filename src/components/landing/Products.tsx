@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight, RefreshCw, Search } from "lucide-react";
 import { ProductDetailDialog } from "./ProductDetailDialog";
 import { ProductCard } from "./ProductCard";
 import { PRODUCT_SEARCH_EVENT } from "./HomeSearch";
@@ -32,6 +32,20 @@ function matchesSearch(product: Product, query: string) {
     .some((value) => value!.toLowerCase().includes(normalized));
 }
 
+function ProductSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-[13px] bg-white" aria-hidden>
+      <div className="aspect-square animate-pulse rounded-[13px] bg-secondary" />
+      <div className="space-y-2 px-1.5 py-2.5">
+        <div className="h-2.5 w-16 animate-pulse rounded bg-secondary" />
+        <div className="h-3 w-full animate-pulse rounded bg-secondary" />
+        <div className="h-3 w-2/3 animate-pulse rounded bg-secondary" />
+        <div className="h-4 w-20 animate-pulse rounded bg-secondary" />
+      </div>
+    </div>
+  );
+}
+
 export function Products({ limit }: { limit?: number }) {
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
@@ -40,7 +54,18 @@ export function Products({ limit }: { limit?: number }) {
   const [showAll, setShowAll] = useState(!limit);
   const sectionRef = useRef<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement | null>(null);
-  const { products: allProducts } = useProductsData();
+  const {
+    products: allProducts,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useProductsData();
+
+  useEffect(() => {
+    if (isError && error) console.error("Storefront products failed to load", error);
+  }, [error, isError]);
 
   function focusSearch() {
     setCat("Todos");
@@ -72,6 +97,7 @@ export function Products({ limit }: { limit?: number }) {
     window.addEventListener(PRODUCT_SEARCH_EVENT, handler);
     return () => window.removeEventListener(PRODUCT_SEARCH_EVENT, handler);
   }, []);
+
   useEffect(() => {
     const syncProductsHash = () => {
       if (window.location.hash === "#buscar") {
@@ -108,10 +134,19 @@ export function Products({ limit }: { limit?: number }) {
     });
   }
 
+  function clearFilters() {
+    setCat("Todos");
+    setQuery("");
+    setShowAll(true);
+    searchRef.current?.focus();
+  }
+
   function handleSelect(product: Product) {
     setSelected(product);
     setOpen(true);
   }
+
+  const hasActiveFilter = cat !== "Todos" || query.trim().length > 0;
 
   return (
     <section ref={sectionRef} id="productos" className="bg-white py-3 lg:py-6">
@@ -172,9 +207,44 @@ export function Products({ limit }: { limit?: number }) {
           </div>
         </div>
 
-        {products.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 md:grid-cols-4 lg:gap-x-4 lg:gap-y-5 xl:grid-cols-5">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-border bg-secondary p-6 text-center">
+            <p className="text-sm font-black text-foreground">Estamos actualizando nuestro catálogo</p>
+            <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+              No pudimos cargar los productos en este momento. Podés intentar nuevamente.
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              disabled={isFetching}
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-xs font-bold text-ink-foreground transition disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
+              {isFetching ? "Reintentando" : "Reintentar"}
+            </button>
+          </div>
+        ) : allProducts.length === 0 ? (
           <div className="rounded-xl border border-border bg-secondary p-6 text-center text-sm text-muted-foreground">
-            No encontramos productos para esa busqueda.
+            Estamos preparando nuevos productos para vos.
+          </div>
+        ) : products.length === 0 ? (
+          <div className="rounded-xl border border-border bg-secondary p-6 text-center">
+            <p className="text-sm font-bold text-foreground">No encontramos productos con esos filtros.</p>
+            {hasActiveFilter && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-3 text-xs font-bold text-primary"
+              >
+                Limpiar búsqueda y filtros
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 md:grid-cols-4 lg:gap-x-4 lg:gap-y-5 xl:grid-cols-5">
