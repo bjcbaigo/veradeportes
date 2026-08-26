@@ -40,7 +40,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-[13px] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.08)] focus-within:ring-2 focus-within:ring-primary/40 ${
+      className={`group relative flex flex-col overflow-hidden rounded-[13px] border border-[#E7EBF0] bg-white text-left shadow-[0_3px_10px_rgba(7,27,59,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.1)] focus-within:ring-2 focus-within:ring-primary/40 ${
         compact ? "w-[154px] shrink-0 sm:w-[184px] lg:w-full" : "w-full"
       }`}
       onClick={() => onSelect(product)}
