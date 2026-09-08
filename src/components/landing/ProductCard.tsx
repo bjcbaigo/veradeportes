@@ -113,10 +113,10 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         <h3 className="line-clamp-2 min-h-[34px] text-[13px] font-medium leading-tight text-foreground lg:text-sm">
           {product.name}
         </h3>
-        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-1">
-          <p className="text-[14px] font-black tracking-tight text-primary lg:text-base">{product.price}</p>
+        <div className="mt-auto flex min-w-0 flex-col items-start gap-0.5 pt-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
+          <p className="max-w-full whitespace-nowrap text-[14px] font-black tracking-tight text-primary lg:text-base">{product.price}</p>
           {product.priceOld && (
-            <p className="text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
+            <p className="max-w-full whitespace-nowrap text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
         </div>
       </div>
