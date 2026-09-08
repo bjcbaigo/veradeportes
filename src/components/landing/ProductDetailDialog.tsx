@@ -150,11 +150,11 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="text-2xl font-black text-primary">{product.price}</p>
+            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+              <p className="max-w-full whitespace-nowrap text-2xl font-black text-primary">{product.price}</p>
               {product.priceOld && Number(product.priceOld.replace(/[^\d]/g, "")) > Number(product.price.replace(/[^\d]/g, "")) && (
                 <>
-                  <p className="text-sm text-muted-foreground line-through">{product.priceOld}</p>
+                  <p className="max-w-full whitespace-nowrap text-sm text-muted-foreground line-through">{product.priceOld}</p>
                   <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-black text-primary-foreground">
                     -{Math.round((1 - Number(product.price.replace(/[^\d]/g, "")) / Number(product.priceOld.replace(/[^\d]/g, ""))) * 100)}%
                   </span>

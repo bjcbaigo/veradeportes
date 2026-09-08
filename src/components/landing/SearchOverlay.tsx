@@ -235,12 +235,12 @@ export function SearchOverlay() {
                         <span className="line-clamp-2 block text-[14px] font-medium leading-tight text-foreground">
                           {product.name}
                         </span>
-                        <span className="mt-0.5 flex items-baseline gap-2">
-                          <span className="font-display text-[15px] font-bold text-primary">
+                        <span className="mt-0.5 flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                          <span className="whitespace-nowrap font-display text-[15px] font-bold text-primary">
                             {product.price}
                           </span>
                           {product.priceOld && (
-                            <span className="text-[11px] text-muted-foreground line-through">
+                            <span className="whitespace-nowrap text-[11px] text-muted-foreground line-through">
                               {product.priceOld}
                             </span>
                           )}

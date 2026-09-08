@@ -75,7 +75,7 @@ function CartPage() {
                         {itemVariantText(item)}
                       </p>
                     )}
-                    <p className="mt-1 font-display text-sm font-black text-primary">
+                    <p className="mt-1 max-w-full whitespace-nowrap font-display text-sm font-black text-primary">
                       {item.price}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
@@ -108,17 +108,17 @@ function CartPage() {
             </div>
 
             <section className="rounded-[14px] border border-border bg-white p-4">
-              <div className="flex justify-between text-sm">
+              <div className="flex min-w-0 justify-between gap-3 text-sm">
                 <span>Subtotal</span>
-                <strong>{formatPrice(subtotal)}</strong>
+                <strong className="shrink-0 whitespace-nowrap">{formatPrice(subtotal)}</strong>
               </div>
-              <div className="mt-2 flex justify-between text-sm">
+              <div className="mt-2 flex min-w-0 justify-between gap-3 text-sm">
                 <span>Envio</span>
-                <strong>{shipping}</strong>
+                <strong className="shrink-0 whitespace-nowrap">{shipping}</strong>
               </div>
-              <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-black">
+              <div className="mt-3 flex min-w-0 justify-between gap-3 border-t border-border pt-3 text-lg font-black">
                 <span>Total</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span className="shrink-0 whitespace-nowrap">{formatPrice(subtotal)}</span>
               </div>
               <a
                 href={checkoutHref}
