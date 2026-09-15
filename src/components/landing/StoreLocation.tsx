@@ -37,7 +37,7 @@ export function StoreLocation() {
               title="Ubicación de Vera Deportes en Corrientes 1635, Vera, Santa Fe"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="block h-[140px] w-full border-0 sm:h-[160px]"
+              className="block h-[100px] w-full border-0 sm:h-[120px]"
             />
           </div>
         </div>
