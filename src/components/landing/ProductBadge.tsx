@@ -34,7 +34,7 @@ export function ProductBadge({ label }: ProductBadgeProps) {
 
   return (
     <span
-      className={`inline-flex h-6 max-w-[calc(100%-3rem)] items-center truncate rounded-full px-2.5 text-[10px] font-black uppercase leading-none ${badgeStyles[badgeKind(normalized)]}`}
+      className={`inline-flex h-6 max-w-[104px] items-center truncate rounded-full px-2.5 text-[10px] font-black uppercase leading-none ${badgeStyles[badgeKind(normalized)]}`}
       title={normalized}
     >
       {normalized}

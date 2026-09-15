@@ -78,7 +78,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
           )}
         </div>
         {discount && (
-          <div className="pointer-events-none absolute left-2 top-2 z-10 flex max-w-[calc(100%-3.5rem)]">
+          <div className="pointer-events-none absolute left-2 top-2 z-10 flex">
             <ProductBadge label={discount} />
           </div>
         )}
