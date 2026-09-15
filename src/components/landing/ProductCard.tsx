@@ -7,6 +7,7 @@ import {
 } from "@/lib/customer-access";
 import { FAVORITES_EVENT, isFavorite, toggleFavorite } from "@/lib/favorites";
 import type { Product } from "@/lib/products";
+import { ProductBadge } from "./ProductBadge";
 
 type Props = {
   product: Product;
@@ -24,7 +25,8 @@ function discountLabel(product: Product) {
 
 export function ProductCard({ product, onSelect, compact = false }: Props) {
   const discount = discountLabel(product);
-  const extraCount = (product.images?.length ?? 0) > 1 ? product.images!.length - 1 : 0;
+  const imageCount = product.images?.length ?? 0;
+  const extraCount = imageCount > 1 ? imageCount - 1 : 0;
   const [favorite, setFavorite] = useState(false);
 
   useEffect(() => {
@@ -76,9 +78,9 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
           )}
         </div>
         {discount && (
-          <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-primary-foreground">
-            {discount}
-          </span>
+          <div className="pointer-events-none absolute left-2 top-2 z-10 flex">
+            <ProductBadge label={discount} />
+          </div>
         )}
         <button
           type="button"
