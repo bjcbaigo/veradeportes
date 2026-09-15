@@ -1,5 +1,6 @@
-import { Facebook, Instagram, Menu, MessageCircle, ShoppingCart, X } from "lucide-react";
+import { Facebook, Instagram, Menu, ShoppingCart, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
@@ -175,7 +176,7 @@ export function Header() {
                 aria-label="WhatsApp"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-whatsapp"
               >
-                <MessageCircle className="h-4 w-4" />
+                <WhatsAppIcon className="h-4 w-4" />
               </a>
             </div>
             <p className="pt-4 text-xs text-muted-foreground">

@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
@@ -42,7 +42,7 @@ export function Promo() {
               rel="noopener"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 h-12 text-sm font-bold uppercase tracking-wide text-primary-foreground hover:bg-primary/90 transition shadow-[0_10px_24px_rgba(255,106,0,0.35)] whitespace-nowrap"
             >
-              <MessageCircle className="h-5 w-5" />
+              <WhatsAppIcon className="h-5 w-5" />
               Pedir por WhatsApp
             </a>
           </div>

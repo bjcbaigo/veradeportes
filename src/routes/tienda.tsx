@@ -9,6 +9,7 @@ import { Header } from "@/components/landing/Header";
 import { HomeSearch } from "@/components/landing/HomeSearch";
 import { Products } from "@/components/landing/Products";
 import { PromoCarousel } from "@/components/landing/PromoCarousel";
+import { StoreLocation } from "@/components/landing/StoreLocation";
 import { WhatsAppFab } from "@/components/landing/WhatsAppFab";
 import { WhatsAppHelp } from "@/components/landing/WhatsAppHelp";
 
@@ -48,6 +49,7 @@ function StorefrontPage() {
         <CommercialBenefits />
         <Brands />
         <WhatsAppHelp />
+        <StoreLocation />
       </main>
       <Footer />
       <BottomNav active="Inicio" />

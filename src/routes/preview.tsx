@@ -7,6 +7,7 @@ import { Products } from "@/components/landing/Products";
 import { Promo } from "@/components/landing/Promo";
 import { Trust } from "@/components/landing/Trust";
 import { Social } from "@/components/landing/Social";
+import { StoreLocation } from "@/components/landing/StoreLocation";
 import { Contact } from "@/components/landing/Contact";
 import { Footer } from "@/components/landing/Footer";
 import { BottomNav } from "@/components/landing/BottomNav";
@@ -45,6 +46,7 @@ function PreviewPage() {
         <Trust />
         <Social />
         <Contact />
+        <StoreLocation />
       </main>
       <Footer />
       <BottomNav />

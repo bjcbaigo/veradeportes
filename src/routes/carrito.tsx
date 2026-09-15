@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { BottomNav } from "@/components/landing/BottomNav";
 import { Header } from "@/components/landing/Header";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { clearCart, formatPrice, removeFromCart, updateCartQty, useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
@@ -125,8 +126,9 @@ function CartPage() {
                 onClick={(e) => requireCustomerAccess(e, "checkout", checkoutHref)}
                 target="_blank"
                 rel="noopener"
-                className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary text-sm font-extrabold uppercase text-primary-foreground"
+                className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-extrabold uppercase text-primary-foreground"
               >
+                <WhatsAppIcon className="h-5 w-5" />
                 Finalizar compra
               </a>
               <button

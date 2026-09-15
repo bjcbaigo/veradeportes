@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Instagram, MessageCircle, Moon, Sun } from "lucide-react";
+import { Instagram, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SplashScreen } from "@/components/SplashScreen";
 import { PrivateAccess } from "@/components/PrivateAccess";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import logoAsset from "@/assets/logo-vera.png.asset.json";
 import heroAthletes from "@/assets/hero-athletes.png";
 import { requireCustomerAccess } from "@/lib/customer-access";
@@ -133,7 +134,7 @@ function ComingSoonPage() {
             aria-label="WhatsApp"
             className="hover:text-[#FF4B00]"
           >
-            <MessageCircle className="h-5 w-5" />
+            <WhatsAppIcon className="h-5 w-5" />
           </a>
         </div>
       </header>
