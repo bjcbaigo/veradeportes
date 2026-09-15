@@ -1,10 +1,15 @@
-import { ExternalLink, MapPin } from "lucide-react";
+import { ExternalLink, MapPin, Minus, Plus } from "lucide-react";
+import { useState } from "react";
 import { SITE } from "@/lib/site";
 
-const MAP_EMBED_URL =
-  "https://www.google.com/maps?q=Corrientes+1635,+Vera,+Santa+Fe&output=embed";
+const BASE_QUERY = "Corrientes+1635,+Vera,+Santa+Fe";
+const MIN_Z = 13;
+const MAX_Z = 19;
 
 export function StoreLocation() {
+  const [z, setZ] = useState(15);
+  const src = `https://www.google.com/maps?q=${BASE_QUERY}&z=${z}&output=embed`;
+
   return (
     <section className="bg-secondary/70 py-4" aria-labelledby="store-location-title">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
@@ -31,14 +36,36 @@ export function StoreLocation() {
               </a>
             </div>
           </div>
-          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_2px_8px_rgba(7,27,59,0.08)]">
+          <div className="relative flex-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_2px_8px_rgba(7,27,59,0.08)]">
             <iframe
-              src={MAP_EMBED_URL}
+              key={z}
+              src={src}
               title="Ubicación de Vera Deportes en Corrientes 1635, Vera, Santa Fe"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="block h-[100px] w-full border-0 sm:h-[120px]"
             />
+            <div className="absolute right-2 top-2 flex flex-col gap-1 rounded-lg border border-border bg-card/95 shadow-sm backdrop-blur">
+              <button
+                type="button"
+                onClick={() => setZ((v) => Math.min(MAX_Z, v + 1))}
+                disabled={z >= MAX_Z}
+                aria-label="Ampliar mapa"
+                className="flex h-7 w-7 items-center justify-center text-foreground transition hover:bg-secondary disabled:opacity-40"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </button>
+              <span className="border-t border-border" />
+              <button
+                type="button"
+                onClick={() => setZ((v) => Math.max(MIN_Z, v - 1))}
+                disabled={z <= MIN_Z}
+                aria-label="Reducir mapa"
+                className="flex h-7 w-7 items-center justify-center text-foreground transition hover:bg-secondary disabled:opacity-40"
+              >
+                <Minus className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
