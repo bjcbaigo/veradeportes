@@ -1,4 +1,5 @@
-import { MessageCircle, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import hero from "@/assets/hero.jpg";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { SITE, waLink } from "@/lib/site";
@@ -34,7 +35,7 @@ export function Hero() {
               rel="noopener"
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-[0_10px_24px_rgba(255,106,0,0.3)] transition active:scale-[0.98] sm:w-auto"
             >
-              <MessageCircle className="h-5 w-5 shrink-0" />
+              <WhatsAppIcon className="h-5 w-5 shrink-0" />
               Consultar
             </a>
             <a

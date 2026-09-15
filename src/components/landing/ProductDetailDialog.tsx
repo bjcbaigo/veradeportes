@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { MessageCircle, Truck, ShieldCheck, RefreshCcw, Target, ListChecks } from "lucide-react";
+import { Truck, ShieldCheck, RefreshCcw, Target, ListChecks } from "lucide-react";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import {
   Dialog,
   DialogContent,
@@ -312,7 +313,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
                 rel="noopener"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-ink text-sm font-bold text-ink-foreground transition hover:bg-ink/90"
               >
-                <MessageCircle className="h-4 w-4" />
+                <WhatsAppIcon className="h-4 w-4" />
                 Comprar por WhatsApp
               </a>
               <a

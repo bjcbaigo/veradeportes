@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 
@@ -11,7 +11,7 @@ export function WhatsAppHelp() {
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="flex items-center gap-3 rounded-[24px] border border-whatsapp/15 bg-card p-4 lg:p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
           <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-whatsapp text-whatsapp-foreground">
-            <MessageCircle className="h-5 w-5" />
+            <WhatsAppIcon className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
             <h2 className="font-display text-base font-bold">Tenes dudas?</h2>
@@ -24,8 +24,9 @@ export function WhatsAppHelp() {
             onClick={(e) => requireCustomerAccess(e, "whatsapp", href)}
             target="_blank"
             rel="noopener"
-            className="inline-flex h-10 shrink-0 items-center justify-center rounded-full bg-whatsapp px-4 text-xs font-extrabold text-whatsapp-foreground"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-whatsapp px-4 text-xs font-extrabold text-whatsapp-foreground"
           >
+            <WhatsAppIcon className="h-4 w-4" />
             Chatear
           </a>
         </div>

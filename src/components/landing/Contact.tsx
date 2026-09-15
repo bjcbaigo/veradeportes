@@ -1,11 +1,12 @@
-import { MessageCircle, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import igLogo from "@/assets/ig-logo.jpg.asset.json";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { SITE, waLink } from "@/lib/site";
 
 const CARDS = [
   {
-    icon: MessageCircle,
+    icon: WhatsAppIcon,
     title: "WhatsApp",
     text: "Escribinos ahora",
     href: waLink("Hola! Quiero hacer una consulta."),
