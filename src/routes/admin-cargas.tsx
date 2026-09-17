@@ -795,6 +795,7 @@ function StudioCard({ producto: p }: { producto: Producto }) {
   const critica = observacionEsCritica(p.observaciones_studio);
   const esDuplicado = (p.observaciones_studio || "").toUpperCase().includes("DUPLICADO");
   const archivado = p.estado === "DESCARTADO";
+  const readiness = evaluateReadiness(p, "ficha");
 
   return (
     <div className={`overflow-hidden rounded-xl border bg-white shadow-sm ${archivado ? "border-neutral-200 opacity-60" : "border-neutral-200"}`}>
@@ -834,6 +835,7 @@ function StudioCard({ producto: p }: { producto: Producto }) {
           <p className="text-[12px] text-neutral-500">Ideal para: <span className="font-medium text-neutral-700">{idealPara.join(" · ")}</span></p>
         )}
         <div className="flex flex-wrap gap-1 pt-0.5">
+          <ReadinessChip r={readiness} />
           <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${badgeImagenes(p.estado_imagenes)}`}>
             Img: {(p.estado_imagenes || "PENDIENTE").toUpperCase()}
           </span>
@@ -1710,6 +1712,13 @@ function PublishDialog({ producto, onClose }: { producto: Producto; onClose: () 
       <div onClick={e => e.stopPropagation()} className="max-h-[92vh] w-full max-w-md space-y-3 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl">
         <h2 className="text-base font-bold">Publicar en landing</h2>
         <p className="text-xs text-neutral-500">Se agrega como fila activa en la pestaña <span className="font-mono">Productos</span>.</p>
+        <ReadinessChecklist
+          r={evaluateReadiness(
+            { url_imagen: imagen, categoria, modelo: producto.modelo, validacion_modelo: producto.validacion_modelo, precio, talles },
+            "publicacion",
+          )}
+          titulo="Chequeo previo a publicar"
+        />
         <Inp label="Nombre *" v={nombre} onC={setNombre} />
         <Inp label="Categoría *" v={categoria} onC={setCategoria} />
         <Inp label="Precio * (ej: 89000)" v={precio} onC={setPrecio} />
@@ -1800,6 +1809,13 @@ function AgendaView() {
   const q = useQuery({ queryKey: ["agenda"], queryFn: () => fetch(), ...QUERY_OPTS });
   return (
     <div>
+      <div className="mb-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+        <p className="text-xs text-amber-800">
+          <span className="font-bold">Esta agenda no publica sola.</span> Es una planificación interna: no envía nada
+          automáticamente a Instagram, Facebook ni WhatsApp. Cada publicación se sigue haciendo a mano.
+        </p>
+      </div>
       <div className="mb-3 flex items-center gap-2">
         <button onClick={() => q.refetch()} className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50">
           <RefreshCw className={`h-3.5 w-3.5 ${q.isFetching ? "animate-spin" : ""}`} /> Refrescar
