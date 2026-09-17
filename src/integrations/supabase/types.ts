@@ -125,6 +125,84 @@ export type Database = {
         }
         Relationships: []
       }
+      social_connections: {
+        Row: {
+          access_token: string
+          account_type: string | null
+          channel: string
+          connected_at: string
+          connected_by: string | null
+          disconnected_at: string | null
+          external_account_id: string
+          id: string
+          is_active: boolean
+          provider: string
+          scopes: string | null
+          token_expires_at: string | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          access_token: string
+          account_type?: string | null
+          channel?: string
+          connected_at?: string
+          connected_by?: string | null
+          disconnected_at?: string | null
+          external_account_id: string
+          id?: string
+          is_active?: boolean
+          provider?: string
+          scopes?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          access_token?: string
+          account_type?: string | null
+          channel?: string
+          connected_at?: string
+          connected_by?: string | null
+          disconnected_at?: string | null
+          external_account_id?: string
+          id?: string
+          is_active?: boolean
+          provider?: string
+          scopes?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      social_oauth_states: {
+        Row: {
+          channel: string
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          state: string
+          used_at: string | null
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          state: string
+          used_at?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          state?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       social_publications: {
         Row: {
           caption: string
