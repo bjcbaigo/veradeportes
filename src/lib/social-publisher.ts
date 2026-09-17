@@ -1,15 +1,16 @@
 /**
- * Contrato de publicación en redes — preparado para la ETAPA 2.
+ * Contrato de publicación en redes.
  *
- * ETAPA 1 (actual): no hay ninguna conexión con Meta, no se hace ningún request
- * externo y no se guardan tokens. El único implementador disponible es un stub que
- * informa que la cuenta profesional todavía no está conectada.
+ * ETAPA 2 (actual): la implementación real vive server-side y está desacoplada
+ * de la UI:
+ *  - `src/lib/instagram-provider.server.ts` — OAuth, identidad y publicación
+ *    contra la API oficial de Meta (Instagram API con Instagram Login).
+ *  - `src/lib/social-connections.functions.ts` — estado, conectar, desconectar
+ *    y publicar (solo admin autenticado; el token nunca sale del servidor).
  *
- * ETAPA 2: se agregará un implementador real de Instagram (Graph API, cuenta
- * PROFESIONAL) que opere sobre una publicación ya persistida en estado
- * LISTO_PARA_PUBLICAR y la actualice a PUBLICADO o ERROR. Los tokens de Meta se
- * gestionarán aparte (Secrets / tabla de conexión propia), nunca en
- * social_publications.
+ * Este archivo conserva el contrato genérico para agregar otros canales sin
+ * tocar el panel. Los tokens se guardan solo en `social_connections`, nunca en
+ * `social_publications`.
  */
 
 export type SocialChannel = "instagram";
@@ -37,24 +38,15 @@ export interface PublishResult {
 export interface SocialPublisher {
   channel: SocialChannel;
   getConnection(): Promise<SocialConnectionState>;
-  /** Solo se invocará con una publicación persistida en LISTO_PARA_PUBLICAR. */
+  /** Solo se invoca con una publicación persistida en LISTO_PARA_PUBLICAR. */
   publishNow(req: PublishRequest): Promise<PublishResult>;
 }
 
-export const INSTAGRAM_NOT_CONNECTED_MESSAGE =
-  "Instagram todavía no está conectado. Este paso prepara la publicación; la publicación real se habilitará al conectar la cuenta profesional en la Etapa 2.";
+export const INSTAGRAM_PROFESSIONAL_NOTICE =
+  "La cuenta a conectar debe ser PROFESIONAL de Instagram (Business o Creator). Las cuentas personales no pueden publicar por la API oficial.";
 
-/** Stub de ETAPA 1: no hace requests ni usa credenciales. */
-export const instagramPublisherStub: SocialPublisher = {
-  channel: "instagram",
-  async getConnection() {
-    return {
-      channel: "instagram",
-      connected: false,
-      detail: "Cuenta profesional requerida",
-    };
-  },
-  async publishNow() {
-    throw new Error(INSTAGRAM_NOT_CONNECTED_MESSAGE);
-  },
-};
+export const INSTAGRAM_NOT_CONFIGURED_MESSAGE =
+  "Falta configurar la app de Meta para habilitar la conexión con Instagram.";
+
+export const INSTAGRAM_NOT_CONNECTED_MESSAGE =
+  "Todavía no hay una cuenta profesional de Instagram conectada. Conectala para poder publicar desde el panel.";
