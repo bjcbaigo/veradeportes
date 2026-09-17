@@ -15,7 +15,13 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * (con el SKU guardado aparte como referencia secundaria). No se migra el catálogo.
  */
 
-export const SOCIAL_STATUSES = ["BORRADOR", "LISTO_PARA_PUBLICAR", "PUBLICADO", "ERROR"] as const;
+export const SOCIAL_STATUSES = [
+  "BORRADOR",
+  "LISTO_PARA_PUBLICAR",
+  "PUBLICANDO",
+  "PUBLICADO",
+  "ERROR",
+] as const;
 export type SocialStatus = (typeof SOCIAL_STATUSES)[number];
 
 /** Estados alcanzables por el operador en la ETAPA 1. */
