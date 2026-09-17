@@ -1124,6 +1124,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
 
   const extraList = v.imagenes_extra.split("|").map((s) => s.trim()).filter(Boolean);
   const critica = observacionEsCritica(v.observaciones_studio);
+  const readiness = evaluateReadiness(v, "ficha");
 
   async function save() {
     if (!v.marca.trim()) { toast.error("Marca obligatoria"); return; }
@@ -1231,6 +1232,8 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
           </EditorSection>
 
           {/* C. Fotografías */}
+          <ContenidoIaSection />
+
           <EditorSection letra="C" titulo="Fotografías">
             <ImagePicker label="Imagen principal" value={v.url_imagen} onChange={x => setV(s => ({ ...s, url_imagen: x }))} />
             <ImagePicker
@@ -1413,7 +1416,9 @@ function AiSuggestionsDialog({
             <Sparkles className="h-4 w-4 text-violet-600" /> Sugerencias de IA
           </h3>
           <p className="mt-0.5 text-[12px] text-neutral-500">
-            La IA propone, vos decidís. Nada se modifica hasta que aceptes y guardes la ficha.
+            La IA es un copiloto: propone, vos decidís. Aceptar sugerencias solo completa el formulario en pantalla;
+            nada queda registrado hasta que presiones <span className="font-semibold">Guardar cambios</span>.
+            Nunca se guarda ni se publica de forma automática.
           </p>
         </div>
 
@@ -1784,6 +1789,13 @@ function ScheduleDialog({ producto, onClose, agendar }: { producto: Producto; on
       <div onClick={e => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-5 shadow-xl">
         <h2 className="text-base font-bold">Agendar publicación</h2>
         <p className="text-xs text-neutral-500">{producto.marca} {producto.modelo}</p>
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <p className="text-xs text-amber-800">
+            Esto solo agenda un recordatorio interno. <span className="font-bold">No publica automáticamente</span> en
+            Instagram, Facebook ni WhatsApp.
+          </p>
+        </div>
         <label className="block"><span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Fecha</span>
           <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" /></label>
         <label className="block"><span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Canal</span>
