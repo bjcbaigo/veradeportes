@@ -1,0 +1,1 @@
+REVOKE ALL ON public.social_publications FROM anon;

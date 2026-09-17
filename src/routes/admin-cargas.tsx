@@ -29,6 +29,7 @@ import {
 import { TallesPicker } from "@/components/TallesPicker";
 import { evaluateReadiness, type ReadinessResult } from "@/lib/product-readiness";
 import { AiContentStudio } from "@/components/studio/AiContentStudio";
+import { InstagramPublication } from "@/components/studio/InstagramPublication";
 import logoVera from "@/assets/logo-vera.png";
 
 
@@ -1221,6 +1222,25 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
                 return { ...s, imagenes_extra: [...arr, url].join("|") };
               })
             }
+          />
+
+          <InstagramPublication
+            producto={{
+              source_ref: p.id || `row-${p.rowIndex}`,
+              sku: v.sku,
+              marca: v.marca,
+              modelo: v.modelo,
+              categoria: v.categoria,
+              subcategoria: v.subcategoria,
+              color: v.color,
+              descripcion: v.descripcion,
+              uso: v.uso,
+              ideal_para: v.ideal_para,
+              talles: v.talles,
+              hashtags: v.hashtags,
+              texto_ig: v.texto_ig,
+            }}
+            mediaOptions={[v.url_imagen, ...extraList]}
           />
 
           <EditorSection letra="C" titulo="Fotografías">
