@@ -27,6 +27,7 @@ import {
   splitTags, observacionEsCritica,
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
+import { evaluateReadiness, type ReadinessResult } from "@/lib/product-readiness";
 import logoVera from "@/assets/logo-vera.png";
 
 
@@ -478,6 +479,83 @@ function productoTieneProblema(p: Producto): boolean {
   const vm = (p.validacion_modelo || "").toUpperCase();
   return ei === "ERROR" || ei === "REVISAR" || vm === "RECHAZADO" || observacionEsCritica(p.observaciones_studio);
 }
+
+/* ===== Readiness: indicadores derivados (solo lectura, no escriben datos) ===== */
+function ReadinessChip({ r }: { r: ReadinessResult }) {
+  if (r.listo) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[12px] font-bold text-emerald-800">
+        <CheckCircle2 className="h-3 w-3" /> Listo para publicar
+      </span>
+    );
+  }
+  return (
+    <span
+      title={`Faltan: ${r.faltantes.map((f) => f.label).join(", ")}`}
+      className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[12px] font-bold text-amber-800"
+    >
+      <AlertTriangle className="h-3 w-3" /> Faltan datos ({r.faltantes.length})
+    </span>
+  );
+}
+
+function ReadinessChecklist({ r, titulo = "Listo para publicar" }: { r: ReadinessResult; titulo?: string }) {
+  return (
+    <div className={`rounded-xl border px-3 py-2.5 ${r.listo ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+      <p className={`text-[12px] font-bold uppercase tracking-wide ${r.listo ? "text-emerald-700" : "text-amber-700"}`}>{titulo}</p>
+      <ul className="mt-1 space-y-0.5">
+        {r.items.map((i) => (
+          <li key={i.key} className="flex items-center gap-1.5 text-xs text-neutral-700">
+            {i.ok
+              ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+              : <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-600" />}
+            <span className={i.ok ? "" : "font-semibold"}>{i.label}</span>
+            {!i.ok && (
+              <span className="text-[12px] text-neutral-500">
+                {i.critico ? "· obligatorio" : "· recomendado"}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* ===== Contenido IA (Fase 1: solo preparación visual, nada se genera) ===== */
+const CONTENIDO_IA_VARIANTES = [
+  { titulo: "Catálogo limpio", desc: "Producto recortado sobre fondo neutro." },
+  { titulo: "Editorial", desc: "Composición de estilo campaña." },
+  { titulo: "Modelo en uso", desc: "Producto usado en contexto real." },
+  { titulo: "Detalle / Textura", desc: "Primer plano de materiales y terminación." },
+] as const;
+
+function ContenidoIaSection() {
+  return (
+    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3">
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-violet-600" />
+        <p className="text-[13px] font-bold text-neutral-900">Contenido IA</p>
+        <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-[12px] font-bold text-neutral-600">Preparación</span>
+      </div>
+      <p className="mt-1 text-[12px] text-neutral-600">
+        La foto original cargada es la fuente de verdad. En esta etapa no se genera ni se guarda ninguna imagen.
+      </p>
+      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        {CONTENIDO_IA_VARIANTES.map((c) => (
+          <div key={c.titulo} className="rounded-lg border border-neutral-200 bg-white px-3 py-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[13px] font-semibold text-neutral-800">{c.titulo}</span>
+              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[12px] font-bold text-neutral-500">No generado</span>
+            </div>
+            <p className="mt-0.5 text-[12px] text-neutral-500">{c.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 /* ============ Product Studio (pipeline unificado) ============ */
 type StudioFilter = "todos" | "pendientes" | "revision" | "aprobados" | "publicados" | "problemas";
