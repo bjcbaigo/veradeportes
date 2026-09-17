@@ -1210,6 +1210,9 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
             </div>
           )}
 
+          <ReadinessChecklist r={readiness} />
+
+
           {/* A. Identificación */}
           <EditorSection letra="A" titulo="Identificación">
             <Inp label="Marca *" v={v.marca} onC={x => setV(s => ({ ...s, marca: x }))} />
