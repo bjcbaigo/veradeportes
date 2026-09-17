@@ -114,7 +114,40 @@ function isBlockedHost(host: string): boolean {
   return false;
 }
 
-function assertSafeUrl(raw: string): URL {
+const BLOCK_MSG = "La URL de la imagen original apunta a una dirección no permitida";
+
+/** ¿El hostname ya es una IP literal (IPv4 o IPv6)? */
+function isLiteralIp(host: string): boolean {
+  const h = host.replace(/^\[|\]$/g, "");
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return true;
+  if (h.includes(":")) return true;
+  return false;
+}
+
+/**
+ * Resuelve DNS y valida TODAS las direcciones (IPv4 e IPv6) del hostname.
+ * Rechaza si cualquiera cae en loopback, link-local, privada/ULA, CGNAT,
+ * unspecified, multicast/reservado o IPv4-mapped IPv6 equivalente.
+ * Protege contra DNS rebinding: un hostname público que resuelva a red interna
+ * no pasa el control, y se repite en cada destino de redirect.
+ */
+async function assertSafeHostname(host: string): Promise<void> {
+  if (isBlockedHost(host)) throw new Error(BLOCK_MSG);
+  if (isLiteralIp(host)) return; // literal ya validado por isBlockedHost
+  const { lookup } = await import("node:dns/promises");
+  let addrs: Array<{ address: string; family: number }>;
+  try {
+    addrs = await lookup(host, { all: true, verbatim: true });
+  } catch {
+    throw new Error("No se pudo resolver el dominio de la imagen original");
+  }
+  if (!addrs.length) throw new Error("No se pudo resolver el dominio de la imagen original");
+  for (const a of addrs) {
+    if (isBlockedHost(a.address)) throw new Error(BLOCK_MSG);
+  }
+}
+
+async function assertSafeUrl(raw: string): Promise<URL> {
   let u: URL;
   try {
     u = new URL(raw);
@@ -124,14 +157,12 @@ function assertSafeUrl(raw: string): URL {
   if (u.protocol !== "http:" && u.protocol !== "https:") {
     throw new Error("Solo se admiten imágenes por http o https");
   }
-  if (isBlockedHost(u.hostname)) {
-    throw new Error("La URL de la imagen original apunta a una dirección no permitida");
-  }
+  await assertSafeHostname(u.hostname);
   return u;
 }
 
 async function fetchReferenceAsDataUrl(url: string): Promise<string> {
-  let current = assertSafeUrl(url);
+  let current = await assertSafeUrl(url);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
@@ -147,7 +178,7 @@ async function fetchReferenceAsDataUrl(url: string): Promise<string> {
       if (res.status >= 300 && res.status < 400) {
         const loc = res.headers.get("location");
         if (!loc) throw new Error("La imagen original respondió una redirección inválida");
-        current = assertSafeUrl(new URL(loc, current).toString());
+        current = await assertSafeUrl(new URL(loc, current).toString());
         continue;
       }
       break;
