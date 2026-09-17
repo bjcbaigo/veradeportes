@@ -178,7 +178,7 @@ async function fetchReferenceAsDataUrl(url: string): Promise<string> {
       if (res.status >= 300 && res.status < 400) {
         const loc = res.headers.get("location");
         if (!loc) throw new Error("La imagen original respondió una redirección inválida");
-        current = assertSafeUrl(new URL(loc, current).toString());
+        current = await assertSafeUrl(new URL(loc, current).toString());
         continue;
       }
       break;
