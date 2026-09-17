@@ -1,63 +1,52 @@
-# Fase 1 — Mejoras seguras en Product Studio (sin tocar datos)
+# Etapa 2 — Publicación real en Instagram (cuenta profesional)
 
-Todo es UI derivada: no se crean columnas, no se modifican hojas, ni tablas, ni auth, ni integraciones. La tienda pública (`/tienda`) y la carga (`/cargar`) no cambian.
+Objetivo: dejar lista la conexión y la publicación reales contra la API oficial de Meta, con bloqueo claro mientras falten las credenciales de la app de Meta. La Etapa 1 sigue funcionando igual.
 
-## 1. Criterio "listo para publicar" (derivado, sin escribir nada)
+## Qué va a ver el usuario
 
-Nuevo archivo `src/lib/product-readiness.ts` con una función pura que calcula, a partir de la ficha ya existente:
+En el bloque "Publicación Instagram" de cada ficha, el estado de conexión pasa a ser real, con cuatro situaciones posibles:
 
-- Requisitos base (visibles en la tarjeta y en el editor):
-  - imagen principal presente
-  - categoría presente
-  - modelo presente o validación de modelo distinta de RECHAZADO
-- Requisitos extra solo en el diálogo de publicación: precio y talles.
+1. **Falta configuración** — lista exacta de datos pendientes de Meta.
+2. **Configurado, sin cuenta conectada** — botón "Conectar Instagram".
+3. **Conectando / error** — mensaje de Meta sanitizado, sin ocultar el motivo.
+4. **Conectado como @usuario** — muestra usuario y id de cuenta, con "Desconectar".
 
-Resultado: lista de faltantes + nivel (`listo` / `advertencias`).
+Con cuenta activa y la publicación en estado LISTO PARA PUBLICAR aparece "Publicar ahora". Si falla, la publicación queda en ERROR con el motivo y un botón "Reintentar". Si ya está publicada, no se puede volver a publicar. Aviso permanente: la cuenta debe ser profesional (Business/Creator).
 
-Aplicación:
-- `StudioCard`: chip "Listo para publicar" o "Faltan datos (n)" con detalle al pasar/expandir. No se ocultan ni se deshabilitan acciones existentes.
-- `StudioEditor`: bloque de checklist arriba, informativo.
-- `PublishDialog`: checklist visible. Se mantiene el bloqueo actual (nombre, categoría, precio, imagen — ya obligatorios hoy). Los talles faltantes se muestran como advertencia, no bloquean, para no frenar fichas históricas.
+## Base de datos (migración nueva)
 
-Riesgo: bajo (solo lectura y render).
+Tabla `public.social_connections`, separada de `social_publications` (que sigue sin tokens):
 
-## 2. Sección "Contenido IA" en el editor (preparación, sin generar)
+- `channel` ('instagram'), `provider` ('instagram_login'), `external_account_id`, `username`, `account_type`
+- `access_token`, `token_expires_at`, `scopes`
+- `is_active`, `connected_by`, `connected_at`, `updated_at`, `disconnected_at`
+- Índice único parcial: **una sola conexión activa por canal**.
+- RLS: solo `admin` autenticado lee/gestiona; `REVOKE ALL FROM anon, authenticated` sobre la tabla y acceso únicamente vía funciones del servidor con rol de servicio, para que el token nunca sea legible desde el navegador.
 
-En `StudioEditor`, nueva sección informativa con cuatro tarjetas: Catálogo limpio, Editorial, Modelo en uso, Detalle/Textura. Todas en estado "No generado", sin botones activos, con nota: "La foto original cargada es la fuente de verdad. Nada se genera ni se guarda en esta fase."
+Tabla auxiliar `public.social_oauth_states` para el `state` de OAuth (valor aleatorio, admin que lo inició, vencimiento corto, marca de uso) — evita CSRF y se limpia al usarse.
 
-Riesgo: nulo (UI estática).
+## Flujo elegido
 
-## 3. Reforzar que la IA es copiloto
+**Instagram API con Instagram Login** (`instagram_business_basic` + `instagram_business_content_publish`), que es el flujo oficial vigente para cuentas profesionales y no requiere página de Facebook vinculada. La elección queda encapsulada en un único módulo proveedor, de modo que cambiar a Facebook Login más adelante no toca el panel.
 
-- En el diálogo de sugerencias: aviso fijo "Las sugerencias no se guardan. Aplicar solo completa el formulario; tenés que presionar Guardar cambios."
-- Verificar y mantener que `applyAi` solo actualice el estado local del formulario, nunca dispare guardado ni publicación.
+Publicación de imagen en dos pasos oficiales: crear contenedor de media con la URL de la imagen aprobada + caption, y luego publicarlo; se guarda el id del posteo devuelto.
 
-Riesgo: bajo.
+## Archivos
 
-## 4. Advertencia en Calendario
+- Nuevos: `src/lib/social-connections.functions.ts` (conectar/estado/desconectar/publicar, solo admin), `src/lib/instagram-provider.server.ts` (OAuth, identidad, publicación, errores sanitizados), rutas de servidor para inicio de OAuth y callback.
+- `src/lib/social-publisher.ts`: el stub se reemplaza por la implementación real cuando la configuración está completa; el contrato no cambia.
+- `src/lib/social-publications.functions.ts`: se agrega el paso a PUBLICADO/ERROR desde el servidor, con control para no publicar dos veces.
+- `src/components/studio/InstagramPublication.tsx`: bloque de conexión real y botones nuevos.
+- No se toca la tienda, la carga, la planilla, los permisos existentes ni los depósitos de imágenes (solo lectura de una imagen ya aprobada).
 
-En `AgendaView` y en el diálogo "Agendar publicación": aviso claro de que es una agenda de planificación interna y que **no publica** automáticamente en Instagram, Facebook ni WhatsApp.
+## Cambio de cuenta
 
-Riesgo: nulo.
+Conectar una cuenta nueva desactiva la anterior en la misma operación (queda registrada la fecha de desconexión). Las publicaciones ya hechas conservan su id de posteo y no se reescriben. "Desconectar" deja el sistema listo para conectar otra cuenta; la revocación remota del permiso, si Meta no la expone de forma segura, queda documentada como paso manual en la configuración de Instagram.
 
-## Archivos que se tocarían
+## Lo que necesito de tu lado (Meta Developers)
 
-| Archivo | Cambio |
-|---|---|
-| `src/lib/product-readiness.ts` | nuevo, función pura de checklist |
-| `src/routes/admin-cargas.tsx` | chips/checklist en tarjeta, editor, diálogo de publicación; sección Contenido IA; avisos de IA y Calendario |
-
-No se toca: `admin-cargas.functions.ts`, `product-studio-ai.*`, `cargar.tsx`, componentes de la tienda, migraciones, secrets, MCP.
+Sin estos datos la conexión queda bloqueada a propósito. Al terminar te dejo los pasos exactos; en resumen: crear la app de Meta, agregar el producto de Instagram, tomar el ID y la clave secreta de la app, autorizar la URL de retorno que te voy a indicar, y agregar la cuenta profesional de prueba como usuaria de prueba. El ID y la clave se guardan en los ajustes del proyecto, nunca en el código.
 
 ## Validación
 
-- Typecheck del proyecto.
-- Revisión en navegador de `/admin-cargas` (login existente) en 390px y 1280px: pestañas Studio, Catálogo, Landing y Calendario cargan; abrir editor, ver checklist y Contenido IA; abrir Publicar y confirmar que publica igual que hoy cuando los campos obligatorios están completos; abrir Agendar y ver el aviso.
-- `/tienda` y `/cargar` en 390px y 1280px: sin cambios visuales, sin errores de consola.
-- Sin cambios en hojas ni base de datos durante las pruebas (solo se publica/agenda si vos lo pedís explícitamente).
-
-## Fases siguientes (no ahora)
-
-- Fase 2: generación real de contenido IA de imágenes con almacenamiento propio y revisión humana.
-- Fase 3: migración gradual del catálogo de Sheets a base de datos, con doble lectura y rollback.
-- Fase 4: publicación asistida en redes, con aprobación manual obligatoria.
+Compilación y tipos, que un visitante anónimo no pueda leer ni escribir la tabla de conexiones, que sin credenciales la interfaz explique qué falta y los endpoints rechacen la operación, y que el panel, la carga y la tienda sigan funcionando. No publico el proyecto a producción.
