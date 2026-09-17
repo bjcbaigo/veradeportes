@@ -1204,7 +1204,22 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
           </EditorSection>
 
           {/* C. Fotografías */}
-          <ContenidoIaSection />
+          <AiContentStudio
+            producto={{
+              imagen_url: v.url_imagen,
+              marca: v.marca,
+              modelo: v.modelo,
+              categoria: v.categoria,
+              color: v.color,
+              descripcion: v.descripcion,
+            }}
+            onUseAsSecondary={(url) =>
+              setV(s => ({
+                ...s,
+                imagenes_extra: [...s.imagenes_extra.split("|").map(x => x.trim()).filter(Boolean), url].join("|"),
+              }))
+            }
+          />
 
           <EditorSection letra="C" titulo="Fotografías">
             <ImagePicker label="Imagen principal" value={v.url_imagen} onChange={x => setV(s => ({ ...s, url_imagen: x }))} />
