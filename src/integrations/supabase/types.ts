@@ -125,6 +125,63 @@ export type Database = {
         }
         Relationships: []
       }
+      social_publications: {
+        Row: {
+          caption: string
+          channel: string
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          external_post_id: string | null
+          hashtags: string
+          id: string
+          media_type: string
+          media_url: string | null
+          product_name: string | null
+          published_at: string | null
+          source_ref: string
+          source_sku: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          caption?: string
+          channel?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          external_post_id?: string | null
+          hashtags?: string
+          id?: string
+          media_type?: string
+          media_url?: string | null
+          product_name?: string | null
+          published_at?: string | null
+          source_ref: string
+          source_sku?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          caption?: string
+          channel?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          external_post_id?: string | null
+          hashtags?: string
+          id?: string
+          media_type?: string
+          media_url?: string | null
+          product_name?: string | null
+          published_at?: string | null
+          source_ref?: string
+          source_sku?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
