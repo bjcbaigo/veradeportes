@@ -1,6 +1,11 @@
 // Generación asistida de imágenes comerciales (Fase 2 — Contenido IA).
 // Server-only. Nunca reemplaza la foto original: produce BORRADORES en un bucket
-// temporal ("ai-drafts") y devuelve la URL pública para revisión humana.
+// PRIVADO ("ai-drafts") y devuelve una signed URL temporal solo para previsualizar.
+// Los borradores aprobados se COPIAN a un bucket público estable ("ai-aprobados")
+// para poder guardarlos como imagen secundaria con una URL que no expira.
+//
+// IMPORTANTE: el modelo INTENTA preservar la identidad del producto, pero no hay
+// garantía de fidelidad. La aprobación humana es obligatoria.
 
 export type ContentVariant = "catalogo" | "editorial" | "modelo" | "detalle";
 
@@ -16,8 +21,14 @@ export interface DraftProductData {
 const IMAGE_MODEL = "google/gemini-3.1-flash-image";
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
+export const DRAFT_BUCKET = "ai-drafts";
+export const APPROVED_BUCKET = "ai-aprobados";
+const SIGNED_URL_TTL = 60 * 60; // 1 hora, solo para preview
+const MAX_REFERENCE_BYTES = 10 * 1024 * 1024; // 10 MB
+const FETCH_TIMEOUT_MS = 15_000;
+
 const REGLAS_DURAS = [
-  "Conservá la identidad exacta del producto de la imagen de referencia: forma, silueta, costuras, logos, tipografías, color y proporciones.",
+  "Intentá preservar con la mayor fidelidad posible la identidad del producto de la imagen de referencia: forma, silueta, costuras, logos, tipografías, color y proporciones.",
   "No inventes características, materiales, colores ni detalles que no estén en la imagen.",
   "No agregues texto, precios, sellos, marcas de agua ni claims publicitarios.",
   "No agregues ni quites elementos del producto.",
@@ -27,7 +38,7 @@ const VARIANTES: Record<ContentVariant, { label: string; prompt: string }> = {
   catalogo: {
     label: "Catálogo limpio",
     prompt:
-      "Foto de catálogo e-commerce: el producto centrado sobre fondo neutro liso y claro, iluminación suave y parcja, sin sombras duras, sin props ni escenografía.",
+      "Foto de catálogo e-commerce: el producto centrado sobre fondo neutro liso y claro, iluminación suave y pareja, sin sombras duras, sin props ni escenografía.",
   },
   editorial: {
     label: "Editorial",
@@ -72,18 +83,117 @@ function buildPrompt(v: ContentVariant, p: DraftProductData) {
     .join("\n");
 }
 
+// ── Endurecimiento de la descarga de la imagen de referencia ──────────────────
+
+function isBlockedHost(host: string): boolean {
+  const h = host.toLowerCase().replace(/^\[|\]$/g, "");
+  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h === "0.0.0.0") return true;
+  if (h === "metadata.google.internal") return true;
+
+  // IPv4
+  const m4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+  if (m4) {
+    const [a, b] = [Number(m4[1]), Number(m4[2])];
+    if (a === 10 || a === 127 || a === 0) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 169 && b === 254) return true; // link-local
+    if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+    if (a >= 224) return true; // multicast / reservado
+    return false;
+  }
+
+  // IPv6
+  if (h.includes(":")) {
+    if (h === "::1" || h === "::") return true;
+    if (/^f[cd]/.test(h)) return true; // ULA fc00::/7
+    if (/^fe[89ab]/.test(h)) return true; // link-local
+    if (/^::ffff:/.test(h)) return isBlockedHost(h.replace(/^::ffff:/, ""));
+    return false;
+  }
+  return false;
+}
+
+function assertSafeUrl(raw: string): URL {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    throw new Error("La URL de la imagen original no es válida");
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") {
+    throw new Error("Solo se admiten imágenes por http o https");
+  }
+  if (isBlockedHost(u.hostname)) {
+    throw new Error("La URL de la imagen original apunta a una dirección no permitida");
+  }
+  return u;
+}
+
 async function fetchReferenceAsDataUrl(url: string): Promise<string> {
-  const res = await fetch(url, { headers: { "User-Agent": "VeraDeportes/1.0" } });
-  if (!res.ok) {
-    throw new Error(`No se pudo leer la imagen original [${res.status}]`);
+  let current = assertSafeUrl(url);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    let res: Response | undefined;
+    // Seguimos redirects manualmente para validar cada destino.
+    for (let hop = 0; hop < 5; hop++) {
+      res = await fetch(current.toString(), {
+        redirect: "manual",
+        signal: controller.signal,
+        headers: { "User-Agent": "VeraDeportes/1.0" },
+      });
+      if (res.status >= 300 && res.status < 400) {
+        const loc = res.headers.get("location");
+        if (!loc) throw new Error("La imagen original respondió una redirección inválida");
+        current = assertSafeUrl(new URL(loc, current).toString());
+        continue;
+      }
+      break;
+    }
+    if (!res) throw new Error("No se pudo leer la imagen original");
+    if (res.status >= 300) {
+      throw new Error(`No se pudo leer la imagen original [${res.status}]`);
+    }
+
+    const type = (res.headers.get("content-type") || "").split(";")[0]?.trim() || "";
+    if (!/^image\/(png|jpe?g|webp)$/i.test(type)) {
+      throw new Error(`La imagen original no es un formato soportado (${type || "desconocido"})`);
+    }
+
+    const declared = Number(res.headers.get("content-length") || "0");
+    if (declared > MAX_REFERENCE_BYTES) {
+      throw new Error("La imagen original supera el máximo permitido (10 MB)");
+    }
+
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error("La imagen original no devolvió contenido");
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        total += value.byteLength;
+        if (total > MAX_REFERENCE_BYTES) {
+          await reader.cancel().catch(() => {});
+          throw new Error("La imagen original supera el máximo permitido (10 MB)");
+        }
+        chunks.push(value);
+      }
+    }
+    const buf = Buffer.concat(chunks.map((c) => Buffer.from(c)));
+    if (buf.byteLength < 500) throw new Error("La imagen original está vacía o no es accesible");
+    return `data:${type};base64,${buf.toString("base64")}`;
+  } catch (e) {
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new Error("La lectura de la imagen original tardó demasiado (timeout)");
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-  const type = (res.headers.get("content-type") || "").split(";")[0]?.trim() || "";
-  if (!/^image\/(png|jpe?g|webp)$/i.test(type)) {
-    throw new Error(`La imagen original no es un formato soportado (${type || "desconocido"})`);
-  }
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.byteLength < 500) throw new Error("La imagen original está vacía o no es accesible");
-  return `data:${type};base64,${buf.toString("base64")}`;
 }
 
 function gatewayError(status: number, body: string): Error {
@@ -93,10 +203,19 @@ function gatewayError(status: number, body: string): Error {
   return new Error(`Falló la generación de imagen [${status}]: ${body.slice(0, 300)}`);
 }
 
+export interface DraftResult {
+  /** Ruta dentro del bucket privado; sirve para borrar o promover el borrador. */
+  path: string;
+  /** Signed URL temporal, SOLO para preview. Nunca guardar en imagenes_extra. */
+  previewUrl: string;
+  variant: ContentVariant;
+  createdAt: string;
+}
+
 export async function generateDraftImage(
   variant: ContentVariant,
   producto: DraftProductData,
-): Promise<{ url: string; variant: ContentVariant; createdAt: string }> {
+): Promise<DraftResult> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("Falta LOVABLE_API_KEY en el servidor");
 
@@ -139,15 +258,50 @@ export async function generateDraftImage(
   const ext = mime.includes("jpeg") ? "jpg" : mime.includes("webp") ? "webp" : "png";
   const bytes = Buffer.from(b64 ?? "", "base64");
 
-  // Almacenamiento temporal de borradores: bucket público "ai-drafts".
+  // Almacenamiento temporal de borradores: bucket PRIVADO "ai-drafts".
   // No escribe en PRODUCTOS_ADMIN ni en la pestaña Productos.
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const path = `${variant}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const up = await supabaseAdmin.storage
-    .from("ai-drafts")
+    .from(DRAFT_BUCKET)
     .upload(path, bytes, { contentType: mime, upsert: false });
   if (up.error) throw new Error(`No se pudo guardar el borrador: ${up.error.message}`);
 
-  const { data } = supabaseAdmin.storage.from("ai-drafts").getPublicUrl(path);
-  return { url: data.publicUrl, variant, createdAt: new Date().toISOString() };
+  const signed = await supabaseAdmin.storage.from(DRAFT_BUCKET).createSignedUrl(path, SIGNED_URL_TTL);
+  if (signed.error || !signed.data?.signedUrl) {
+    throw new Error(`No se pudo generar el enlace de previsualización: ${signed.error?.message ?? "desconocido"}`);
+  }
+
+  return { path, previewUrl: signed.data.signedUrl, variant, createdAt: new Date().toISOString() };
+}
+
+/** Elimina físicamente un borrador del bucket privado. */
+export async function deleteDraftImage(path: string): Promise<void> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin.storage.from(DRAFT_BUCKET).remove([path]);
+  if (error) throw new Error(`No se pudo eliminar el borrador: ${error.message}`);
+}
+
+/**
+ * Copia el borrador aprobado al bucket público estable y elimina el temporal.
+ * Devuelve una URL pública que NO expira, apta para guardar como imagen secundaria.
+ */
+export async function promoteDraftImage(path: string): Promise<{ url: string }> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const dl = await supabaseAdmin.storage.from(DRAFT_BUCKET).download(path);
+  if (dl.error || !dl.data) {
+    throw new Error(`No se pudo leer el borrador para aprobarlo: ${dl.error?.message ?? "no existe"}`);
+  }
+  const mime = dl.data.type || "image/png";
+  const bytes = Buffer.from(await dl.data.arrayBuffer());
+  const up = await supabaseAdmin.storage
+    .from(APPROVED_BUCKET)
+    .upload(path, bytes, { contentType: mime, upsert: true });
+  if (up.error) throw new Error(`No se pudo aprobar el borrador: ${up.error.message}`);
+
+  // El temporal ya no hace falta: evita huérfanos.
+  await supabaseAdmin.storage.from(DRAFT_BUCKET).remove([path]).catch(() => {});
+
+  const { data } = supabaseAdmin.storage.from(APPROVED_BUCKET).getPublicUrl(path);
+  return { url: data.publicUrl };
 }

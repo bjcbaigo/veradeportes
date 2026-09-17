@@ -1214,10 +1214,12 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
               descripcion: v.descripcion,
             }}
             onUseAsSecondary={(url) =>
-              setV(s => ({
-                ...s,
-                imagenes_extra: [...s.imagenes_extra.split("|").map(x => x.trim()).filter(Boolean), url].join("|"),
-              }))
+              setV(s => {
+                const arr = s.imagenes_extra.split("|").map(x => x.trim()).filter(Boolean);
+                // Deduplicar para evitar repetidos si se aprueba dos veces la misma URL.
+                if (arr.includes(url) || s.url_imagen.trim() === url) return s;
+                return { ...s, imagenes_extra: [...arr, url].join("|") };
+              })
             }
           />
 
