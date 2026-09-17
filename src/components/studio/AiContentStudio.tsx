@@ -4,18 +4,20 @@ import { AlertTriangle, Check, Loader2, RefreshCw, Sparkles, Trash2 } from "luci
 import { toast } from "sonner";
 import {
   CONTENT_VARIANTS, CONTENT_VARIANT_LABELS,
-  generateProductContentDraft, type ContentVariantId,
+  generateProductContentDraft, deleteProductContentDraft, promoteProductContentDraft,
+  type ContentVariantId,
 } from "@/lib/product-content-ai.functions";
 
 /**
  * Contenido IA — Fase 2.
  * TRAZABILIDAD: el estado de los borradores (variante, timestamp, estado) es
  * TEMPORAL POR SESIÓN (estado de React). No hay tabla ni columnas nuevas en esta
- * fase; al cerrar el editor se pierde el historial, aunque el archivo generado
- * queda en el bucket temporal "ai-drafts".
+ * fase; el archivo del borrador vive en el bucket PRIVADO "ai-drafts" y solo se
+ * previsualiza con signed URLs temporales.
  * La foto original cargada es siempre la fuente de verdad y nunca se reemplaza
- * automáticamente: solo el operador puede copiar un borrador a imágenes secundarias
- * y recién se persiste al presionar "Guardar cambios".
+ * automáticamente. Al aprobar, el archivo se copia a un almacenamiento estable y
+ * se usa una URL que no expira; recién se persiste al presionar "Guardar cambios".
+ * La IA INTENTA preservar el producto: no hay garantía de fidelidad.
  */
 
 type DraftEstado = "GENERANDO" | "BORRADOR" | "APROBADO PARA USO" | "DESCARTADO";
@@ -23,7 +25,10 @@ type DraftEstado = "GENERANDO" | "BORRADOR" | "APROBADO PARA USO" | "DESCARTADO"
 interface Draft {
   variant: ContentVariantId;
   estado: DraftEstado;
-  url?: string;
+  /** Signed URL temporal, solo preview. Nunca se guarda en imagenes_extra. */
+  previewUrl?: string;
+  /** Ruta en el bucket privado; permite borrar o promover. */
+  path?: string;
   createdAt?: string;
   error?: string;
 }
@@ -60,12 +65,16 @@ export function AiContentStudio({
   onUseAsSecondary: (url: string) => void;
 }) {
   const generate = useServerFn(generateProductContentDraft);
+  const removeDraft = useServerFn(deleteProductContentDraft);
+  const promote = useServerFn(promoteProductContentDraft);
   const [drafts, setDrafts] = useState<Partial<Record<ContentVariantId, Draft>>>({});
   const [confirmar, setConfirmar] = useState<ContentVariantId | null>(null);
+  const [ocupado, setOcupado] = useState<ContentVariantId | null>(null);
 
   const sinOriginal = !producto.imagen_url?.trim();
 
   async function run(variant: ContentVariantId) {
+    const anterior = drafts[variant];
     setDrafts(s => ({ ...s, [variant]: { variant, estado: "GENERANDO" } }));
     try {
       const r = await generate({
@@ -81,23 +90,61 @@ export function AiContentStudio({
       });
       setDrafts(s => ({
         ...s,
-        [variant]: { variant, estado: "BORRADOR", url: r.url, createdAt: r.createdAt },
+        [variant]: { variant, estado: "BORRADOR", previewUrl: r.previewUrl, path: r.path, createdAt: r.createdAt },
       }));
+      // Recién con el nuevo borrador a salvo eliminamos el anterior: así un fallo
+      // de generación nunca hace perder el borrador previo. No se borra si ya fue
+      // aprobado (en ese caso el archivo se movió al almacenamiento estable).
+      if (anterior?.path && anterior.estado !== "APROBADO PARA USO") {
+        try {
+          await removeDraft({ data: { path: anterior.path } });
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "error desconocido";
+          toast.error(`No se pudo eliminar el borrador anterior: ${msg}`);
+        }
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
-      // Ante cualquier fallo del modelo/gateway no se altera nada de la ficha.
-      setDrafts(s => ({ ...s, [variant]: { variant, estado: "DESCARTADO", error: msg } }));
+      // Ante cualquier fallo del modelo/gateway no se altera nada de la ficha
+      // y se conserva el borrador anterior si existía.
+      setDrafts(s => ({ ...s, [variant]: anterior ? { ...anterior, error: msg } : { variant, estado: "DESCARTADO", error: msg } }));
       toast.error(`No se pudo generar «${CONTENT_VARIANT_LABELS[variant]}»: ${msg}`);
     }
   }
 
-  function usar(variant: ContentVariantId) {
+  async function descartar(variant: ContentVariantId) {
     const d = drafts[variant];
-    if (!d?.url) return;
-    onUseAsSecondary(d.url);
-    setDrafts(s => ({ ...s, [variant]: { ...d, estado: "APROBADO PARA USO" } }));
-    setConfirmar(null);
-    toast.success("Agregada como imagen secundaria. Guardá los cambios para confirmar.");
+    setOcupado(variant);
+    try {
+      if (d?.path && d.estado !== "APROBADO PARA USO") {
+        await removeDraft({ data: { path: d.path } });
+      }
+      setDrafts(s => ({ ...s, [variant]: { variant, estado: "DESCARTADO" } }));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "error desconocido";
+      toast.error(`No se pudo eliminar el archivo del borrador: ${msg}`);
+    } finally {
+      setOcupado(null);
+    }
+  }
+
+  async function usar(variant: ContentVariantId) {
+    const d = drafts[variant];
+    if (!d?.path) return;
+    setOcupado(variant);
+    try {
+      // Promovemos a almacenamiento estable: la URL guardada no expira.
+      const { url } = await promote({ data: { path: d.path } });
+      onUseAsSecondary(url);
+      setDrafts(s => ({ ...s, [variant]: { ...d, estado: "APROBADO PARA USO" } }));
+      setConfirmar(null);
+      toast.success("Agregada como imagen secundaria. Guardá los cambios para confirmar.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "error desconocido";
+      toast.error(`No se pudo usar el borrador: ${msg}`);
+    } finally {
+      setOcupado(null);
+    }
   }
 
   return (
@@ -113,7 +160,15 @@ export function AiContentStudio({
       </p>
       <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
         <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
-        <p className="text-[12px] font-semibold text-amber-800">Imagen generada con IA — revisar fidelidad antes de usar.</p>
+        <div>
+          <p className="text-[12px] font-semibold text-amber-800">Imagen generada con IA — revisar fidelidad antes de usar.</p>
+          <p className="text-[12px] font-semibold text-amber-800">
+            La IA puede alterar detalles del producto. Compará siempre con la foto original antes de aprobar.
+          </p>
+          <p className="mt-0.5 text-[12px] text-amber-700">
+            El modelo intenta preservar forma, color y logos, pero no lo garantiza. La aprobación siempre es manual.
+          </p>
+        </div>
       </div>
       {sinOriginal && (
         <p className="mt-2 text-[12px] font-semibold text-red-600">
@@ -121,7 +176,8 @@ export function AiContentStudio({
         </p>
       )}
       <p className="mt-2 text-[12px] text-neutral-500">
-        Historial temporal de esta sesión: al cerrar el editor se pierde el listado de borradores.
+        Historial temporal de esta sesión: al cerrar el editor se pierde el listado de borradores y las vistas
+        previas dejan de estar disponibles.
       </p>
 
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -129,6 +185,7 @@ export function AiContentStudio({
           const d = drafts[variant];
           const estado: DraftEstado = d?.estado ?? "DESCARTADO";
           const generando = estado === "GENERANDO";
+          const trabajando = ocupado === variant;
           return (
             <div key={variant} className="rounded-lg border border-neutral-200 bg-white p-3">
               <div className="flex items-center justify-between gap-2">
@@ -138,9 +195,9 @@ export function AiContentStudio({
                 </span>
               </div>
 
-              {d?.url && (
+              {d?.previewUrl && (
                 <div className="mt-2 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
-                  <img src={d.url} alt={`Borrador ${CONTENT_VARIANT_LABELS[variant]}`} className="aspect-square w-full object-cover" />
+                  <img src={d.previewUrl} alt={`Borrador ${CONTENT_VARIANT_LABELS[variant]}`} className="aspect-square w-full object-cover" />
                 </div>
               )}
               {generando && (
@@ -158,26 +215,28 @@ export function AiContentStudio({
               <div className="mt-2 flex flex-wrap gap-1.5">
                 <button
                   type="button"
-                  disabled={generando || sinOriginal}
+                  disabled={generando || sinOriginal || trabajando}
                   onClick={() => run(variant)}
                   className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-violet-300 bg-violet-50 px-2.5 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
                 >
                   {generando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-                  {d?.url ? "Regenerar" : "Generar borrador"}
+                  {d?.previewUrl ? "Regenerar" : "Generar borrador"}
                 </button>
-                {d?.url && (
+                {d?.previewUrl && (
                   <>
                     <button
                       type="button"
-                      onClick={() => setDrafts(s => ({ ...s, [variant]: { variant, estado: "DESCARTADO" } }))}
-                      className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50"
+                      disabled={trabajando}
+                      onClick={() => descartar(variant)}
+                      className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs hover:bg-neutral-50 disabled:opacity-50"
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Descartar
                     </button>
                     <button
                       type="button"
+                      disabled={trabajando || estado === "APROBADO PARA USO"}
                       onClick={() => setConfirmar(variant)}
-                      className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-emerald-300 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                      className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-emerald-300 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
                     >
                       <Check className="h-3.5 w-3.5" /> Usar como secundaria
                     </button>
@@ -198,9 +257,18 @@ export function AiContentStudio({
               imágenes secundarias del formulario. La imagen principal no cambia y nada se guarda hasta que presiones
               «Guardar cambios».
             </p>
+            <p className="text-xs font-semibold text-amber-700">
+              Verificá antes que el borrador coincida con la foto original: la IA puede alterar detalles.
+            </p>
             <div className="flex justify-end gap-2">
               <button onClick={() => setConfirmar(null)} className="min-h-[40px] rounded-md border border-neutral-300 bg-white px-3 text-sm hover:bg-neutral-50">Cancelar</button>
-              <button onClick={() => usar(confirmar)} className="min-h-[40px] rounded-md bg-emerald-600 px-3 text-sm font-semibold text-white hover:bg-emerald-700">Confirmar</button>
+              <button
+                disabled={ocupado === confirmar}
+                onClick={() => usar(confirmar)}
+                className="min-h-[40px] rounded-md bg-emerald-600 px-3 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {ocupado === confirmar ? "Procesando…" : "Confirmar"}
+              </button>
             </div>
           </div>
         </div>
