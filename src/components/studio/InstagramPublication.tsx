@@ -1,22 +1,40 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, CheckCircle2, Instagram, Loader2, Plug, RotateCcw, Save, Wand2 } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  Instagram,
+  Loader2,
+  Plug,
+  PlugZap,
+  RotateCcw,
+  Save,
+  Send,
+  Wand2,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   getSocialPublication,
   saveSocialPublicationDraft,
   setSocialPublicationStatus,
 } from "@/lib/social-publications.functions";
-import { instagramPublisherStub, INSTAGRAM_NOT_CONNECTED_MESSAGE } from "@/lib/social-publisher";
+import {
+  disconnectInstagram,
+  getInstagramConnectionStatus,
+  publishInstagramNow,
+  startInstagramConnect,
+} from "@/lib/social-connections.functions";
+import { INSTAGRAM_PROFESSIONAL_NOTICE } from "@/lib/social-publisher";
 
 /**
- * Publicación Instagram — ETAPA 1: preparación interna.
- * No hay conexión con Meta ni publicación externa. Solo BORRADOR y LISTO_PARA_PUBLICAR,
- * siempre con acción manual del operador (aprobación humana obligatoria).
- * Solo se ofrecen como media imágenes YA aprobadas del producto (principal o secundarias);
- * nunca borradores IA privados ni URLs firmadas temporales.
- * Video: el catálogo no soporta video hoy, así que queda fuera de esta etapa.
+ * Publicación Instagram — ETAPA 2: conexión y publicación reales.
+ *
+ * Solo se ofrecen como media imágenes YA aprobadas del producto (principal o
+ * secundarias); nunca borradores IA privados ni URLs firmadas temporales.
+ * Video queda fuera de esta etapa (el catálogo no lo soporta).
+ * El token de Meta nunca llega al navegador: todo pasa por funciones de servidor.
  */
 
 export interface InstagramPublicationProducto {
@@ -75,6 +93,7 @@ function buildHashtagsSuggestion(p: InstagramPublicationProducto) {
 const ESTADO_STYLE: Record<string, string> = {
   BORRADOR: "bg-amber-100 text-amber-800",
   LISTO_PARA_PUBLICAR: "bg-emerald-100 text-emerald-800",
+  PUBLICANDO: "bg-sky-100 text-sky-800",
   PUBLICADO: "bg-blue-100 text-blue-700",
   ERROR: "bg-red-100 text-red-700",
 };
@@ -90,10 +109,12 @@ export function InstagramPublication({
   const fetchPub = useServerFn(getSocialPublication);
   const savePub = useServerFn(saveSocialPublicationDraft);
   const setStatus = useServerFn(setSocialPublicationStatus);
+  const fetchConn = useServerFn(getInstagramConnectionStatus);
+  const startConnect = useServerFn(startInstagramConnect);
+  const doDisconnect = useServerFn(disconnectInstagram);
+  const doPublish = useServerFn(publishInstagramNow);
 
   const opciones = useMemo(() => [...new Set(mediaOptions.map((u) => u.trim()).filter(esEstable))], [mediaOptions]);
-  const conexion = useMemo(() => instagramPublisherStub, []);
-  const [conn, setConn] = useState<{ connected: boolean; detail: string }>({ connected: false, detail: "Cuenta profesional requerida" });
 
   const key = ["social-publication", producto.source_ref] as const;
   const { data: pub, isLoading } = useQuery({
@@ -102,15 +123,34 @@ export function InstagramPublication({
     staleTime: 0,
   });
 
+  const connKey = ["instagram-connection"] as const;
+  const { data: conn, isLoading: connLoading } = useQuery({
+    queryKey: connKey,
+    queryFn: () => fetchConn({}),
+    staleTime: 30_000,
+  });
+
   const [media, setMedia] = useState("");
   const [caption, setCaption] = useState("");
   const [hashtags, setHashtags] = useState("");
   const [hidratado, setHidratado] = useState(false);
-  const [busy, setBusy] = useState<null | "save" | "status">(null);
+  const [busy, setBusy] = useState<null | "save" | "status" | "conn" | "publish">(null);
 
+  // Resultado del regreso de OAuth (?instagram=connected|error)
   useEffect(() => {
-    conexion.getConnection().then((c) => setConn({ connected: c.connected, detail: c.detail }));
-  }, [conexion]);
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    const r = p.get("instagram");
+    if (!r) return;
+    if (r === "connected") toast.success(`Instagram conectado${p.get("ig_user") ? ` como @${p.get("ig_user")}` : ""}.`);
+    else toast.error(p.get("ig_msg") || "No se pudo conectar Instagram.");
+    p.delete("instagram");
+    p.delete("ig_user");
+    p.delete("ig_msg");
+    const qs = p.toString();
+    window.history.replaceState({}, "", `${window.location.pathname}${qs ? `?${qs}` : ""}`);
+    qc.invalidateQueries({ queryKey: connKey });
+  }, [qc]);
 
   useEffect(() => {
     if (isLoading || hidratado) return;
@@ -122,6 +162,9 @@ export function InstagramPublication({
 
   const estado = pub?.status ?? "BORRADOR";
   const listo = estado === "LISTO_PARA_PUBLICAR";
+  const publicado = estado === "PUBLICADO";
+  const enError = estado === "ERROR";
+  const puedePublicar = !!conn?.connected && (listo || enError) && !!pub?.media_url && !!pub?.caption?.trim();
 
   async function guardar() {
     setBusy("save");
@@ -167,6 +210,50 @@ export function InstagramPublication({
     }
   }
 
+  async function conectar() {
+    setBusy("conn");
+    try {
+      const { authorizeUrl } = await startConnect({});
+      window.location.href = authorizeUrl;
+    } catch (e) {
+      toast.error((e as Error).message);
+      setBusy(null);
+    }
+  }
+
+  async function desconectar() {
+    if (!window.confirm("¿Desconectar la cuenta de Instagram? Después podés conectar otra cuenta profesional.")) return;
+    setBusy("conn");
+    try {
+      await doDisconnect({});
+      await qc.invalidateQueries({ queryKey: connKey });
+      toast.success("Cuenta desconectada. Podés conectar otra cuenta profesional.");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function publicarAhora() {
+    if (!window.confirm("Se publicará ahora en Instagram con la imagen y el texto guardados. ¿Confirmás?")) return;
+    setBusy("publish");
+    try {
+      await doPublish({ data: { source_ref: producto.source_ref } });
+      const row = await fetchPub({ data: { source_ref: producto.source_ref } });
+      qc.setQueryData(key, row);
+      toast.success("Publicado en Instagram.");
+    } catch (e) {
+      toast.error((e as Error).message);
+      const row = await fetchPub({ data: { source_ref: producto.source_ref } });
+      qc.setQueryData(key, row);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const bloqueadoEdicion = publicado || estado === "PUBLICANDO";
+
   return (
     <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -179,22 +266,63 @@ export function InstagramPublication({
 
       <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
         <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
-        <p className="text-[12px] font-semibold text-amber-800">{INSTAGRAM_NOT_CONNECTED_MESSAGE}</p>
+        <p className="text-[12px] font-semibold text-amber-800">{INSTAGRAM_PROFESSIONAL_NOTICE}</p>
       </div>
 
+      {/* Estado real de conexión */}
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
-        <div className="flex items-center gap-2">
-          <Plug className="h-3.5 w-3.5 text-neutral-500" />
+        <div className="flex items-start gap-2">
+          {conn?.connected ? <PlugZap className="mt-0.5 h-3.5 w-3.5 text-emerald-600" /> : <Plug className="mt-0.5 h-3.5 w-3.5 text-neutral-500" />}
           <div>
-            <p className="text-[12px] font-semibold text-neutral-800">Conexión Instagram · {conn.connected ? "Conectado" : "No conectado"}</p>
-            <p className="text-[12px] text-neutral-500">{conn.detail}</p>
+            {connLoading ? (
+              <p className="text-[12px] font-semibold text-neutral-600">Verificando conexión…</p>
+            ) : !conn?.configured ? (
+              <>
+                <p className="text-[12px] font-semibold text-red-700">Instagram no configurado</p>
+                <p className="text-[12px] text-neutral-600">
+                  Falta cargar en el proyecto: {conn?.missing?.join(", ") || "credenciales de la app de Meta"}.
+                </p>
+              </>
+            ) : conn.connected ? (
+              <>
+                <p className="text-[12px] font-semibold text-emerald-700">
+                  Conectado{conn.username ? ` como @${conn.username}` : ""}
+                </p>
+                <p className="text-[12px] text-neutral-500">
+                  ID de cuenta: {conn.externalAccountId}
+                  {conn.accountType ? ` · ${conn.accountType}` : ""}
+                  {conn.tokenExpiresAt ? ` · vence ${new Date(conn.tokenExpiresAt).toLocaleDateString()}` : ""}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-[12px] font-semibold text-neutral-800">Configurado · sin cuenta conectada</p>
+                <p className="text-[12px] text-neutral-500">Cuenta profesional requerida</p>
+              </>
+            )}
           </div>
         </div>
-        <button type="button" disabled title="Disponible en la Etapa 2"
-          className="min-h-[36px] cursor-not-allowed rounded-md border border-neutral-300 bg-neutral-100 px-2.5 text-xs font-semibold text-neutral-500">
-          Conectar Instagram — Próximamente (Etapa 2)
-        </button>
+        <div className="flex flex-wrap gap-1.5">
+          {conn?.configured && !conn.connected && (
+            <button type="button" disabled={busy !== null} onClick={conectar}
+              className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md bg-pink-600 px-3 text-xs font-semibold text-white hover:bg-pink-700 disabled:opacity-50">
+              {busy === "conn" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Instagram className="h-3.5 w-3.5" />} Conectar Instagram
+            </button>
+          )}
+          {conn?.connected && (
+            <button type="button" disabled={busy !== null} onClick={desconectar}
+              className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 disabled:opacity-50">
+              Desconectar
+            </button>
+          )}
+        </div>
       </div>
+      {conn?.connected && !conn.remoteRevokeSupported && (
+        <p className="mt-1 text-[12px] text-neutral-500">
+          Al desconectar se invalida la conexión guardada acá. Para revocar el permiso del lado de Instagram,
+          hacelo desde Instagram → Configuración → Apps y sitios web.
+        </p>
+      )}
 
       {isLoading ? (
         <div className="mt-3 flex items-center gap-2 text-[12px] text-neutral-500">
@@ -212,8 +340,8 @@ export function InstagramPublication({
               ) : (
                 <div className="mt-1 flex gap-1.5 overflow-x-auto pb-1">
                   {opciones.map((u) => (
-                    <button key={u} type="button" onClick={() => setMedia(u)}
-                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 bg-white ${media === u ? "border-pink-500" : "border-neutral-200"}`}>
+                    <button key={u} type="button" disabled={bloqueadoEdicion} onClick={() => setMedia(u)}
+                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 bg-white disabled:opacity-60 ${media === u ? "border-pink-500" : "border-neutral-200"}`}>
                       <img src={u} alt="" className="h-full w-full object-contain" loading="lazy" />
                     </button>
                   ))}
@@ -224,47 +352,78 @@ export function InstagramPublication({
 
             <label className="block">
               <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Texto de la publicación</span>
-              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={7}
-                className="mt-1 w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm" />
+              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={7} disabled={bloqueadoEdicion}
+                className="mt-1 w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm disabled:bg-neutral-100" />
             </label>
 
             <label className="block">
               <span className="block text-[12px] font-bold uppercase tracking-wide text-neutral-600">Hashtags</span>
-              <input value={hashtags} onChange={(e) => setHashtags(e.target.value)}
-                className="mt-1 min-h-[40px] w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm" />
+              <input value={hashtags} onChange={(e) => setHashtags(e.target.value)} disabled={bloqueadoEdicion}
+                className="mt-1 min-h-[40px] w-full rounded-md border border-neutral-300 px-2.5 py-2 text-sm disabled:bg-neutral-100" />
             </label>
 
-            <div className="flex flex-wrap gap-1.5">
-              <button type="button" onClick={() => { setCaption(buildCaptionSuggestion(producto)); setHashtags(buildHashtagsSuggestion(producto)); }}
-                className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-violet-300 bg-violet-50 px-2.5 text-xs font-semibold text-violet-700 hover:bg-violet-100">
-                <Wand2 className="h-3.5 w-3.5" /> Sugerir texto
-              </button>
-              <button type="button" disabled={busy !== null} onClick={() => guardar()}
-                className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 text-xs font-semibold hover:bg-neutral-50 disabled:opacity-50">
-                {busy === "save" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Guardar borrador
-              </button>
-              {listo ? (
-                <button type="button" disabled={busy !== null} onClick={() => marcar("BORRADOR")}
-                  className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-2.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 disabled:opacity-50">
-                  <RotateCcw className="h-3.5 w-3.5" /> Volver a borrador
+            {publicado ? (
+              <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
+                <p className="text-[12px] font-semibold text-blue-800">
+                  Publicado en Instagram{pub?.published_at ? ` el ${new Date(pub.published_at).toLocaleString()}` : ""}.
+                </p>
+                {pub?.external_post_id && (
+                  <p className="mt-0.5 flex items-center gap-1 text-[12px] text-blue-700">
+                    <ExternalLink className="h-3 w-3" /> ID del posteo: {pub.external_post_id}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                <button type="button" onClick={() => { setCaption(buildCaptionSuggestion(producto)); setHashtags(buildHashtagsSuggestion(producto)); }}
+                  className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-violet-300 bg-violet-50 px-2.5 text-xs font-semibold text-violet-700 hover:bg-violet-100">
+                  <Wand2 className="h-3.5 w-3.5" /> Sugerir texto
                 </button>
-              ) : (
-                <button type="button" disabled={busy !== null || !media || !caption.trim()} onClick={() => marcar("LISTO_PARA_PUBLICAR")}
-                  className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Marcar listo para publicar
+                <button type="button" disabled={busy !== null} onClick={() => guardar()}
+                  className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 text-xs font-semibold hover:bg-neutral-50 disabled:opacity-50">
+                  {busy === "save" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Guardar borrador
                 </button>
-              )}
-            </div>
-            {pub?.error_message && <p className="text-[12px] text-red-600">{pub.error_message}</p>}
+                {listo || enError ? (
+                  <button type="button" disabled={busy !== null} onClick={() => marcar("BORRADOR")}
+                    className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-2.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 disabled:opacity-50">
+                    <RotateCcw className="h-3.5 w-3.5" /> Volver a borrador
+                  </button>
+                ) : (
+                  <button type="button" disabled={busy !== null || !media || !caption.trim()} onClick={() => marcar("LISTO_PARA_PUBLICAR")}
+                    className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Marcar listo para publicar
+                  </button>
+                )}
+                {puedePublicar && (
+                  <button type="button" disabled={busy !== null} onClick={publicarAhora}
+                    className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md bg-pink-600 px-3 text-xs font-semibold text-white hover:bg-pink-700 disabled:opacity-50">
+                    {busy === "publish" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                    {enError ? "Reintentar publicación" : "Publicar ahora"}
+                  </button>
+                )}
+              </div>
+            )}
+            {pub?.error_message && (
+              <p className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-[12px] font-semibold text-red-700">
+                Instagram: {pub.error_message}
+              </p>
+            )}
+            {listo && !conn?.connected && (
+              <p className="text-[12px] text-neutral-500">
+                Para publicar desde acá, conectá primero una cuenta profesional de Instagram.
+              </p>
+            )}
           </div>
 
-          {/* Vista previa: simulación interna, no es Instagram real. */}
+          {/* Vista previa: simulación interna del posteo. */}
           <div>
             <p className="text-[12px] font-bold uppercase tracking-wide text-neutral-600">Vista previa (simulación interna)</p>
             <div className="mt-1 overflow-hidden rounded-xl border border-neutral-200 bg-white">
               <div className="flex items-center gap-2 px-3 py-2">
                 <div className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-pink-500 to-orange-400 text-[11px] font-bold text-white">VD</div>
-                <span className="text-[13px] font-semibold text-neutral-900">Vera Deportes</span>
+                <span className="text-[13px] font-semibold text-neutral-900">
+                  {conn?.username ? `@${conn.username}` : "Vera Deportes"}
+                </span>
               </div>
               <div className="aspect-square w-full bg-neutral-100">
                 {media ? <img src={media} alt="" className="h-full w-full object-contain" /> : null}
@@ -275,7 +434,7 @@ export function InstagramPublication({
               </div>
             </div>
             <p className="mt-1 text-[12px] text-neutral-500">
-              Simulación interna del posteo. No se envía nada a Instagram, Facebook ni WhatsApp.
+              La publicación real se envía solo cuando presionás “Publicar ahora”. Nada se publica ni se programa automáticamente.
             </p>
           </div>
         </div>
