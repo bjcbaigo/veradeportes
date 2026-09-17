@@ -28,6 +28,7 @@ import {
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
 import { evaluateReadiness, type ReadinessResult } from "@/lib/product-readiness";
+import { AiContentStudio } from "@/components/studio/AiContentStudio";
 import logoVera from "@/assets/logo-vera.png";
 
 
@@ -522,39 +523,7 @@ function ReadinessChecklist({ r, titulo = "Listo para publicar" }: { r: Readines
   );
 }
 
-/* ===== Contenido IA (Fase 1: solo preparación visual, nada se genera) ===== */
-const CONTENIDO_IA_VARIANTES = [
-  { titulo: "Catálogo limpio", desc: "Producto recortado sobre fondo neutro." },
-  { titulo: "Editorial", desc: "Composición de estilo campaña." },
-  { titulo: "Modelo en uso", desc: "Producto usado en contexto real." },
-  { titulo: "Detalle / Textura", desc: "Primer plano de materiales y terminación." },
-] as const;
-
-function ContenidoIaSection() {
-  return (
-    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3">
-      <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-violet-600" />
-        <p className="text-[13px] font-bold text-neutral-900">Contenido IA</p>
-        <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-[12px] font-bold text-neutral-600">Preparación</span>
-      </div>
-      <p className="mt-1 text-[12px] text-neutral-600">
-        La foto original cargada es la fuente de verdad. En esta etapa no se genera ni se guarda ninguna imagen.
-      </p>
-      <div className="mt-2 grid gap-2 sm:grid-cols-2">
-        {CONTENIDO_IA_VARIANTES.map((c) => (
-          <div key={c.titulo} className="rounded-lg border border-neutral-200 bg-white px-3 py-2">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[13px] font-semibold text-neutral-800">{c.titulo}</span>
-              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[12px] font-bold text-neutral-500">No generado</span>
-            </div>
-            <p className="mt-0.5 text-[12px] text-neutral-500">{c.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+/* Contenido IA: implementado en @/components/studio/AiContentStudio (Fase 2). */
 
 
 /* ============ Product Studio (pipeline unificado) ============ */
@@ -1235,7 +1204,22 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
           </EditorSection>
 
           {/* C. Fotografías */}
-          <ContenidoIaSection />
+          <AiContentStudio
+            producto={{
+              imagen_url: v.url_imagen,
+              marca: v.marca,
+              modelo: v.modelo,
+              categoria: v.categoria,
+              color: v.color,
+              descripcion: v.descripcion,
+            }}
+            onUseAsSecondary={(url) =>
+              setV(s => ({
+                ...s,
+                imagenes_extra: [...s.imagenes_extra.split("|").map(x => x.trim()).filter(Boolean), url].join("|"),
+              }))
+            }
+          />
 
           <EditorSection letra="C" titulo="Fotografías">
             <ImagePicker label="Imagen principal" value={v.url_imagen} onChange={x => setV(s => ({ ...s, url_imagen: x }))} />
