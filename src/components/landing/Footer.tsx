@@ -1,5 +1,5 @@
 import { Facebook, Instagram, MapPin } from "lucide-react";
-import logoEmblem from "@/assets/logo-vera-emblema-tight.png.asset.json";
+import footerLogo from "@/assets/home/logo-footer-vera.png.asset.json";
 import { SITE } from "@/lib/site";
 
 export function Footer() {
@@ -7,20 +7,14 @@ export function Footer() {
     <footer className="border-t border-ink/70 bg-ink pb-28 pt-9 text-ink-foreground md:pb-9">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end xl:max-w-7xl xl:px-6">
         <div>
-          <div className="flex max-w-[620px] items-center gap-3 sm:gap-5">
-            <img
-              src={logoEmblem.url}
-              alt=""
-              className="h-[72px] w-[132px] shrink-0 object-contain sm:h-[96px] sm:w-[190px]"
-              width={630}
-              height={305}
-            />
-            <p className="whitespace-nowrap font-display text-[clamp(1.55rem,4.2vw,3.15rem)] font-black uppercase leading-none">
-              <span className="text-primary">Vera</span>{" "}
-              <span className="text-ink-foreground">Deportes</span>
-            </p>
-          </div>
-          <p className="mt-2 text-xs text-ink-foreground/65 sm:ml-[210px]">Movimiento que te acompaña.</p>
+          <img
+            src={footerLogo.url}
+            alt="Vera Deportes"
+            className="h-auto w-full max-w-[485px] object-contain object-left"
+            width={485}
+            height={146}
+          />
+          <p className="mt-1 text-xs text-ink-foreground/65 sm:ml-[145px]">Movimiento que te acompaña.</p>
         </div>
         <div className="flex flex-col gap-4 sm:items-end">
           <a href={SITE.maps} target="_blank" rel="noopener" className="flex items-center gap-2 text-sm text-ink-foreground/80 hover:text-primary">
