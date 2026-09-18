@@ -86,3 +86,12 @@ Admin (/admin-cargas)
    ├─ Completa marca/modelo/descripción
    └─ "Publicar en landing" → Productos (visible en la web pública)
 ```
+
+## Opción B — Procesamiento y mejora de imágenes
+
+Se agregó la mesa de trabajo "Mejorar fotos" dentro de la ficha de producto en
+`/admin-cargas` (antes de "Fotografías"), con mejora determinística en el navegador,
+comparador antes/después, aprobación como principal o secundaria, descarte con borrado
+del archivo y creación de versión Instagram 4:5. Persistencia y trazabilidad en la tabla
+`product_assets` (migración aditiva, RLS admin). Las variantes IA ahora exigen una
+imagen base APROBADA. Detalle completo y limitaciones: `docs/PROCESAMIENTO_IMAGENES.md`.
