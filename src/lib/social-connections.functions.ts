@@ -12,10 +12,19 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * `social_publications` sigue sin tokens.
  */
 
+export interface InstagramConfigItem {
+  name: string;
+  label: string;
+  state: "ok" | "missing" | "invalid";
+  detail: string;
+}
+
 export interface InstagramConnectionStatus {
   /** Faltan credenciales de la app de Meta. */
   configured: boolean;
   missing: string[];
+  /** Detalle exacto por variable de entorno. */
+  configItems: InstagramConfigItem[];
   connected: boolean;
   username: string | null;
   externalAccountId: string | null;
@@ -63,6 +72,7 @@ export const getInstagramConnectionStatus = createServerFn({ method: "POST" })
     return {
       configured: cfg.configured,
       missing: cfg.missing,
+      configItems: cfg.items,
       connected: !!row,
       username: row?.username ?? null,
       externalAccountId: row?.external_account_id ?? null,

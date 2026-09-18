@@ -29,10 +29,24 @@ export interface InstagramConfig {
   redirectUri: string;
 }
 
+export type ConfigItemState = "ok" | "missing" | "invalid";
+
+export interface ConfigItem {
+  /** Nombre exacto de la variable de entorno. */
+  name: string;
+  /** Etiqueta legible para el panel. */
+  label: string;
+  state: ConfigItemState;
+  /** Qué hay que corregir (nunca incluye el valor del secreto). */
+  detail: string;
+}
+
 export interface ConfigCheck {
   configured: boolean;
-  /** Nombres exactos de lo que falta configurar. */
+  /** Nombres exactos de lo que falta o está inválido. */
   missing: string[];
+  /** Detalle por variable, para mostrar en la UI. */
+  items: ConfigItem[];
   redirectUri: string | null;
 }
 
@@ -44,28 +58,73 @@ export function resolveRedirectUri(origin?: string | null): string | null {
   return null;
 }
 
+function checkAppId(raw: string | undefined): ConfigItem {
+  const base = { name: "META_APP_ID", label: "ID de la app de Meta" };
+  const v = (raw ?? "").trim();
+  if (!v) return { ...base, state: "missing", detail: "Falta cargarlo en los ajustes del proyecto." };
+  if (!/^\d{8,25}$/.test(v))
+    return { ...base, state: "invalid", detail: "Debe ser el número de ID de la app (solo dígitos, 8 a 25)." };
+  return { ...base, state: "ok", detail: "Cargado." };
+}
+
+function checkAppSecret(raw: string | undefined): ConfigItem {
+  const base = { name: "META_APP_SECRET", label: "Clave secreta de la app de Meta" };
+  const v = (raw ?? "").trim();
+  if (!v) return { ...base, state: "missing", detail: "Falta cargarla en los ajustes del proyecto." };
+  if (v.length < 20 || /\s/.test(v))
+    return { ...base, state: "invalid", detail: "Valor demasiado corto o con espacios: copiala completa desde Meta." };
+  return { ...base, state: "ok", detail: "Cargada." };
+}
+
+function checkRedirect(uri: string | null): ConfigItem {
+  const base = { name: "META_REDIRECT_URI", label: "URL de retorno (redirect URI)" };
+  if (!uri)
+    return {
+      ...base,
+      state: "missing",
+      detail: "No se pudo determinar la URL de retorno; cargá META_REDIRECT_URI.",
+    };
+  let url: URL;
+  try {
+    url = new URL(uri);
+  } catch {
+    return { ...base, state: "invalid", detail: `No es una URL válida: ${uri}` };
+  }
+  if (url.protocol !== "https:")
+    return { ...base, state: "invalid", detail: "Meta exige que empiece con https://" };
+  if (url.pathname !== "/api/public/instagram/callback")
+    return {
+      ...base,
+      state: "invalid",
+      detail: "Debe terminar en /api/public/instagram/callback",
+    };
+  return { ...base, state: "ok", detail: uri };
+}
+
 export function checkInstagramConfig(origin?: string | null): ConfigCheck {
-  const appId = process.env["META_APP_ID"];
-  const appSecret = process.env["META_APP_SECRET"];
   const redirectUri = resolveRedirectUri(origin);
-  const missing: string[] = [];
-  if (!appId) missing.push("META_APP_ID");
-  if (!appSecret) missing.push("META_APP_SECRET");
-  if (!redirectUri) missing.push("META_REDIRECT_URI");
-  return { configured: missing.length === 0, missing, redirectUri };
+  const items = [
+    checkAppId(process.env["META_APP_ID"]),
+    checkAppSecret(process.env["META_APP_SECRET"]),
+    checkRedirect(redirectUri),
+  ];
+  const missing = items.filter((i) => i.state !== "ok").map((i) => i.name);
+  return { configured: missing.length === 0, missing, items, redirectUri };
 }
 
 /** Devuelve la config completa o lanza un error explícito con lo que falta. */
 export function requireInstagramConfig(origin?: string | null): InstagramConfig {
   const check = checkInstagramConfig(origin);
   if (!check.configured) {
-    throw new Error(
-      `Instagram no está configurado. Falta cargar en el proyecto: ${check.missing.join(", ")}.`,
-    );
+    const detalle = check.items
+      .filter((i) => i.state !== "ok")
+      .map((i) => `${i.name}: ${i.detail}`)
+      .join(" | ");
+    throw new Error(`Instagram no está configurado. ${detalle}`);
   }
   return {
-    appId: process.env["META_APP_ID"]!,
-    appSecret: process.env["META_APP_SECRET"]!,
+    appId: process.env["META_APP_ID"]!.trim(),
+    appSecret: process.env["META_APP_SECRET"]!.trim(),
     redirectUri: check.redirectUri!,
   };
 }
