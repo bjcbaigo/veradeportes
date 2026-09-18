@@ -78,7 +78,7 @@ export function HomeHero() {
                   <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-ink-foreground sm:text-base">
                     {slide.eyebrow}
                   </p>
-                  <h1 className="mt-1 max-w-[580px] font-display text-[40px] font-black uppercase leading-none text-primary sm:text-6xl lg:text-7xl">
+                  <h1 className="mt-1 max-w-[580px] font-display text-[34px] font-black uppercase leading-none text-primary sm:text-5xl lg:text-[58px]">
                     {slide.title}
                   </h1>
                   <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-ink-foreground/95 sm:text-base">
