@@ -4,4 +4,4 @@
 - [x] Buscador debajo de portada y categorías visuales adaptables
 - [x] Bloques comerciales, productos, beneficios y marcas jerarquizados
 - [x] Cierre visual del local con ubicación y WhatsApp
-- [ ] Responsive, navegación, carrito, ficha, WhatsApp y carga de imágenes verificados
+- [x] Responsive, navegación, carrito, ficha, WhatsApp y carga de imágenes verificados

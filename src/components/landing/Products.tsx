@@ -112,12 +112,13 @@ export function Products({ limit }: { limit?: number }) {
   }
 
   return (
-    <section ref={sectionRef} id="productos" className="bg-white py-3 lg:py-6">
+    <section ref={sectionRef} id="productos" className="bg-background py-8 sm:py-12">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="mb-2 flex items-center justify-between lg:mb-4">
-          <h2 className="text-[17px] font-black uppercase tracking-normal text-foreground lg:text-xl">
-            Productos
-          </h2>
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Todo en un lugar</p>
+            <h2 className="mt-1 text-2xl font-black uppercase text-foreground sm:text-3xl">Nuestros productos</h2>
+          </div>
           <button
             type="button"
             onClick={handleShowAllProducts}
