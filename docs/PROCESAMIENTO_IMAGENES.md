@@ -35,6 +35,15 @@ catálogo e Instagram, sin perder nunca la foto original.
 Fondo del borde: conservar / blanco / gris `#e5e7eb`. Ajustes acotados:
 brillo ±20, contraste ±20, nitidez 0–30.
 
+## Comparación antes/después
+
+El comparador no usa la foto original cruda contra la procesada. Primero genera
+un **antes normalizado** con el mismo preset, relación, encuadre `contain`, fondo
+y tamaño final que la imagen procesada; después compara esa referencia contra la
+versión con brillo/contraste/nitidez aplicados. Así se evita una comparación
+engañosa por diferencias de escala o encuadre, y no se modifica ni se guarda la
+ORIGINAL.
+
 ## Limitación explícita (no simulada)
 
 El runtime del servidor no tiene librerías de imagen, así que el procesamiento

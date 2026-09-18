@@ -71,8 +71,9 @@ export function ImageWorkbench({
   const [nitidez, setNitidez] = useState(DEFAULT_OPTIONS.nitidez);
   const [comparar, setComparar] = useState(false);
   const [corte, setCorte] = useState(50);
-  const [ultima, setUltima] = useState<{ asset: ProductAsset; procesada: ProcessedImage; base: string } | null>(null);
+  const [ultima, setUltima] = useState<{ asset: ProductAsset; procesada: ProcessedImage } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const ultimaProcesadaRef = useRef<ProcessedImage | null>(null);
 
   const visibles = useMemo(() => assets.filter(a => a.estado !== "DESCARTADA"), [assets]);
   const aprobadas = useMemo(() => visibles.filter(a => a.estado === "APROBADA"), [visibles]);
@@ -90,7 +91,25 @@ export function ImageWorkbench({
     }
   }
 
+  function revocarPreview(procesada: ProcessedImage | null) {
+    if (!procesada) return;
+    URL.revokeObjectURL(procesada.previewUrl);
+    URL.revokeObjectURL(procesada.beforePreviewUrl);
+  }
+
+  function limpiarUltima() {
+    revocarPreview(ultimaProcesadaRef.current);
+    ultimaProcesadaRef.current = null;
+    setUltima(null);
+    setComparar(false);
+  }
+
   useEffect(() => { void recargar(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [sourceRef]);
+
+  useEffect(() => () => {
+    revocarPreview(ultimaProcesadaRef.current);
+    ultimaProcesadaRef.current = null;
+  }, []);
 
   useEffect(() => {
     onApprovedChange?.(principal?.public_url ?? aprobadas[0]?.public_url ?? null);
@@ -100,33 +119,37 @@ export function ImageWorkbench({
   /** Procesa desde la original (o desde una foto nueva del celular) y guarda la procesada. */
   async function procesar(desde: File | string, rol: "PRINCIPAL" | "SECUNDARIA" | "CATALOGO" | "INSTAGRAM" = "CATALOGO") {
     setTrabajando("procesar");
+    let procesadaNueva: ProcessedImage | null = null;
+    let transferidaAEstado = false;
     try {
       let parentId: string | undefined;
-      let base = typeof desde === "string" ? desde : "";
       if (typeof desde === "string") {
         const original = await registerFn({ data: { source_ref: sourceRef, source_sku: sourceSku, url: desde } });
         parentId = original.id;
       }
-      const procesada = await processImage(desde, { preset, fondo, brillo, contraste, nitidez });
-      if (!base) base = procesada.previewUrl;
+      procesadaNueva = await processImage(desde, { preset, fondo, brillo, contraste, nitidez });
       const asset = await saveFn({
         data: {
           source_ref: sourceRef,
           source_sku: sourceSku,
           parent_asset_id: parentId,
           rol,
-          mime: procesada.mime,
-          dataBase64: procesada.dataBase64,
-          width: procesada.width,
-          height: procesada.height,
-          transform: procesada.transform,
+          mime: procesadaNueva.mime,
+          dataBase64: procesadaNueva.dataBase64,
+          width: procesadaNueva.width,
+          height: procesadaNueva.height,
+          transform: procesadaNueva.transform,
         },
       });
-      setUltima({ asset, procesada, base });
+      revocarPreview(ultimaProcesadaRef.current);
+      ultimaProcesadaRef.current = procesadaNueva;
+      transferidaAEstado = true;
+      setUltima({ asset, procesada: procesadaNueva });
       setComparar(true);
       await recargar();
       toast.success("Imagen procesada. Compará y aprobá si te convence.");
     } catch (e) {
+      if (!transferidaAEstado) revocarPreview(procesadaNueva);
       toast.error(`No se pudo procesar: ${(e as Error).message}`);
     } finally {
       setTrabajando(null);
@@ -152,7 +175,7 @@ export function ImageWorkbench({
     setTrabajando(asset.id);
     try {
       await discardFn({ data: { id: asset.id } });
-      if (ultima?.asset.id === asset.id) { setUltima(null); setComparar(false); }
+      if (ultima?.asset.id === asset.id) limpiarUltima();
       await recargar();
       toast.success("Procesada descartada y archivo eliminado.");
     } catch (e) {
@@ -168,8 +191,9 @@ export function ImageWorkbench({
       return;
     }
     setTrabajando(asset.id);
+    let procesada: ProcessedImage | null = null;
     try {
-      const procesada = await processImage(asset.public_url, {
+      procesada = await processImage(asset.public_url, {
         preset: "instagram_45", fondo, brillo: 0, contraste: 0, nitidez,
       });
       await saveFn({
@@ -184,6 +208,7 @@ export function ImageWorkbench({
     } catch (e) {
       toast.error(`No se pudo crear la versión Instagram: ${(e as Error).message}`);
     } finally {
+      revocarPreview(procesada);
       setTrabajando(null);
     }
   }
@@ -256,17 +281,27 @@ export function ImageWorkbench({
       {/* Comparador */}
       {ultima && comparar && (
         <div className="mt-3">
-          <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
-            <img src={ultima.base} alt="Antes" className="block w-full" />
-            <div className="absolute inset-0 overflow-hidden" style={{ width: `${corte}%` }}>
-              <img src={ultima.procesada.previewUrl} alt="Después" className="block w-full"
-                style={{ width: `${100 / (corte / 100)}%`, maxWidth: "none" }} />
-            </div>
+          <div
+            className="relative w-full overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100"
+            style={{ aspectRatio: `${ultima.procesada.width} / ${ultima.procesada.height}` }}
+          >
+            <img src={ultima.procesada.beforePreviewUrl} alt="Antes" className="absolute inset-0 h-full w-full object-contain" />
+            <img
+              src={ultima.procesada.previewUrl}
+              alt="Después"
+              className="absolute inset-0 h-full w-full object-contain"
+              style={{ clipPath: `inset(0 ${100 - corte}% 0 0)` }}
+            />
+            <div
+              className="absolute bottom-0 top-0 w-0.5 bg-[#FF6200] shadow-[0_0_0_1px_rgba(255,255,255,0.85)]"
+              style={{ left: `${corte}%` }}
+              aria-hidden="true"
+            />
             <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-bold text-white">Después</span>
             <span className="absolute right-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-bold text-white">Antes</span>
           </div>
           <input type="range" min={0} max={100} value={corte} onChange={e => setCorte(Number(e.target.value))}
-            className="mt-2 w-full" aria-label="Comparar antes y después" />
+            className="mt-2 h-10 w-full" aria-label="Comparar antes y después" />
           <p className="text-[12px] text-neutral-600">
             {ultima.procesada.width}×{ultima.procesada.height} px · {formatBytes(ultima.procesada.bytes)}
           </p>
