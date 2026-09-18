@@ -251,6 +251,10 @@ export async function publishImage(args: {
   const creationId = container?.id as string | undefined;
   if (!creationId) throw new Error("Instagram no devolvió el contenedor de la publicación.");
 
+  // Espera activa: Instagram procesa la media de forma asíncrona. Publicar
+  // inmediatamente devuelve "Media ID is not available".
+  await waitForContainerReady(creationId, args.accessToken);
+
   const publish = new URLSearchParams({ creation_id: creationId, access_token: args.accessToken });
   const posted = await graphJson(`${GRAPH}/${GRAPH_VERSION}/${args.igUserId}/media_publish`, {
     method: "POST",
