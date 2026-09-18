@@ -95,3 +95,12 @@ comparador antes/después, aprobación como principal o secundaria, descarte con
 del archivo y creación de versión Instagram 4:5. Persistencia y trazabilidad en la tabla
 `product_assets` (migración aditiva, RLS admin). Las variantes IA ahora exigen una
 imagen base APROBADA. Detalle completo y limitaciones: `docs/PROCESAMIENTO_IMAGENES.md`.
+
+
+## Registro de implementación — 18/09/2026
+
+Implementación integral del flujo de procesamiento de imágenes aplicada sobre Vera Sports Hub y sincronizada con GitHub.
+
+Incluye: tabla aditiva `product_assets` con RLS admin y trazabilidad; motor determinístico de procesamiento en navegador; presets Catálogo 1:1, Instagram 4:5 e Instagram 1:1; comparador antes/después; aprobación como principal/secundaria; descarte con limpieza de storage; integración de imagen aprobada como única base habilitante para Contenido IA; documentación técnica en `docs/PROCESAMIENTO_IMAGENES.md`.
+
+Validaciones realizadas: typecheck sin errores, smoke de `/`, `/tienda`, `/cargar` y `/admin-cargas`, y verificación de tabla `product_assets` con RLS y políticas activas. La arquitectura de publicación de Instagram no fue modificada.
