@@ -55,6 +55,8 @@ export interface ProcessedImage {
   blob: Blob;
   dataBase64: string;
   mime: "image/jpeg";
+  /** Preview temporal del original normalizado al mismo preset/ratio/contain/fondo. No se persiste. */
+  beforePreviewUrl: string;
   previewUrl: string;
   width: number;
   height: number;
@@ -124,6 +126,12 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
+function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("No se pudo comprimir la imagen"))), "image/jpeg", 0.86);
+  });
+}
+
 /**
  * Procesa una imagen (archivo local o URL pública) aplicando encuadre por preset,
  * fondo opcional y ajustes moderados. Devuelve el resultado listo para subir.
@@ -165,6 +173,10 @@ export async function processImage(
   ctx.drawImage(bitmap, Math.round((targetW - dw) / 2), Math.round((targetH - dh) / 2), dw, dh);
   bitmap.close?.();
 
+  // Referencia "antes" ya normalizada: mismo preset, ratio, contain, fondo y tamaño
+  // que la salida final. Así el comparador mide solo brillo/contraste/nitidez, no escala.
+  const beforeBlob = await canvasToJpegBlob(canvas);
+
   if (opts.brillo !== 0 || opts.contraste !== 0 || opts.nitidez > 0) {
     const img = ctx.getImageData(0, 0, targetW, targetH);
     aplicarAjustes(img.data, opts.brillo, opts.contraste);
@@ -172,14 +184,13 @@ export async function processImage(
     ctx.putImageData(img, 0, 0);
   }
 
-  const blob: Blob = await new Promise((resolve, reject) => {
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("No se pudo comprimir la imagen"))), "image/jpeg", 0.86);
-  });
+  const blob = await canvasToJpegBlob(canvas);
 
   return {
     blob,
     dataBase64: await blobToBase64(blob),
     mime: "image/jpeg",
+    beforePreviewUrl: URL.createObjectURL(beforeBlob),
     previewUrl: URL.createObjectURL(blob),
     width: targetW,
     height: targetH,
