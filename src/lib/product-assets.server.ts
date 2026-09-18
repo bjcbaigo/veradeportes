@@ -25,6 +25,8 @@ export const ASSET_ROLES = [
 ] as const;
 export type AssetRol = (typeof ASSET_ROLES)[number];
 
+export type TransformMeta = Record<string, string | number | boolean | null>;
+
 export interface ProductAsset {
   id: string;
   source_ref: string;
@@ -35,7 +37,7 @@ export interface ProductAsset {
   bucket: string | null;
   path: string | null;
   public_url: string;
-  transform: Record<string, unknown>;
+  transform: TransformMeta;
   width: number | null;
   height: number | null;
   bytes: number | null;

@@ -11,7 +11,7 @@ import { ASSET_ROLES } from "./product-assets.server";
  * APROBADA / DESCARTADA: solo cambian el estado; descartar borra el archivo.
  */
 
-export type { ProductAsset, AssetEstado, AssetRol } from "./product-assets.server";
+export type { ProductAsset, AssetEstado, AssetRol, TransformMeta } from "./product-assets.server";
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data: isAdmin } = await context.supabase.rpc("has_role", {
@@ -38,7 +38,7 @@ const SaveProcessedInput = z.object({
   dataBase64: z.string().min(500).max(12_000_000),
   width: z.number().int().positive().max(6000),
   height: z.number().int().positive().max(6000),
-  transform: z.record(z.string(), z.unknown()).default({}),
+  transform: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).default({}),
 });
 
 const ApproveInput = z.object({
@@ -92,7 +92,7 @@ export const registerOriginalAsset = createServerFn({ method: "POST" })
         estado: "ORIGINAL",
         rol: "PRINCIPAL",
         public_url: data.url,
-        transform: { tipo: "origen", inmutable: true },
+        transform: { tipo: "origen", inmutable: true } as unknown as never,
         created_by: context.userId,
       })
       .select(ASSET_SELECT)
@@ -111,7 +111,7 @@ export const saveProcessedAsset = createServerFn({ method: "POST" })
       "./product-assets.server"
     );
 
-    const preset = String((data.transform as Record<string, unknown>)["preset"] ?? "procesada");
+    const preset = String(data.transform["preset"] ?? "procesada");
     const { path, publicUrl, bytes } = await uploadProcessed(
       data.source_ref,
       data.dataBase64,
@@ -130,7 +130,7 @@ export const saveProcessedAsset = createServerFn({ method: "POST" })
         bucket: ASSETS_BUCKET,
         path,
         public_url: publicUrl,
-        transform: data.transform,
+        transform: data.transform as unknown as never,
         width: data.width,
         height: data.height,
         bytes,
