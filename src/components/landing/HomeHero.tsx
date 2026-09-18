@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, CreditCard, RefreshCcw, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 import heroIndumentaria from "@/assets/home/hero-indumentaria.png.asset.json";
 import heroZapatilla from "@/assets/home/hero-zapatilla.png.asset.json";
@@ -8,18 +8,18 @@ import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 const SLIDES = [
   {
     image: heroIndumentaria.url,
-    eyebrow: "Movimiento y estilo",
-    title: "Entrená cómoda. Vestite como vos.",
-    subtitle: "Indumentaria deportiva para moverte con libertad todos los días.",
-    cta: "Ver indumentaria",
+    eyebrow: "Tu estilo,",
+    title: "En movimiento",
+    subtitle: "Indumentaria, zapatillas y accesorios para llegar más lejos.",
+    cta: "Ver colección",
     href: "/tienda#productos",
     filter: "Indumentaria" as CategoryKey,
     position: "object-[58%_center] sm:object-center",
   },
   {
     image: heroZapatilla.url,
-    eyebrow: "Tu próximo par",
-    title: "Pisá fuerte. Llegá más lejos.",
+    eyebrow: "Elegí",
+    title: "Tu próximo par",
     subtitle: "Zapatillas urbanas y running seleccionadas para cada ritmo.",
     cta: "Ver zapatillas",
     href: "/tienda#productos",
@@ -28,8 +28,8 @@ const SLIDES = [
   },
   {
     image: interiorLocal.url,
-    eyebrow: "Vera Deportes",
-    title: "Tu pasión se vive acá.",
+    eyebrow: "Viví la experiencia",
+    title: "Vera Deportes",
     subtitle: "Productos destacados y atención cercana en nuestro local.",
     cta: "Ver novedades",
     href: "/tienda#productos",
@@ -53,7 +53,7 @@ export function HomeHero() {
 
   return (
     <section aria-label="Novedades de Vera Deportes" className="relative overflow-hidden bg-ink">
-      <div className="relative mx-auto h-[430px] max-w-[1600px] sm:h-[520px] lg:h-[610px]">
+      <div className="relative mx-auto h-[430px] max-w-[1600px] sm:h-[500px] lg:h-[570px]">
         {SLIDES.map((slide, index) => (
           <article
             key={slide.eyebrow}
@@ -70,44 +70,66 @@ export function HomeHero() {
               fetchPriority={index === 0 ? "high" : "auto"}
               className={`h-full w-full object-cover ${slide.position}`}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/70 to-transparent sm:via-ink/50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/45 to-transparent sm:via-ink/25" />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink/65 to-transparent sm:hidden" />
             <div className="absolute inset-0 flex items-end sm:items-center">
-              <div className="mx-auto w-full max-w-7xl px-5 pb-20 sm:px-8 sm:pb-0 xl:px-12">
-                <div className="max-w-[620px] text-ink-foreground">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-primary sm:text-sm">
+              <div className="mx-auto w-full max-w-7xl px-5 pb-24 sm:px-8 sm:pb-14 xl:px-12">
+                <div className="max-w-[560px] text-ink-foreground">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-ink-foreground sm:text-base">
                     {slide.eyebrow}
                   </p>
-                  <h1 className="mt-2 max-w-[580px] font-display text-[38px] font-black uppercase leading-[0.98] sm:text-6xl lg:text-7xl">
+                  <h1 className="mt-1 max-w-[580px] font-display text-[34px] font-black uppercase leading-none text-primary sm:text-5xl lg:text-[58px]">
                     {slide.title}
                   </h1>
-                  <p className="mt-4 max-w-md text-sm font-medium leading-relaxed text-ink-foreground/90 sm:text-lg">
+                  <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-ink-foreground/95 sm:text-base">
                     {slide.subtitle}
                   </p>
-                  <a
-                    href={slide.href}
-                    onClick={() => emitCategory(slide.filter)}
-                    className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-extrabold text-primary-foreground shadow-lg transition hover:brightness-105 active:scale-[0.98]"
-                  >
-                    {slide.cta}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <a
+                      href={slide.href}
+                      onClick={() => emitCategory(slide.filter)}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-extrabold text-primary-foreground shadow-lg transition hover:brightness-105 active:scale-[0.98]"
+                    >
+                      {slide.cta}
+                      <ArrowRight className="h-4 w-4" />
+                    </a>
+                    <a
+                      href="/ofertas"
+                      className="inline-flex h-11 items-center justify-center rounded-full border border-ink-foreground/70 bg-ink/25 px-5 text-sm font-extrabold text-ink-foreground backdrop-blur-sm transition hover:bg-ink/55"
+                    >
+                      Ver ofertas
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </article>
         ))}
 
-        <div className="absolute inset-x-0 bottom-5 z-20 mx-auto grid max-w-7xl grid-cols-[44px_1fr_44px] items-center gap-3 px-4 sm:bottom-8 sm:px-8 xl:px-12">
-          <button
-            type="button"
-            onClick={() => move(-1)}
-            aria-label="Imagen anterior"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink-foreground/40 bg-ink/45 text-ink-foreground backdrop-blur transition hover:bg-ink/70"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <div className="flex justify-center gap-2" role="tablist" aria-label="Elegir imagen">
+        <button
+          type="button"
+          onClick={() => move(-1)}
+          aria-label="Imagen anterior"
+          className="absolute left-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/45 bg-ink/40 text-ink-foreground backdrop-blur transition hover:bg-ink/70 sm:left-6"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => move(1)}
+          aria-label="Imagen siguiente"
+          className="absolute right-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/45 bg-ink/40 text-ink-foreground backdrop-blur transition hover:bg-ink/70 sm:right-6"
+        >
+          <ArrowRight className="h-5 w-5" />
+        </button>
+
+        <div className="absolute inset-x-0 bottom-5 z-20 mx-auto max-w-7xl px-5 sm:px-8 xl:px-12">
+          <div className="hidden items-center gap-8 text-ink-foreground sm:flex">
+            <div className="flex items-center gap-2"><Truck className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Envíos<br /><span className="font-normal text-ink-foreground/75">a todo el país</span></span></div>
+            <div className="flex items-center gap-2"><CreditCard className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Pagos<br /><span className="font-normal text-ink-foreground/75">seguros</span></span></div>
+            <div className="flex items-center gap-2"><RefreshCcw className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Cambios<br /><span className="font-normal text-ink-foreground/75">sin complicaciones</span></span></div>
+          </div>
+          <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 justify-center gap-2" role="tablist" aria-label="Elegir imagen">
             {SLIDES.map((slide, index) => (
               <button
                 key={slide.eyebrow}
@@ -120,14 +142,6 @@ export function HomeHero() {
               />
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => move(1)}
-            aria-label="Imagen siguiente"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink-foreground/40 bg-ink/45 text-ink-foreground backdrop-blur transition hover:bg-ink/70"
-          >
-            <ArrowRight className="h-5 w-5" />
-          </button>
         </div>
       </div>
     </section>

@@ -1,9 +1,10 @@
-import { Facebook, Instagram, Menu, ShoppingCart, X } from "lucide-react";
+import { Facebook, Instagram, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import logo from "@/assets/logo-vera.png";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
+import { openSearch } from "@/lib/search";
 import { SITE, waLink } from "@/lib/site";
 
 const NAV = [
@@ -47,7 +48,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[44px_1fr_auto] items-center px-4 xl:max-w-7xl xl:px-6">
+      <div className="mx-auto grid h-[72px] max-w-7xl grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-2 px-4 md:grid-cols-[minmax(210px,1fr)_auto_minmax(150px,1fr)] md:gap-6 xl:px-6">
         <button
           type="button"
           className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
@@ -58,23 +59,20 @@ export function Header() {
         >
           <Menu className="h-5 w-5" strokeWidth={2.25} />
         </button>
-        <span className="hidden md:inline-flex h-10 w-10" />
-
-        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-1.5">
+        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-2 md:mx-0 md:justify-self-start">
           <img
             src={logo}
             alt="Vera Deportes"
-            className="h-10 w-auto shrink-0 min-[360px]:h-11"
+            className="h-12 w-auto shrink-0 md:h-14"
             width={160}
             height={160}
           />
-          <span className="font-display text-sm font-black leading-none text-foreground">
+          <span className="hidden font-display text-[15px] font-black leading-none text-foreground min-[370px]:inline md:text-lg">
             <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>
 
-        <div className="flex items-center justify-end gap-4 xl:gap-6">
-          <nav className="hidden items-center gap-5 text-sm font-semibold md:flex xl:gap-7">
+        <nav className="hidden items-center justify-center gap-5 text-xs font-bold md:flex lg:gap-7">
             {NAV.slice(1, 5).map((i) => (
               <a
                 key={i.href}
@@ -84,7 +82,23 @@ export function Header() {
                 {i.label}
               </a>
             ))}
-          </nav>
+        </nav>
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => openSearch()}
+            aria-label="Buscar productos"
+            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:inline-flex"
+          >
+            <Search className="h-[18px] w-[18px]" strokeWidth={2.2} />
+          </button>
+          <a
+            href="/registro?intent=cuenta&returnTo=%2Ftienda"
+            aria-label="Mi cuenta"
+            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border transition hover:bg-secondary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:inline-flex"
+          >
+            <UserRound className="h-[18px] w-[18px]" strokeWidth={2.2} />
+          </a>
           <a
             href="/carrito"
             aria-label="Carrito"
