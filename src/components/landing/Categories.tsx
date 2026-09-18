@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import zapatillas from "@/assets/p-zapatillas-1.jpg";
-import indumentaria from "@/assets/p-remera-1.jpg";
+import indumentaria from "@/assets/home/hero-indumentaria.png.asset.json";
 import ofertas from "@/assets/promo.jpg";
 import accesorios from "@/assets/p-acc-1.jpg";
 import { emitCategory, type CategoryKey } from "@/lib/category-filter";
@@ -9,11 +9,12 @@ const CATS: {
   label: CategoryKey | "Calzado";
   filter: CategoryKey;
   image: string;
+  position?: string;
 }[] = [
-  { label: "Calzado", filter: "Zapatillas", image: zapatillas },
-  { label: "Indumentaria", filter: "Indumentaria", image: indumentaria },
+  { label: "Calzado", filter: "Zapatillas", image: zapatillas, position: "object-center" },
+  { label: "Indumentaria", filter: "Indumentaria", image: indumentaria.url, position: "object-[58%_center]" },
   { label: "Ofertas", filter: "Ofertas", image: ofertas },
-  { label: "Accesorios", filter: "Accesorios", image: accesorios },
+  { label: "Accesorios", filter: "Accesorios", image: accesorios, position: "object-center" },
 ];
 
 export function Categories() {
@@ -27,14 +28,14 @@ export function Categories() {
           </div>
         </div>
         <div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-5">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-4">
             {CATS.map((c) => {
               return (
                 <button
                   key={c.label}
                   type="button"
                   onClick={() => emitCategory(c.filter)}
-                  className="group relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg bg-ink text-left shadow-md focus:outline-none focus:ring-2 focus:ring-primary/60 sm:aspect-[4/3]"
+                  className="group relative aspect-[5/4] min-w-0 overflow-hidden rounded-md bg-ink text-left shadow-md ring-1 ring-ink/10 transition hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/60 sm:aspect-[4/3] lg:aspect-[7/5]"
                 >
                   <img
                     src={c.image}
@@ -42,12 +43,15 @@ export function Categories() {
                     width={500}
                     height={500}
                     loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    className={`absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 ${c.position ?? "object-center"}`}
                   />
-                  <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/15 to-transparent" />
-                  <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-4 text-ink-foreground">
-                    <span className="text-base font-black uppercase sm:text-lg">{c.label}</span>
-                    <ArrowRight className="h-5 w-5 shrink-0 text-primary" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/5 to-transparent" />
+                  <span className="absolute inset-x-0 bottom-0 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 p-3 text-ink-foreground sm:p-4">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-black sm:text-base">{c.label}</span>
+                      <span className="mt-0.5 block text-[10px] font-extrabold text-primary sm:text-xs">Ver todo</span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-primary sm:h-5 sm:w-5" />
                   </span>
                 </button>
               );
