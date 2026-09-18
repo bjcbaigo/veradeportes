@@ -18,12 +18,13 @@ export function FeaturedOffers() {
   }
 
   return (
-    <section id="ofertas" className="bg-white py-2 lg:py-4">
+    <section id="ofertas" className="bg-secondary py-8 sm:py-12">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="mb-3 flex items-center justify-between lg:mb-4">
-          <h2 className="text-[17px] font-black uppercase tracking-normal text-foreground lg:text-xl">
-            Destacados
-          </h2>
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Lo más buscado</p>
+            <h2 className="mt-1 text-2xl font-black uppercase text-foreground sm:text-3xl">Productos destacados</h2>
+          </div>
           <a
             href="/ofertas"
             className="-mr-1 inline-flex min-h-[40px] items-center gap-1 px-1 text-xs font-bold text-primary lg:text-sm"

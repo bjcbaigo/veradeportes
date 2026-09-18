@@ -1,8 +1,7 @@
-# Roadmap — Plantilla visual Zapatillas
+# Roadmap — Rediseño Home Desktop y Mobile
 
-- [x] Selector Automática / Zapatillas / Neutra con detección por categoría
-- [x] Encuadre uniforme en catálogo e Instagram sin recorte ni deformación
-- [x] Comparador normalizado y metadata de transformación
-- [x] Ayudas y limitación explícita de sombra/fondo
-- [x] Documentación actualizada
-- [x] Typecheck, smoke y verificación visual con una zapatilla real
+- [x] Portada rotativa con tres imágenes aprobadas y controles manuales/automáticos
+- [x] Buscador debajo de portada y categorías visuales adaptables
+- [x] Bloques comerciales, productos, beneficios y marcas jerarquizados
+- [x] Cierre visual del local con ubicación y WhatsApp
+- [x] Responsive, navegación, carrito, ficha, WhatsApp y carga de imágenes verificados
