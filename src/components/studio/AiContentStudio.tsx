@@ -60,9 +60,12 @@ function fmt(iso?: string) {
 export function AiContentStudio({
   producto,
   onUseAsSecondary,
+  baseAprobada,
 }: {
   producto: AiContentProducto;
   onUseAsSecondary: (url: string) => void;
+  /** URL de la imagen base APROBADA en la mesa de trabajo. Sin esto no se genera. */
+  baseAprobada?: string | null;
 }) {
   const generate = useServerFn(generateProductContentDraft);
   const removeDraft = useServerFn(deleteProductContentDraft);
@@ -71,7 +74,9 @@ export function AiContentStudio({
   const [confirmar, setConfirmar] = useState<ContentVariantId | null>(null);
   const [ocupado, setOcupado] = useState<ContentVariantId | null>(null);
 
-  const sinOriginal = !producto.imagen_url?.trim();
+  const base = (baseAprobada ?? "").trim();
+  const sinOriginal = !base && !producto.imagen_url?.trim();
+  const sinBase = !base;
 
   async function run(variant: ContentVariantId) {
     const anterior = drafts[variant];
