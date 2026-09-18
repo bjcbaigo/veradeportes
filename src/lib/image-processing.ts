@@ -59,7 +59,7 @@ export interface ProcessedImage {
   width: number;
   height: number;
   bytes: number;
-  transform: Record<string, unknown>;
+  transform: Record<string, string | number | boolean | null>;
 }
 
 function clamp(n: number, min: number, max: number) {
