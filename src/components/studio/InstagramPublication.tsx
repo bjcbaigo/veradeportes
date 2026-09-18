@@ -280,8 +280,24 @@ export function InstagramPublication({
               <>
                 <p className="text-[12px] font-semibold text-red-700">Instagram no configurado</p>
                 <p className="text-[12px] text-neutral-600">
-                  Falta cargar en el proyecto: {conn?.missing?.join(", ") || "credenciales de la app de Meta"}.
+                  Conectar Instagram queda bloqueado hasta completar estos datos de la app de Meta:
                 </p>
+                <ul className="mt-1 space-y-1">
+                  {(conn?.configItems ?? []).map((it) => (
+                    <li key={it.name} className="text-[12px] leading-snug">
+                      <span
+                        className={`font-bold ${
+                          it.state === "ok" ? "text-emerald-700" : it.state === "invalid" ? "text-amber-700" : "text-red-700"
+                        }`}
+                      >
+                        {it.state === "ok" ? "✓" : it.state === "invalid" ? "!" : "✗"} {it.name}
+                      </span>{" "}
+                      <span className="text-neutral-600">
+                        ({it.label}) — {it.state === "missing" ? "falta" : it.state === "invalid" ? "inválido" : "ok"}: {it.detail}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </>
             ) : conn.connected ? (
               <>
