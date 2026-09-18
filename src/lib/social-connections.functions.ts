@@ -72,6 +72,7 @@ export const getInstagramConnectionStatus = createServerFn({ method: "POST" })
     return {
       configured: cfg.configured,
       missing: cfg.missing,
+      configItems: cfg.items,
       connected: !!row,
       username: row?.username ?? null,
       externalAccountId: row?.external_account_id ?? null,
