@@ -24,15 +24,19 @@ export const PRESETS: Record<
 
 export type FondoId = "conservar" | "blanco" | "gris";
 
+export type VisualTemplateId = "zapatillas" | "neutra";
+
 export const FONDOS: Record<FondoId, { label: string; color: string | null }> = {
   conservar: { label: "Conservar fondo original", color: null },
-  blanco: { label: "Relleno blanco", color: "#ffffff" },
-  gris: { label: "Relleno gris (#e5e7eb)", color: "#e5e7eb" },
+  blanco: { label: "Completar bordes en blanco", color: "#ffffff" },
+  gris: { label: "Completar bordes en gris claro", color: "#e5e7eb" },
 };
 
 export interface ProcessOptions {
   preset: PresetId;
   fondo: FondoId;
+  /** Plantilla determinística resuelta por la interfaz. */
+  template: VisualTemplateId;
   /** 0 = sin cambios. Rango acotado -20..20 (porcentaje). */
   brillo: number;
   /** 0 = sin cambios. Rango acotado -20..20 (porcentaje). */
@@ -44,6 +48,7 @@ export interface ProcessOptions {
 export const DEFAULT_OPTIONS: ProcessOptions = {
   preset: "catalogo",
   fondo: "conservar",
+  template: "neutra",
   brillo: 0,
   contraste: 0,
   nitidez: 10,
@@ -160,17 +165,26 @@ export async function processImage(
   if (!ctx) throw new Error("El navegador no permite procesar imágenes");
   ctx.imageSmoothingQuality = "high";
 
-  const fondo = FONDOS[opts.fondo].color;
+  const esZapatilla = opts.template === "zapatillas";
+  const fondo = esZapatilla ? FONDOS.blanco.color : FONDOS[opts.fondo].color;
   // Sin color de relleno usamos blanco técnico solo para el JPG (no admite alfa),
   // que es el fondo neutro del catálogo.
   ctx.fillStyle = fondo ?? "#ffffff";
   ctx.fillRect(0, 0, targetW, targetH);
 
   // "Contain": el producto entero entra en el encuadre, sin recortes ni deformación.
-  const escala = Math.min(targetW / bitmap.width, targetH / bitmap.height);
+  // Zapatillas usa una caja útil estable (80%) para mantener escala y aire visual
+  // equivalentes en los tres formatos. Sin segmentación no se dibuja una sombra:
+  // podría quedar encima del fondo de la foto y falsear el producto.
+  const maxW = esZapatilla ? targetW * 0.8 : targetW;
+  const maxH = esZapatilla ? targetH * 0.8 : targetH;
+  const escala = Math.min(maxW / bitmap.width, maxH / bitmap.height);
   const dw = Math.round(bitmap.width * escala);
   const dh = Math.round(bitmap.height * escala);
-  ctx.drawImage(bitmap, Math.round((targetW - dw) / 2), Math.round((targetH - dh) / 2), dw, dh);
+  const dx = Math.round((targetW - dw) / 2);
+  const centroY = esZapatilla ? targetH * 0.54 : targetH / 2;
+  const dy = Math.round(clamp(centroY - dh / 2, 0, targetH - dh));
+  ctx.drawImage(bitmap, dx, dy, dw, dh);
   bitmap.close?.();
 
   // Referencia "antes" ya normalizada: mismo preset, ratio, contain, fondo y tamaño
@@ -197,6 +211,10 @@ export async function processImage(
     bytes: blob.size,
     transform: {
       tipo: "deterministico",
+      template: opts.template,
+      normalized: true,
+      fill_mode: esZapatilla ? "white" : opts.fondo,
+      shadow: false,
       preset: opts.preset,
       ratio: preset.label,
       fondo: opts.fondo,

@@ -32,14 +32,37 @@ catálogo e Instagram, sin perder nunca la foto original.
 | Instagram 4:5 | 4:5 | feed |
 | Instagram 1:1 | 1:1 | feed cuadrado |
 
-Fondo del borde: conservar / blanco / gris `#e5e7eb`. Ajustes acotados:
+Fondo del borde: conservar / completar bordes en blanco / completar bordes en gris
+claro `#e5e7eb`. Completar bordes **no elimina el fondo de la foto**: solo pinta el
+espacio libre del formato. Ajustes acotados:
 brillo ±20, contraste ±20, nitidez 0–30.
+
+## Plantillas visuales
+
+La mesa ofrece `Automática`, `Zapatillas` y `Neutra`. En categorías que contienen
+zapatillas, calzado o running se preselecciona `Zapatillas`; el usuario puede
+cambiarla manualmente. `Automática` aplica esa misma detección y, para las demás
+categorías, usa la plantilla neutra.
+
+### Zapatillas
+
+Su objetivo es mantener una presentación consistente del calzado en Catálogo 1:1,
+Instagram 4:5 e Instagram 1:1. Usa lienzo blanco, conserva la proporción original,
+aplica `contain`, centra horizontalmente, ubica el centro visual cerca del 54% de
+la altura y limita la caja útil al 80% del ancho y alto. No recorta, estira, cambia
+colores, logos ni geometría.
+
+La sombra avanzada queda desactivada (`shadow: false`): sin segmentar el producto,
+dibujar una sombra puede superponerse al fondo original y producir un resultado
+falso. Para aislar el producto y obtener una sombra fiable se debe usar `Catálogo
+limpio IA`, siempre con revisión humana. La transformación registra `template`,
+`normalized`, `fill_mode`, `shadow` y el `preset` aplicado.
 
 ## Comparación antes/después
 
 El comparador no usa la foto original cruda contra la procesada. Primero genera
-un **antes normalizado** con el mismo preset, relación, encuadre `contain`, fondo
-y tamaño final que la imagen procesada; después compara esa referencia contra la
+un **antes normalizado** con el mismo preset, relación, encuadre `contain`, fondo,
+plantilla, escala, posición y tamaño final que la imagen procesada; después compara esa referencia contra la
 versión con brillo/contraste/nitidez aplicados. Así se evita una comparación
 engañosa por diferencias de escala o encuadre, y no se modifica ni se guarda la
 ORIGINAL.
