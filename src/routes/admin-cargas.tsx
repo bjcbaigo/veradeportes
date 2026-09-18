@@ -29,6 +29,7 @@ import {
 import { TallesPicker } from "@/components/TallesPicker";
 import { evaluateReadiness, type ReadinessResult } from "@/lib/product-readiness";
 import { AiContentStudio } from "@/components/studio/AiContentStudio";
+import { ImageWorkbench } from "@/components/studio/ImageWorkbench";
 import { InstagramPublication } from "@/components/studio/InstagramPublication";
 import logoVera from "@/assets/logo-vera.png";
 
@@ -1075,6 +1076,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
   const [aiBusy, setAiBusy] = useState(false);
   const [aiData, setAiData] = useState<AiSuggestion | null>(null);
   const [aiApplied, setAiApplied] = useState<string[]>([]);
+  const [baseAprobada, setBaseAprobada] = useState<string | null>(null);
 
   const [v, setV] = useState({
     url_imagen: p.url_imagen, marca: p.marca, modelo: p.modelo,
@@ -1204,8 +1206,25 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
             <Inp label="Uso recomendado" v={v.uso} onC={x => setV(s => ({ ...s, uso: x }))} span />
           </EditorSection>
 
+          {/* Mesa de trabajo de imágenes (mejora determinística, sin IA) */}
+          <ImageWorkbench
+            sourceRef={p.id || `row-${p.rowIndex}`}
+            sourceSku={v.sku || undefined}
+            originalUrl={v.url_imagen}
+            onApprovedChange={setBaseAprobada}
+            onApproveMain={(url) => setV(s => ({ ...s, url_imagen: url }))}
+            onApproveSecondary={(url) =>
+              setV(s => {
+                const arr = s.imagenes_extra.split("|").map(x => x.trim()).filter(Boolean);
+                if (arr.includes(url) || s.url_imagen.trim() === url) return s;
+                return { ...s, imagenes_extra: [...arr, url].join("|") };
+              })
+            }
+          />
+
           {/* C. Fotografías */}
           <AiContentStudio
+            baseAprobada={baseAprobada}
             producto={{
               imagen_url: v.url_imagen,
               marca: v.marca,

@@ -60,9 +60,12 @@ function fmt(iso?: string) {
 export function AiContentStudio({
   producto,
   onUseAsSecondary,
+  baseAprobada,
 }: {
   producto: AiContentProducto;
   onUseAsSecondary: (url: string) => void;
+  /** URL de la imagen base APROBADA en la mesa de trabajo. Sin esto no se genera. */
+  baseAprobada?: string | null;
 }) {
   const generate = useServerFn(generateProductContentDraft);
   const removeDraft = useServerFn(deleteProductContentDraft);
@@ -71,7 +74,9 @@ export function AiContentStudio({
   const [confirmar, setConfirmar] = useState<ContentVariantId | null>(null);
   const [ocupado, setOcupado] = useState<ContentVariantId | null>(null);
 
-  const sinOriginal = !producto.imagen_url?.trim();
+  const base = (baseAprobada ?? "").trim();
+  const sinOriginal = !base && !producto.imagen_url?.trim();
+  const sinBase = !base;
 
   async function run(variant: ContentVariantId) {
     const anterior = drafts[variant];
@@ -80,7 +85,7 @@ export function AiContentStudio({
       const r = await generate({
         data: {
           variant,
-          imagen_url: producto.imagen_url,
+          imagen_url: base || producto.imagen_url,
           marca: producto.marca || undefined,
           modelo: producto.modelo || undefined,
           categoria: producto.categoria || undefined,
@@ -170,6 +175,11 @@ export function AiContentStudio({
           </p>
         </div>
       </div>
+      {!sinOriginal && sinBase && (
+        <p className="mt-2 text-[12px] font-semibold text-amber-700">
+          Primero aprobá una imagen base en «Mejorar fotos». Las variantes IA siempre parten de una imagen aprobada.
+        </p>
+      )}
       {sinOriginal && (
         <p className="mt-2 text-[12px] font-semibold text-red-600">
           Cargá primero la imagen principal del producto para poder generar borradores.
@@ -215,7 +225,7 @@ export function AiContentStudio({
               <div className="mt-2 flex flex-wrap gap-1.5">
                 <button
                   type="button"
-                  disabled={generando || sinOriginal || trabajando}
+                  disabled={generando || sinOriginal || sinBase || trabajando}
                   onClick={() => run(variant)}
                   className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-violet-300 bg-violet-50 px-2.5 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
                 >
