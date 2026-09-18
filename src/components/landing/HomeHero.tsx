@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import heroIndumentaria from "@/assets/home/hero-indumentaria.png.asset.json";
 import heroZapatilla from "@/assets/home/hero-zapatilla.png.asset.json";
 import interiorLocal from "@/assets/home/interior-vera-deportes.png.asset.json";
+import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const SLIDES = [
   {
@@ -12,6 +13,7 @@ const SLIDES = [
     subtitle: "Indumentaria deportiva para moverte con libertad todos los días.",
     cta: "Ver indumentaria",
     href: "/tienda#productos",
+    filter: "Indumentaria" as CategoryKey,
     position: "object-[58%_center] sm:object-center",
   },
   {
@@ -21,6 +23,7 @@ const SLIDES = [
     subtitle: "Zapatillas urbanas y running seleccionadas para cada ritmo.",
     cta: "Ver zapatillas",
     href: "/tienda#productos",
+    filter: "Zapatillas" as CategoryKey,
     position: "object-[61%_center] sm:object-center",
   },
   {
@@ -30,6 +33,7 @@ const SLIDES = [
     subtitle: "Productos destacados y atención cercana en nuestro local.",
     cta: "Ver novedades",
     href: "/tienda#productos",
+    filter: "Todos" as CategoryKey,
     position: "object-[38%_center] sm:object-center",
   },
 ];
@@ -82,6 +86,7 @@ export function HomeHero() {
                   </p>
                   <a
                     href={slide.href}
+                    onClick={() => emitCategory(slide.filter)}
                     className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-extrabold text-primary-foreground shadow-lg transition hover:brightness-105 active:scale-[0.98]"
                   >
                     {slide.cta}

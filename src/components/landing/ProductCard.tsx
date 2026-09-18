@@ -42,7 +42,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-[13px] border border-[#DDE3EA] bg-white text-left shadow-[0_3px_10px_rgba(7,27,59,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(7,27,59,0.12)] focus-within:ring-2 focus-within:ring-primary/40 ${
+      className={`group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg focus-within:ring-2 focus-within:ring-primary/40 ${
         compact ? "w-[154px] shrink-0 sm:w-[184px] lg:w-full" : "w-full"
       }`}
       onClick={() => onSelect(product)}
@@ -55,8 +55,8 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         }
       }}
     >
-      <div className="relative rounded-[13px] bg-[#EEF2F6] p-2">
-        <div className="relative aspect-square w-full overflow-hidden rounded-[12px] bg-[#EEF2F6]">
+      <div className="relative bg-secondary p-2">
+        <div className="relative aspect-square w-full overflow-hidden rounded-md bg-secondary">
           {product.image ? (
             <img
               src={product.image}
@@ -72,7 +72,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             </div>
           )}
           {extraCount > 0 && (
-            <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-[10px] font-bold text-white">
+            <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-[10px] font-bold text-ink-foreground">
               +{extraCount}
             </span>
           )}
@@ -96,7 +96,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             }
             setFavorite(toggleFavorite(product.id));
           }}
-          className={`absolute right-1.5 top-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 transition ${
+          className={`absolute right-1.5 top-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/95 transition ${
             favorite ? "text-primary" : "text-foreground/70 hover:text-primary"
           }`}
         >
@@ -108,7 +108,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-0.5 px-1.5 py-2.5">
+      <div className="flex flex-1 flex-col gap-0.5 px-3 py-3">
         <p className="truncate text-[10px] font-black uppercase tracking-[0.03em] text-foreground">
           {product.brand}
         </p>

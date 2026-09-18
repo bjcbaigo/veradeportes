@@ -23,15 +23,15 @@ const BRANDS = [
 
 export function Brands() {
   return (
-    <section id="marcas" className="py-3">
+    <section id="marcas" className="bg-background py-8 sm:py-12">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-center justify-between lg:mb-4">
-          <h2 className="font-display text-sm font-black uppercase tracking-normal lg:text-lg">
-            Marcas destacadas
+          <h2 className="font-display text-xl font-black uppercase tracking-normal sm:text-2xl">
+            Nuestras marcas
           </h2>
           <a
             href="#productos"
-            className="inline-flex items-center gap-1 text-xs font-bold text-primary"
+            className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary sm:text-sm"
           >
             Ver todas <ArrowRight className="h-3.5 w-3.5" />
           </a>
@@ -42,7 +42,7 @@ export function Brands() {
               <a
                 key={b.name}
                 href="#productos"
-                className="flex h-12 w-[76px] shrink-0 lg:h-20 lg:w-full items-center justify-center rounded-xl border border-border/80 bg-card p-2 lg:rounded-2xl lg:p-4 shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition hover:border-primary/60"
+                className="flex h-16 w-[100px] shrink-0 items-center justify-center rounded-md border border-border bg-card p-3 transition hover:border-primary/60 lg:h-20 lg:w-full lg:p-4"
                 aria-label={`Ver productos ${b.name}`}
               >
                 <img
