@@ -1210,6 +1210,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
           <ImageWorkbench
             sourceRef={p.id || `row-${p.rowIndex}`}
             sourceSku={v.sku || undefined}
+            category={v.categoria}
             originalUrl={v.url_imagen}
             onApprovedChange={setBaseAprobada}
             onApproveMain={(url) => setV(s => ({ ...s, url_imagen: url }))}

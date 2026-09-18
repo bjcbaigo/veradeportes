@@ -4,7 +4,7 @@ import { Check, Image as ImageIcon, Loader2, RefreshCw, Trash2, Wand2 } from "lu
 import { toast } from "sonner";
 import {
   DEFAULT_OPTIONS, FONDOS, LIMITES, PRESETS, processImage,
-  type PresetId, type FondoId, type ProcessedImage,
+  type PresetId, type FondoId, type ProcessedImage, type VisualTemplateId,
 } from "@/lib/image-processing";
 import { formatBytes } from "@/lib/image-optimize";
 import {
@@ -45,6 +45,7 @@ const ROL_LABEL: Record<string, string> = {
 export interface ImageWorkbenchProps {
   sourceRef: string;
   sourceSku?: string;
+  category?: string;
   originalUrl: string;
   onApproveMain: (url: string) => void;
   onApproveSecondary: (url: string) => void;
@@ -53,7 +54,7 @@ export interface ImageWorkbenchProps {
 }
 
 export function ImageWorkbench({
-  sourceRef, sourceSku, originalUrl, onApproveMain, onApproveSecondary, onApprovedChange,
+  sourceRef, sourceSku, category, originalUrl, onApproveMain, onApproveSecondary, onApprovedChange,
 }: ImageWorkbenchProps) {
   const listFn = useServerFn(listProductAssets);
   const registerFn = useServerFn(registerOriginalAsset);
@@ -66,6 +67,9 @@ export function ImageWorkbench({
   const [trabajando, setTrabajando] = useState<string | null>(null);
   const [preset, setPreset] = useState<PresetId>(DEFAULT_OPTIONS.preset);
   const [fondo, setFondo] = useState<FondoId>(DEFAULT_OPTIONS.fondo);
+  const [plantilla, setPlantilla] = useState<"automatica" | VisualTemplateId>(() =>
+    isShoeCategory(category) ? "zapatillas" : "automatica",
+  );
   const [brillo, setBrillo] = useState(DEFAULT_OPTIONS.brillo);
   const [contraste, setContraste] = useState(DEFAULT_OPTIONS.contraste);
   const [nitidez, setNitidez] = useState(DEFAULT_OPTIONS.nitidez);
@@ -79,6 +83,9 @@ export function ImageWorkbench({
   const aprobadas = useMemo(() => visibles.filter(a => a.estado === "APROBADA"), [visibles]);
   const principal = aprobadas.find(a => a.rol === "PRINCIPAL") ?? null;
   const sinOriginal = !originalUrl?.trim();
+  const plantillaResuelta: VisualTemplateId = plantilla === "automatica"
+    ? (isShoeCategory(category) ? "zapatillas" : "neutra")
+    : plantilla;
 
   async function recargar() {
     try {
@@ -127,7 +134,14 @@ export function ImageWorkbench({
         const original = await registerFn({ data: { source_ref: sourceRef, source_sku: sourceSku, url: desde } });
         parentId = original.id;
       }
-      procesadaNueva = await processImage(desde, { preset, fondo, brillo, contraste, nitidez });
+      procesadaNueva = await processImage(desde, {
+        preset,
+        fondo: plantillaResuelta === "zapatillas" ? "blanco" : fondo,
+        template: plantillaResuelta,
+        brillo,
+        contraste,
+        nitidez,
+      });
       const asset = await saveFn({
         data: {
           source_ref: sourceRef,
@@ -194,7 +208,12 @@ export function ImageWorkbench({
     let procesada: ProcessedImage | null = null;
     try {
       procesada = await processImage(asset.public_url, {
-        preset: "instagram_45", fondo, brillo: 0, contraste: 0, nitidez,
+        preset: "instagram_45",
+        fondo: plantillaResuelta === "zapatillas" ? "blanco" : fondo,
+        template: plantillaResuelta,
+        brillo: 0,
+        contraste: 0,
+        nitidez,
       });
       await saveFn({
         data: {
@@ -238,6 +257,24 @@ export function ImageWorkbench({
       {/* Controles */}
       <div className="mt-3 grid gap-2 sm:grid-cols-2">
         <label className="block">
+          <span className="text-[12px] font-bold uppercase tracking-wide text-neutral-600">Plantilla visual</span>
+          <select
+            value={plantilla}
+            onChange={e => {
+              const value = e.target.value as "automatica" | VisualTemplateId;
+              setPlantilla(value);
+              if (value === "zapatillas" || (value === "automatica" && isShoeCategory(category))) {
+                setFondo("blanco");
+              }
+            }}
+            className="mt-1 min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-2 text-sm"
+          >
+            <option value="automatica">Automática</option>
+            <option value="zapatillas">Zapatillas</option>
+            <option value="neutra">Neutra</option>
+          </select>
+        </label>
+        <label className="block">
           <span className="text-[12px] font-bold uppercase tracking-wide text-neutral-600">Formato</span>
           <select value={preset} onChange={e => setPreset(e.target.value as PresetId)}
             className="mt-1 min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-2 text-sm">
@@ -251,6 +288,21 @@ export function ImageWorkbench({
             {Object.entries(FONDOS).map(([k, f]) => <option key={k} value={k}>{f.label}</option>)}
           </select>
         </label>
+        <div className="text-[12px] text-neutral-600 sm:col-span-2">
+          <p>No elimina el fondo. Solo completa el espacio libre del formato con color blanco.</p>
+          {plantillaResuelta === "zapatillas" && (
+            <>
+              <p className="mt-1 font-semibold text-neutral-700">
+                Uniforma posición, escala y fondo para que el catálogo mantenga el mismo estilo. Si la foto tiene
+                un fondo complejo, usá “Catálogo limpio IA” para aislar mejor el producto.
+              </p>
+              <p className="mt-1 text-amber-700">
+                La sombra avanzada no se aplica sin una imagen limpia, porque podría verse falsa. Podés obtenerla
+                con “Catálogo limpio IA” y revisión manual.
+              </p>
+            </>
+          )}
+        </div>
         <Slider label="Brillo" v={brillo} min={-LIMITES.brillo} max={LIMITES.brillo} onC={setBrillo} />
         <Slider label="Contraste" v={contraste} min={-LIMITES.contraste} max={LIMITES.contraste} onC={setContraste} />
         <Slider label="Nitidez" v={nitidez} min={0} max={LIMITES.nitidez} onC={setNitidez} />
@@ -366,6 +418,11 @@ export function ImageWorkbench({
       </div>
     </div>
   );
+}
+
+function isShoeCategory(category?: string) {
+  const normalized = (category ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return ["zapatilla", "calzado", "running"].some(term => normalized.includes(term));
 }
 
 function Slider({ label, v, min, max, onC }: { label: string; v: number; min: number; max: number; onC: (n: number) => void }) {
