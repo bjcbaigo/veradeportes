@@ -1,7 +1,7 @@
 import { Facebook, Instagram, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import logo from "@/assets/logo-vera.png";
+import logoEmblem from "@/assets/logo-vera-emblema.png.asset.json";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
 import { openSearch } from "@/lib/search";
@@ -48,7 +48,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-[72px] max-w-7xl grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-2 px-4 md:grid-cols-[minmax(210px,1fr)_auto_minmax(150px,1fr)] md:gap-6 xl:px-6">
+      <div className="mx-auto grid h-[78px] max-w-7xl grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-2 px-4 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 xl:px-6">
         <button
           type="button"
           className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
@@ -59,15 +59,15 @@ export function Header() {
         >
           <Menu className="h-5 w-5" strokeWidth={2.25} />
         </button>
-        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-2 md:mx-0 md:justify-self-start">
+        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-2.5 md:mx-0 md:justify-self-start md:gap-3">
           <img
-            src={logo}
-            alt="Vera Deportes"
-            className="h-12 w-auto shrink-0 md:h-14"
-            width={160}
-            height={160}
+            src={logoEmblem.url}
+            alt=""
+            className="h-11 w-[90px] shrink-0 object-contain md:h-16 md:w-[132px]"
+            width={630}
+            height={305}
           />
-          <span className="hidden font-display text-[15px] font-black leading-none text-foreground min-[370px]:inline md:text-lg">
+          <span className="hidden whitespace-nowrap font-display text-[17px] font-black leading-none text-foreground min-[370px]:inline md:text-[24px]">
             <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>
@@ -134,7 +134,7 @@ export function Header() {
                 className="flex min-w-0 items-center gap-2"
                 onClick={() => setOpen(false)}
               >
-                <img src={logo} alt="Vera Deportes" className="h-10 w-auto shrink-0" />
+                <img src={logoEmblem.url} alt="" className="h-10 w-20 shrink-0 object-contain" />
                 <span className="truncate font-display text-sm font-black">
                   <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
                 </span>

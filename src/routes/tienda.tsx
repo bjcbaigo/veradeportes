@@ -54,8 +54,8 @@ function StorefrontPage() {
         <CommercialBenefits />
         <Brands />
         <WhatsAppHelp />
-        <StoreExperience />
         <StoreLocation />
+        <StoreExperience />
       </main>
       <Footer />
       <BottomNav active="Inicio" />
