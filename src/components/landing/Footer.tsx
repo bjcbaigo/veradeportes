@@ -1,5 +1,5 @@
 import { Facebook, Instagram, MapPin } from "lucide-react";
-import logoEmblem from "@/assets/logo-vera-emblema-final.png.asset.json";
+import logoEmblem from "@/assets/logo-vera-emblema-tight.png.asset.json";
 import { SITE } from "@/lib/site";
 
 export function Footer() {
