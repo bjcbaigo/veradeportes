@@ -67,7 +67,7 @@ export function Header() {
             width={630}
             height={305}
           />
-          <span className="hidden whitespace-nowrap font-display text-[17px] font-black leading-none text-foreground min-[370px]:inline md:text-[24px]">
+          <span className="hidden origin-left scale-x-[1.12] whitespace-nowrap font-display text-[17px] font-black leading-none text-foreground min-[370px]:inline md:text-[24px]">
             <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>
@@ -135,7 +135,7 @@ export function Header() {
                 onClick={() => setOpen(false)}
               >
                 <img src={logoEmblem.url} alt="" className="h-10 w-20 shrink-0 object-contain" />
-                <span className="truncate font-display text-sm font-black">
+                <span className="origin-left scale-x-[1.1] truncate font-display text-sm font-black">
                   <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
                 </span>
               </a>
