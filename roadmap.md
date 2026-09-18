@@ -6,4 +6,4 @@
 - [x] UI mobile-first `ImageWorkbench` integrada en el editor de ficha de /admin-cargas
 - [x] Variantes IA solo desde imagen APROBADA
 - [x] Docs: docs/PROCESAMIENTO_IMAGENES.md + actualizar docs/registro-modulo-cargas.md
-- [ ] Pruebas: typecheck + smoke /cargar /admin-cargas /tienda + flujo de asset sin publicar en Instagram
+- [x] Pruebas: typecheck + smoke /cargar /admin-cargas /tienda + flujo de asset sin publicar en Instagram
