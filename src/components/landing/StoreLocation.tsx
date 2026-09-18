@@ -11,10 +11,10 @@ export function StoreLocation() {
   const src = `https://www.google.com/maps?q=${BASE_QUERY}&z=${z}&output=embed`;
 
   return (
-    <section className="bg-secondary/70 py-4" aria-labelledby="store-location-title">
+    <section className="bg-secondary/70 py-6" aria-labelledby="store-location-title">
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          <div className="flex items-start gap-2.5 sm:w-64 sm:shrink-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <div className="flex items-start gap-3 sm:w-72 sm:shrink-0">
             <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <MapPin className="h-4 w-4" />
             </span>
@@ -43,7 +43,7 @@ export function StoreLocation() {
               title="Ubicación de Vera Deportes en Corrientes 1635, Vera, Santa Fe"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="block h-[100px] w-full border-0 sm:h-[120px]"
+                className="block h-[150px] w-full border-0 sm:h-[170px]"
             />
             <div className="absolute right-2 top-2 flex flex-col gap-1 rounded-lg border border-border bg-card/95 shadow-sm backdrop-blur">
               <button
