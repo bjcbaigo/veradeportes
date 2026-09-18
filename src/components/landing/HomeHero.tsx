@@ -123,7 +123,7 @@ export function HomeHero() {
           <ArrowRight className="h-5 w-5" />
         </button>
 
-        <div className="absolute inset-x-0 bottom-5 z-20 mx-auto max-w-7xl px-5 sm:px-8 xl:px-12">
+        <div className="absolute inset-x-0 bottom-10 z-20 mx-auto max-w-7xl px-5 sm:bottom-12 sm:px-8 xl:px-12">
           <div className="hidden items-center gap-8 text-ink-foreground sm:flex">
             <div className="flex items-center gap-2"><Truck className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Envíos<br /><span className="font-normal text-ink-foreground/75">a todo el país</span></span></div>
             <div className="flex items-center gap-2"><CreditCard className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Pagos<br /><span className="font-normal text-ink-foreground/75">seguros</span></span></div>
