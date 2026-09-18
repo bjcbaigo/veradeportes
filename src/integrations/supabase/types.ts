@@ -125,6 +125,83 @@ export type Database = {
         }
         Relationships: []
       }
+      product_assets: {
+        Row: {
+          approved_at: string | null
+          bucket: string | null
+          bytes: number | null
+          created_at: string
+          created_by: string | null
+          discarded_at: string | null
+          error_message: string | null
+          estado: string
+          height: number | null
+          id: string
+          mime: string | null
+          parent_asset_id: string | null
+          path: string | null
+          public_url: string
+          rol: string
+          source_ref: string
+          source_sku: string | null
+          transform: Json
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          bucket?: string | null
+          bytes?: number | null
+          created_at?: string
+          created_by?: string | null
+          discarded_at?: string | null
+          error_message?: string | null
+          estado?: string
+          height?: number | null
+          id?: string
+          mime?: string | null
+          parent_asset_id?: string | null
+          path?: string | null
+          public_url: string
+          rol?: string
+          source_ref: string
+          source_sku?: string | null
+          transform?: Json
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          bucket?: string | null
+          bytes?: number | null
+          created_at?: string
+          created_by?: string | null
+          discarded_at?: string | null
+          error_message?: string | null
+          estado?: string
+          height?: number | null
+          id?: string
+          mime?: string | null
+          parent_asset_id?: string | null
+          path?: string | null
+          public_url?: string
+          rol?: string
+          source_ref?: string
+          source_sku?: string | null
+          transform?: Json
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_assets_parent_asset_id_fkey"
+            columns: ["parent_asset_id"]
+            isOneToOne: false
+            referencedRelation: "product_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_connections: {
         Row: {
           access_token: string
