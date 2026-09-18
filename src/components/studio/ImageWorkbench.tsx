@@ -66,7 +66,9 @@ export function ImageWorkbench({
   const [cargando, setCargando] = useState(true);
   const [trabajando, setTrabajando] = useState<string | null>(null);
   const [preset, setPreset] = useState<PresetId>(DEFAULT_OPTIONS.preset);
-  const [fondo, setFondo] = useState<FondoId>(DEFAULT_OPTIONS.fondo);
+  const [fondo, setFondo] = useState<FondoId>(() =>
+    isShoeCategory(category) ? "blanco" : DEFAULT_OPTIONS.fondo,
+  );
   const [plantilla, setPlantilla] = useState<"automatica" | VisualTemplateId>(() =>
     isShoeCategory(category) ? "zapatillas" : "automatica",
   );
@@ -283,13 +285,22 @@ export function ImageWorkbench({
         </label>
         <label className="block">
           <span className="text-[12px] font-bold uppercase tracking-wide text-neutral-600">Fondo del borde</span>
-          <select value={fondo} onChange={e => setFondo(e.target.value as FondoId)}
-            className="mt-1 min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-2 text-sm">
+          <select
+            value={plantillaResuelta === "zapatillas" ? "blanco" : fondo}
+            disabled={plantillaResuelta === "zapatillas"}
+            onChange={e => setFondo(e.target.value as FondoId)}
+            className="mt-1 min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-2 text-sm disabled:bg-neutral-100"
+          >
             {Object.entries(FONDOS).map(([k, f]) => <option key={k} value={k}>{f.label}</option>)}
           </select>
         </label>
         <div className="text-[12px] text-neutral-600 sm:col-span-2">
-          <p>No elimina el fondo. Solo completa el espacio libre del formato con color blanco.</p>
+          {(plantillaResuelta === "zapatillas" || fondo === "blanco") && (
+            <p>No elimina el fondo. Solo completa el espacio libre del formato con color blanco.</p>
+          )}
+          {plantillaResuelta !== "zapatillas" && fondo === "gris" && (
+            <p>No elimina el fondo. Solo completa el espacio libre del formato con color gris claro.</p>
+          )}
           {plantillaResuelta === "zapatillas" && (
             <>
               <p className="mt-1 font-semibold text-neutral-700">
