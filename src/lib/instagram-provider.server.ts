@@ -231,7 +231,51 @@ export async function fetchIdentity(accessToken: string): Promise<InstagramIdent
   };
 }
 
-/** Publicación oficial de imagen: contenedor de media + media_publish. */
+const CONTAINER_POLL_INTERVAL_MS = 2500;
+const CONTAINER_POLL_TIMEOUT_MS = 45000;
+
+/**
+ * Espera a que el contenedor de media quede FINISHED antes de publicar.
+ * Estados posibles: EXPIRED, ERROR, FINISHED, IN_PROGRESS, PUBLISHED.
+ */
+export async function waitForContainerReady(
+  creationId: string,
+  accessToken: string,
+  opts?: { intervalMs?: number; timeoutMs?: number },
+): Promise<void> {
+  const interval = opts?.intervalMs ?? CONTAINER_POLL_INTERVAL_MS;
+  const timeout = opts?.timeoutMs ?? CONTAINER_POLL_TIMEOUT_MS;
+  const deadline = Date.now() + timeout;
+  let last = "IN_PROGRESS";
+
+  while (Date.now() < deadline) {
+    const url = `${GRAPH}/${GRAPH_VERSION}/${creationId}?fields=status_code,status&access_token=${encodeURIComponent(
+      accessToken,
+    )}`;
+    const body = await graphJson(url);
+    last = String(body?.status_code ?? "").toUpperCase() || "IN_PROGRESS";
+
+    if (last === "FINISHED" || last === "PUBLISHED") return;
+    if (last === "ERROR" || last === "EXPIRED") {
+      const detail = body?.status ? sanitize(String(body.status)) : "";
+      throw new Error(
+        last === "EXPIRED"
+          ? `Instagram descartó la media antes de publicarla (contenedor vencido).${detail ? ` Detalle: ${detail}` : ""}`
+          : `Instagram no pudo procesar la imagen.${detail ? ` Detalle: ${detail}` : ""}`,
+      );
+    }
+
+    await new Promise((r) => setTimeout(r, interval));
+  }
+
+  throw new Error(
+    `Instagram no terminó de procesar la imagen dentro de ${Math.round(
+      timeout / 1000,
+    )} segundos (último estado: ${last}). Probá de nuevo en unos minutos.`,
+  );
+}
+
+/** Publicación oficial de imagen: contenedor de media + espera + media_publish. */
 export async function publishImage(args: {
   accessToken: string;
   igUserId: string;
@@ -250,6 +294,10 @@ export async function publishImage(args: {
   });
   const creationId = container?.id as string | undefined;
   if (!creationId) throw new Error("Instagram no devolvió el contenedor de la publicación.");
+
+  // Espera activa: Instagram procesa la media de forma asíncrona. Publicar
+  // inmediatamente devuelve "Media ID is not available".
+  await waitForContainerReady(creationId, args.accessToken);
 
   const publish = new URLSearchParams({ creation_id: creationId, access_token: args.accessToken });
   const posted = await graphJson(`${GRAPH}/${GRAPH_VERSION}/${args.igUserId}/media_publish`, {
