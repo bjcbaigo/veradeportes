@@ -124,10 +124,10 @@ export function HomeHero() {
         </button>
 
         <div className="absolute inset-x-0 bottom-10 z-20 mx-auto max-w-7xl px-5 sm:bottom-12 sm:px-8 xl:px-12">
-          <div className="hidden items-center gap-8 text-ink-foreground sm:flex">
-            <div className="flex items-center gap-2"><Truck className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Envíos<br /><span className="font-normal text-ink-foreground/75">a todo el país</span></span></div>
-            <div className="flex items-center gap-2"><CreditCard className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Pagos<br /><span className="font-normal text-ink-foreground/75">seguros</span></span></div>
-            <div className="flex items-center gap-2"><RefreshCcw className="h-5 w-5" /><span className="text-xs font-semibold leading-tight">Cambios<br /><span className="font-normal text-ink-foreground/75">sin complicaciones</span></span></div>
+          <div className="hidden items-center gap-10 text-ink-foreground sm:flex">
+            <div className="flex items-center gap-3"><Truck className="h-6 w-6 shrink-0" /><span className="text-base font-bold leading-[1.15]">Envíos<br /><span className="text-sm font-medium text-ink-foreground/90">a todo el país</span></span></div>
+            <div className="flex items-center gap-3"><CreditCard className="h-6 w-6 shrink-0" /><span className="text-base font-bold leading-[1.15]">Pagos<br /><span className="text-sm font-medium text-ink-foreground/90">seguros</span></span></div>
+            <div className="flex items-center gap-3"><RefreshCcw className="h-6 w-6 shrink-0" /><span className="text-base font-bold leading-[1.15]">Cambios<br /><span className="text-sm font-medium text-ink-foreground/90">sin complicaciones</span></span></div>
           </div>
           <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 justify-center gap-2" role="tablist" aria-label="Elegir imagen">
             {SLIDES.map((slide, index) => (
