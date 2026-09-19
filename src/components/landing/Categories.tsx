@@ -1,8 +1,8 @@
 import { ArrowRight } from "lucide-react";
-import zapatillas from "@/assets/p-zapatillas-1.jpg";
+import zapatillas from "@/assets/home/category-zapatillas.jpg";
 import indumentaria from "@/assets/home/hero-indumentaria.png.asset.json";
-import ofertas from "@/assets/promo.jpg";
-import accesorios from "@/assets/p-acc-1.jpg";
+import ofertas from "@/assets/home/category-ofertas.jpg";
+import accesorios from "@/assets/home/category-accesorios.jpg";
 import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const CATS: {
@@ -11,7 +11,7 @@ const CATS: {
   image: string;
   position?: string;
 }[] = [
-  { label: "Calzado", filter: "Zapatillas", image: zapatillas, position: "object-center" },
+  { label: "Zapatillas", filter: "Zapatillas", image: zapatillas, position: "object-center" },
   { label: "Indumentaria", filter: "Indumentaria", image: indumentaria.url, position: "object-[58%_center]" },
   { label: "Ofertas", filter: "Ofertas", image: ofertas },
   { label: "Accesorios", filter: "Accesorios", image: accesorios, position: "object-center" },
@@ -45,7 +45,7 @@ export function Categories() {
                     loading="lazy"
                     className={`absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 ${c.position ?? "object-center"}`}
                   />
-                  <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/5 to-transparent" />
+                   <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/10 to-transparent" />
                   <span className="absolute inset-x-0 bottom-0 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-0.5 p-2 text-ink-foreground sm:gap-2 sm:p-4">
                     <span className="min-w-0">
                       <span className="block truncate text-[11px] font-black sm:text-base">{c.label}</span>
