@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   AlertTriangle,
   CheckCircle2,
+  Copy,
   ExternalLink,
   Instagram,
   Loader2,
@@ -27,6 +28,7 @@ import {
   startInstagramConnect,
 } from "@/lib/social-connections.functions";
 import { INSTAGRAM_PROFESSIONAL_NOTICE } from "@/lib/social-publisher";
+import { productUrl } from "@/lib/product-url";
 
 /**
  * Publicación Instagram — ETAPA 2: conexión y publicación reales.
