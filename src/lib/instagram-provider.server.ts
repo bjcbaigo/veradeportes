@@ -215,7 +215,7 @@ export async function exchangeCodeForToken(cfg: InstagramConfig, code: string): 
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: form.toString(),
-  });
+  }, "oauth_token");
   const shortToken = short?.access_token as string | undefined;
   if (!shortToken) throw new Error("Instagram no devolvió un token de acceso.");
   const scopes = Array.isArray(short?.permissions) ? short.permissions.join(",") : IG_SCOPES;
@@ -224,7 +224,7 @@ export async function exchangeCodeForToken(cfg: InstagramConfig, code: string): 
     cfg.appSecret,
   )}&access_token=${encodeURIComponent(shortToken)}`;
   try {
-    const long = await graphJson(longUrl);
+    const long = await graphJson(longUrl, undefined, "oauth_token");
     const token = (long?.access_token as string) || shortToken;
     const expiresIn = Number(long?.expires_in ?? 0);
     return {
@@ -248,7 +248,7 @@ export async function fetchIdentity(accessToken: string): Promise<InstagramIdent
   const url = `${GRAPH}/${GRAPH_VERSION}/me?fields=user_id,username,account_type&access_token=${encodeURIComponent(
     accessToken,
   )}`;
-  const me = await graphJson(url);
+  const me = await graphJson(url, undefined, "identity");
   const id = String(me?.user_id ?? me?.id ?? "");
   if (!id) throw new Error("No se pudo identificar la cuenta de Instagram.");
   return {
@@ -279,16 +279,17 @@ export async function waitForContainerReady(
     const url = `${GRAPH}/${GRAPH_VERSION}/${creationId}?fields=status_code,status&access_token=${encodeURIComponent(
       accessToken,
     )}`;
-    const body = await graphJson(url);
+    const body = await graphJson(url, undefined, "container_status");
     last = String(body?.status_code ?? "").toUpperCase() || "IN_PROGRESS";
 
     if (last === "FINISHED" || last === "PUBLISHED") return;
     if (last === "ERROR" || last === "EXPIRED") {
       const detail = body?.status ? sanitize(String(body.status)) : "";
       throw new Error(
-        last === "EXPIRED"
-          ? `Instagram descartó la media antes de publicarla (contenedor vencido).${detail ? ` Detalle: ${detail}` : ""}`
-          : `Instagram no pudo procesar la imagen.${detail ? ` Detalle: ${detail}` : ""}`,
+        (last === "EXPIRED"
+          ? `${DIAG_TAG}[container_status] Instagram descartó la media antes de publicarla (contenedor vencido).`
+          : `${DIAG_TAG}[container_status] Instagram no pudo procesar la imagen.`) +
+          (detail ? ` Detalle: ${detail}` : ""),
       );
     }
 
@@ -296,7 +297,7 @@ export async function waitForContainerReady(
   }
 
   throw new Error(
-    `Instagram no terminó de procesar la imagen dentro de ${Math.round(
+    `${DIAG_TAG}[container_status] Instagram no terminó de procesar la imagen dentro de ${Math.round(
       timeout / 1000,
     )} segundos (último estado: ${last}). Probá de nuevo en unos minutos.`,
   );
@@ -314,11 +315,15 @@ export async function publishImage(args: {
     caption: args.caption,
     access_token: args.accessToken,
   });
-  const container = await graphJson(`${GRAPH}/${GRAPH_VERSION}/${args.igUserId}/media`, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: create.toString(),
-  });
+  const container = await graphJson(
+    `${GRAPH}/${GRAPH_VERSION}/${args.igUserId}/media`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: create.toString(),
+    },
+    "create_media",
+  );
   const creationId = container?.id as string | undefined;
   if (!creationId) throw new Error("Instagram no devolvió el contenedor de la publicación.");
 
@@ -327,11 +332,15 @@ export async function publishImage(args: {
   await waitForContainerReady(creationId, args.accessToken);
 
   const publish = new URLSearchParams({ creation_id: creationId, access_token: args.accessToken });
-  const posted = await graphJson(`${GRAPH}/${GRAPH_VERSION}/${args.igUserId}/media_publish`, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: publish.toString(),
-  });
+  const posted = await graphJson(
+    `${GRAPH}/${GRAPH_VERSION}/${args.igUserId}/media_publish`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: publish.toString(),
+    },
+    "media_publish",
+  );
   const postId = posted?.id as string | undefined;
   if (!postId) throw new Error("Instagram no devolvió el identificador del posteo.");
   return postId;
