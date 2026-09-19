@@ -463,12 +463,17 @@ function UploadWizard({ pin }: { pin: string }) {
                 </div>
               </SummaryRow>
               <SummaryRow label="Cargado por" value={usuario || "—"} onEdit={() => goTo(1)} />
+              <SummaryRow label="Tipo de producto" value={tipo || "—"} onEdit={() => goTo(1)} />
+              <SummaryRow label="Subtipo / categoría" value={categoriaFinal || "—"} onEdit={() => goTo(1)} />
               <SummaryRow label="Producto"
                 value={[marca, modelo].filter(Boolean).join(" ") || "—"}
-                sub={[categoria, color].filter(Boolean).join(" · ")} onEdit={() => goTo(1)} />
+                sub={color || undefined} onEdit={() => goTo(1)} />
               <SummaryRow label="Ideal para" value={splitTags(idealPara).join(", ") || "—"} onEdit={() => goTo(2)} />
               <SummaryRow label="Sellos" value={splitTags(sellos).join(", ") || "—"} onEdit={() => goTo(2)} />
-              <SummaryRow label="Talles" value={splitTags(talles).join(", ") || "Sin marcar"} onEdit={() => goTo(2)} />
+              <SummaryRow
+                label={tipoCfg?.talles === "ninguno" ? "Variante" : "Talles"}
+                value={splitTags(tallesFinal).join(", ") || "Sin marcar"}
+                onEdit={() => goTo(2)} />
               {comentario.trim() && (
                 <SummaryRow label="Comentario" value={comentario.trim()} onEdit={() => goTo(2)} />
               )}
