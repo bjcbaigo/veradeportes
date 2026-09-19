@@ -116,9 +116,11 @@ export function PromoCarousel() {
                   </span>
                 )}
               </span>
-              <span className="absolute right-2 top-2 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-black text-primary-foreground sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-xs">
-                -{discountPct(offerProduct)}%
-              </span>
+              {discountPct(offerProduct) > 0 && (
+                <span className="absolute right-2 top-2 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-black text-primary-foreground sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-xs">
+                  -{discountPct(offerProduct)}%
+                </span>
+              )}
               <img
                 src={offerProduct.image}
                 alt={offerProduct.name}
