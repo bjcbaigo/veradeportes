@@ -1305,6 +1305,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
             <Inp label="Slug" v={v.slug} onC={x => setV(s => ({ ...s, slug: x }))} />
             <Inp label="SEO Título" v={v.seo_titulo} onC={x => setV(s => ({ ...s, seo_titulo: x }))} />
             <TA label="SEO Descripción" v={v.seo_descripcion} onC={x => setV(s => ({ ...s, seo_descripcion: x }))} span rows={2} />
+            <EnlaceProducto marca={v.marca} modelo={v.modelo} sku={v.sku} id={p.id} />
             <Sel label="Estado publicación" v={v.estado} onC={x => setV(s => ({ ...s, estado: x as any }))} options={["APROBADO","PUBLICADO","DESCARTADO"]} />
           </EditorSection>
         </div>
