@@ -342,6 +342,60 @@ function UploadWizard({ pin }: { pin: string }) {
               title="Datos básicos"
               hint="Solo tu nombre es obligatorio; lo demás, si lo sabés."
             />
+            <div>
+              <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-600">
+                ¿Qué tipo de producto estás cargando? <span className="text-primary">*</span>
+              </span>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {PRODUCT_TIPOS.map((t) => {
+                  const on = tipo === t.id;
+                  return (
+                    <button key={t.id} type="button" onClick={() => pickTipo(t.id)}
+                      className={`rounded-xl border-2 px-3 py-4 text-left transition ${
+                        on
+                          ? "border-primary bg-primary/5"
+                          : "border-neutral-200 bg-white hover:bg-neutral-50"
+                      }`}>
+                      <span className={`block text-sm font-bold ${on ? "text-primary" : "text-vd-navy"}`}>
+                        {t.label}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] text-neutral-500">{t.hint}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {tipoCfg && tipoCfg.subtipos.length > 0 && (
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-600">
+                  Subtipo
+                </span>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {tipoCfg.subtipos.map((s) => {
+                    const on = subtipo === s;
+                    return (
+                      <button key={s} type="button" onClick={() => setSubtipo(on ? "" : s)}
+                        className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+                        }`}>
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {tipo === "Otros" && (
+              <Field label="Categoría / tipo (escribilo)">
+                <input value={categoria} onChange={(e) => setCategoria(e.target.value)} maxLength={80}
+                  placeholder="Ej: Pelota de fútbol" className={inputCls} />
+              </Field>
+            )}
+
             <Field label="Tu nombre o alias" required>
               <input value={usuario} onChange={(e) => setUsuario(e.target.value)} maxLength={80}
                 className={inputCls} />
@@ -350,10 +404,6 @@ function UploadWizard({ pin }: { pin: string }) {
               <Field label="Marca">
                 <input value={marca} onChange={(e) => setMarca(e.target.value)} maxLength={80}
                   placeholder="Ej: Nike" className={inputCls} />
-              </Field>
-              <Field label="Categoría">
-                <input value={categoria} onChange={(e) => setCategoria(e.target.value)} maxLength={80}
-                  placeholder="Ej: Zapatillas" className={inputCls} />
               </Field>
               <Field label="Modelo">
                 <input value={modelo} onChange={(e) => setModelo(e.target.value)} maxLength={120}
