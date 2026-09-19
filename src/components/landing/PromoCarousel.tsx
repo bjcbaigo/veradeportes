@@ -14,6 +14,7 @@ import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
 import onRunning from "@/assets/brands/on-running.png.asset.json";
 import fila from "@/assets/brands/fila.png.asset.json";
 import skechers from "@/assets/brands/skechers-full.png.asset.json";
+import asicsGelExcite10 from "@/assets/p-asics-excite10.png";
 
 const BRAND_LOGOS: [string, string][] = [
   ["nike", nike.url],
@@ -63,6 +64,9 @@ export function PromoCarousel() {
     const offers = products.filter((p) => isOfferProduct(p) && p.image);
     return offers.sort((a, b) => discountPct(b) - discountPct(a))[0] ?? null;
   }, [products]);
+  const offerImage = offerProduct?.name.toLowerCase().includes("gel-excite 10")
+    ? asicsGelExcite10
+    : offerProduct?.image;
 
   return (
     <section id="promos" className="bg-background py-2 sm:py-8">
@@ -133,17 +137,17 @@ export function PromoCarousel() {
                   -{discountPct(offerProduct)}%
                 </span>
               )}
-              <span className="absolute inset-x-1 top-7 bottom-[47%] overflow-hidden sm:inset-y-2 sm:left-auto sm:right-2 sm:top-2 sm:w-[46%]">
+              <span className="absolute inset-x-0 top-5 bottom-[44%] overflow-hidden sm:inset-y-0 sm:left-auto sm:right-0 sm:top-0 sm:w-[51%]">
                 <img
-                  src={offerProduct.image}
+                  src={offerImage}
                   alt={offerProduct.name}
                   width={600}
                   height={600}
                   loading="lazy"
-                  className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full scale-125 object-contain transition-transform duration-500 group-hover:scale-[1.3] sm:scale-110 sm:group-hover:scale-[1.15]"
                 />
               </span>
-              <span className="absolute inset-x-0 bottom-0 z-10 flex h-[47%] flex-col items-start justify-end gap-0 bg-secondary p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:h-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
+              <span className="absolute inset-x-0 bottom-0 z-10 flex h-[44%] flex-col items-start justify-end gap-0 bg-secondary p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:h-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
                 <span className="line-clamp-2 text-[10px] font-black uppercase leading-tight text-foreground sm:text-xl">
                   {offerProduct.name.toLowerCase().startsWith(offerProduct.brand.toLowerCase())
                     ? offerProduct.name.slice(offerProduct.brand.length).trim()
