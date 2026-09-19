@@ -751,6 +751,7 @@ function StudioCard({ producto: p }: { producto: Producto }) {
   const qc = useQueryClient();
   const upd = useServerFn(updateProductoEstado);
   const agendar = useServerFn(agendarPublicacion);
+  const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [scheduling, setScheduling] = useState(false);
   const [publishing, setPublishing] = useState(false);
