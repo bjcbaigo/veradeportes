@@ -48,7 +48,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-1.5 px-3 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 md:px-4 xl:px-6">
+      <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-1.5 px-3 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 md:px-4 xl:px-6">
         <button
           type="button"
           className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-background text-foreground hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
@@ -83,12 +83,12 @@ export function Header() {
               </a>
             ))}
         </nav>
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-1 md:gap-2">
           <button
             type="button"
             onClick={() => openSearch()}
             aria-label="Buscar productos"
-            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:inline-flex"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10"
           >
             <Search className="h-[18px] w-[18px]" strokeWidth={2.2} />
           </button>

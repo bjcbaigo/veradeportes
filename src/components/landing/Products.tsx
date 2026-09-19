@@ -38,10 +38,12 @@ export function Products({ limit }: { limit?: number }) {
   const [cat, setCat] = useState<CategoryKey>("Todos");
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(!limit);
+  const [mobileActivated, setMobileActivated] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const { products: allProducts } = useProductsData();
 
   function focusSearch() {
+    setMobileActivated(true);
     setCat("Todos");
     setShowAll(true);
     window.requestAnimationFrame(() => {
@@ -53,6 +55,7 @@ export function Products({ limit }: { limit?: number }) {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<CategoryKey>).detail;
       if (detail) {
+        setMobileActivated(true);
         setCat(detail);
         setShowAll(true);
       }
@@ -96,6 +99,7 @@ export function Products({ limit }: { limit?: number }) {
   }, [allProducts, cat, limit, query, showAll]);
 
   function handleShowAllProducts() {
+    setMobileActivated(true);
     setCat("Todos");
     setShowAll(true);
     if (window.location.pathname === "/tienda") {
@@ -112,7 +116,7 @@ export function Products({ limit }: { limit?: number }) {
   }
 
   return (
-    <section ref={sectionRef} id="productos" className="bg-background py-8 sm:py-12">
+    <section ref={sectionRef} id="productos" className={`${mobileActivated ? "block" : "hidden"} bg-background py-8 sm:block sm:py-12`}>
       <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-5 flex items-end justify-between gap-4">
           <div>
