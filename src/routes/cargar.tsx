@@ -505,8 +505,10 @@ function UploadWizard({ pin }: { pin: string }) {
           </button>
         )}
       </div>
-      {step === 1 && !usuario.trim() && (
-        <p className="mt-2 text-center text-xs text-neutral-500">Completá tu nombre para continuar.</p>
+      {step === 1 && !canNext && (
+        <p className="mt-2 text-center text-xs text-neutral-500">
+          Elegí el tipo de producto y completá tu nombre para continuar.
+        </p>
       )}
     </div>
   );
