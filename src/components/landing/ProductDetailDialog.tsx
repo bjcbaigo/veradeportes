@@ -41,6 +41,8 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const [selectedSize, setSelectedSize] = useState("");
   const [actionError, setActionError] = useState("");
+  const [linkCopied, setLinkCopied] = useState(false);
+
 
   useEffect(() => {
     setActive(0);
