@@ -1,48 +1,181 @@
+import { ArrowRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ProductDetailDialog } from "@/components/landing/ProductDetailDialog";
+import { isOfferProduct, useProductsData } from "@/lib/product-data";
 import { getActivePromotions } from "@/lib/promotions";
+import type { Product } from "@/lib/products";
+import nike from "@/assets/brands/nike.png.asset.json";
+import adidas from "@/assets/brands/adidas.svg.asset.json";
+import puma from "@/assets/brands/puma.png.asset.json";
+import topper from "@/assets/brands/topper.svg.asset.json";
+import asics from "@/assets/brands/asics-black.png.asset.json";
+import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
+import onRunning from "@/assets/brands/on-running.png.asset.json";
+import fila from "@/assets/brands/fila.png.asset.json";
+import skechers from "@/assets/brands/skechers-full.png.asset.json";
+
+const BRAND_LOGOS: [string, string][] = [
+  ["nike", nike.url],
+  ["adidas", adidas.url],
+  ["puma", puma.url],
+  ["topper", topper.url],
+  ["asics", asics.url],
+  ["new balance", nbLogo.url],
+  ["on running", onRunning.url],
+  ["on", onRunning.url],
+  ["fila", fila.url],
+  ["skechers", skechers.url],
+];
+
+function brandLogo(brand: string) {
+  const b = (brand || "").toLowerCase();
+  return BRAND_LOGOS.find(([key]) => b.includes(key))?.[1];
+}
+
+function priceNumber(raw?: string) {
+  return Number((raw || "").replace(/[^\d]/g, "")) || 0;
+}
+
+function discountPct(p: Product) {
+  const now = priceNumber(p.price);
+  const before = priceNumber(p.priceOld);
+  if (!now || !before || before <= now) return 0;
+  return Math.round(((before - now) / before) * 100);
+}
 
 export function PromoCarousel() {
   const promotions = getActivePromotions();
+  const { products } = useProductsData();
+  const [selected, setSelected] = useState<Product | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const editorial = promotions.find((p) => p.id === "nueva-coleccion") ?? promotions[0];
+  const fallback = promotions.find((p) => p.id !== editorial?.id);
+
+  const offerProduct = useMemo(() => {
+    const offers = products.filter((p) => isOfferProduct(p) && discountPct(p) > 0 && p.image);
+    return offers.sort((a, b) => discountPct(b) - discountPct(a))[0] ?? null;
+  }, [products]);
 
   return (
     <section id="promos" className="bg-background py-2 sm:py-8">
-      <div className="mx-auto max-w-6xl xl:max-w-7xl">
-        <div className="mb-4 hidden px-4 sm:block xl:px-6">
-          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Elegidos para vos</p>
-          <h2 className="mt-1 text-2xl font-black uppercase text-foreground sm:text-3xl">Historias en movimiento</h2>
-        </div>
-        <div className="px-3 sm:px-4 xl:px-6">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-4">
-            {promotions.map((promo) => (
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
+          {/* Tarjeta editorial: colección */}
+          {editorial && (
+            <a
+              href={editorial.href}
+              className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-ink shadow-md sm:aspect-[16/8]"
+            >
+              <img
+                src={editorial.image}
+                alt=""
+                width={800}
+                height={700}
+                loading="eager"
+                className="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/30 to-transparent" />
+              <span className="absolute right-2 top-2 rounded-full bg-background px-2 py-1 text-[8px] font-black uppercase tracking-wide text-foreground sm:right-3 sm:top-3 sm:px-3 sm:py-1.5 sm:text-[11px]">
+                Nuevos ingresos
+              </span>
+              <span className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 p-2.5 sm:gap-1.5 sm:p-5">
+                <span className="font-display text-sm font-black uppercase leading-none text-ink-foreground sm:text-3xl">
+                  {editorial.title}
+                </span>
+                <span className="text-[9px] font-semibold text-ink-foreground/85 sm:text-sm">
+                  {editorial.subtitle}
+                </span>
+                <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-background px-2.5 py-1 text-[9px] font-black text-foreground transition group-hover:bg-primary group-hover:text-primary-foreground sm:mt-2 sm:px-4 sm:py-1.5 sm:text-xs">
+                  {editorial.ctaText} <ArrowRight className="h-3 w-3" />
+                </span>
+              </span>
+            </a>
+          )}
+
+          {/* Tarjeta producto en oferta con precio real */}
+          {offerProduct ? (
+            <button
+              type="button"
+              onClick={() => {
+                setSelected(offerProduct);
+                setOpen(true);
+              }}
+              className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-secondary text-left shadow-md ring-1 ring-border sm:aspect-[16/8]"
+            >
+              <span className="absolute left-2 top-2 flex h-4 items-center sm:left-3 sm:top-3 sm:h-7">
+                {brandLogo(offerProduct.brand) ? (
+                  <img
+                    src={brandLogo(offerProduct.brand)}
+                    alt={offerProduct.brand}
+                    className="max-h-4 max-w-[52px] object-contain sm:max-h-7 sm:max-w-[110px]"
+                  />
+                ) : (
+                  <span className="text-[9px] font-black uppercase text-foreground sm:text-sm">
+                    {offerProduct.brand}
+                  </span>
+                )}
+              </span>
+              <span className="absolute right-2 top-2 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-black text-primary-foreground sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-xs">
+                -{discountPct(offerProduct)}%
+              </span>
+              <img
+                src={offerProduct.image}
+                alt={offerProduct.name}
+                width={600}
+                height={600}
+                loading="lazy"
+                className="absolute bottom-[38%] left-1/2 h-[52%] w-[78%] -translate-x-1/2 object-contain transition-transform duration-500 group-hover:scale-105 sm:bottom-auto sm:left-auto sm:right-2 sm:top-1/2 sm:h-[86%] sm:w-[46%] sm:-translate-x-0 sm:-translate-y-1/2"
+              />
+              <span className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0 p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
+                <span className="line-clamp-2 text-[10px] font-black uppercase leading-tight text-foreground sm:text-xl">
+                  {offerProduct.name}
+                </span>
+                {offerProduct.priceOld && (
+                  <span className="text-[8px] font-semibold text-muted-foreground sm:text-xs">
+                    Antes <span className="line-through">{offerProduct.priceOld}</span>
+                  </span>
+                )}
+                <span className="text-[10px] font-black text-foreground sm:text-lg">
+                  Ahora <span className="text-primary">{offerProduct.price}</span>
+                </span>
+                <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[9px] font-black text-primary-foreground transition group-hover:brightness-110 sm:mt-1.5 sm:px-4 sm:py-1.5 sm:text-xs">
+                  Ver producto <ArrowRight className="h-3 w-3" />
+                </span>
+              </span>
+            </button>
+          ) : (
+            fallback && (
               <a
-                key={promo.id}
-                href={promo.href}
-                className={`group relative aspect-[4/5] min-w-0 overflow-hidden rounded-sm bg-ink shadow-lg ${promo.order > 2 ? "hidden sm:block" : "block"}`}
+                href={fallback.href}
+                className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-ink shadow-md sm:aspect-[16/8]"
               >
                 <img
-                  src={promo.image}
+                  src={fallback.image}
                   alt=""
-                  width={600}
-                  height={750}
-                  loading={promo.order === 1 ? "eager" : "lazy"}
-                  className="absolute inset-0 h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-110"
+                  width={800}
+                  height={700}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-transparent opacity-90" />
-                <span className="absolute inset-0 flex flex-col justify-end p-3 sm:p-4">
-                  <h3 className="mb-1 font-display text-base font-black uppercase leading-tight text-ink-foreground sm:text-xl">
-                    {promo.title}
-                  </h3>
-                  <p className="mb-2.5 text-[11px] font-bold uppercase tracking-wide text-ink-foreground/75 sm:mb-3 sm:text-sm">
-                    {promo.subtitle}
-                  </p>
-                  <span className="inline-block w-fit bg-primary px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground transition-colors group-hover:bg-background group-hover:text-ink sm:px-4 sm:py-2 sm:text-xs">
-                    {promo.ctaText}
+                <span className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/30 to-transparent" />
+                <span className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 p-2.5 sm:gap-1.5 sm:p-5">
+                  <span className="font-display text-sm font-black uppercase leading-none text-ink-foreground sm:text-3xl">
+                    {fallback.title}
+                  </span>
+                  <span className="text-[9px] font-semibold text-ink-foreground/85 sm:text-sm">
+                    {fallback.subtitle}
+                  </span>
+                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[9px] font-black text-primary-foreground sm:mt-2 sm:px-4 sm:py-1.5 sm:text-xs">
+                    {fallback.ctaText} <ArrowRight className="h-3 w-3" />
                   </span>
                 </span>
               </a>
-            ))}
-          </div>
+            )
+          )}
         </div>
       </div>
+      <ProductDetailDialog product={selected} open={open} onOpenChange={setOpen} />
     </section>
   );
 }
