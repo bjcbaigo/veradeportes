@@ -144,7 +144,7 @@ export function PromoCarousel() {
                   width={600}
                   height={600}
                   loading="lazy"
-                  className="absolute left-1/2 top-1/2 h-auto w-full max-w-none -translate-x-1/2 -translate-y-1/2 scale-110 object-contain transition-transform duration-500 group-hover:scale-[1.16] sm:scale-105 sm:group-hover:scale-110"
+                  className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-95 object-contain p-1 transition-transform duration-500 group-hover:scale-100 sm:scale-100 sm:p-3 sm:group-hover:scale-105"
                 />
               </span>
               <span className="absolute inset-x-0 bottom-0 z-10 flex h-[44%] flex-col items-start justify-end gap-0 bg-secondary p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:h-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
