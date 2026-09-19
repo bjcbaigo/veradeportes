@@ -851,10 +851,16 @@ function StudioCard({ producto: p }: { producto: Producto }) {
               <Archive className="h-3 w-3" /> Archivar
             </button>
           ) : (
-            <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "APROBADO" })}
-              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-green-300 bg-white px-3 py-2 text-[13px] font-semibold text-green-700 hover:bg-green-50">
-              <RotateCcw className="h-3 w-3" /> Restaurar
-            </button>
+            <>
+              <button onClick={() => mut.mutate({ rowIndex: p.rowIndex, estado: "APROBADO" })}
+                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md border border-green-300 bg-white px-3 py-2 text-[13px] font-semibold text-green-700 hover:bg-green-50">
+                <RotateCcw className="h-3 w-3" /> Restaurar
+              </button>
+              <button onClick={() => setDeleting(true)}
+                className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md bg-red-600 px-3 py-2 text-[13px] font-semibold text-white hover:bg-red-700">
+                <Trash2 className="h-3 w-3" /> Eliminar definitivamente
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -863,6 +869,85 @@ function StudioCard({ producto: p }: { producto: Producto }) {
       {scheduling && <ScheduleDialog producto={p} onClose={() => setScheduling(false)} agendar={(v) => agendar({ data: v })} />}
       {publishing && <PublishDialog producto={p} onClose={() => setPublishing(false)} />}
       {viewingTexts && <TextsDialog producto={p} onClose={() => setViewingTexts(false)} />}
+      {deleting && <DeleteProductoDialog producto={p} onClose={() => setDeleting(false)} />}
+    </div>
+  );
+}
+
+/* ============ Eliminación definitiva (doble confirmación) ============ */
+function DeleteProductoDialog({ producto: p, onClose }: { producto: Producto; onClose: () => void }) {
+  const qc = useQueryClient();
+  const del = useServerFn(deleteProductoDefinitivo);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [texto, setTexto] = useState("");
+  const [busy, setBusy] = useState(false);
+  const nombre = `${p.marca} ${p.modelo}`.trim() || p.id;
+
+  async function confirmar() {
+    if (texto.trim().toUpperCase() !== "ELIMINAR") return;
+    setBusy(true);
+    try {
+      const res = await del({ data: { rowIndex: p.rowIndex, id: p.id, confirm: "ELIMINAR" } });
+      await qc.invalidateQueries({ queryKey: ["productos"] });
+      await qc.invalidateQueries({ queryKey: ["sheet-products"] });
+      await qc.invalidateQueries({ queryKey: ["agenda"] });
+      qc.invalidateQueries({ queryKey: ["social-publication", p.id] });
+      toast.success(
+        res.publicadas > 0
+          ? `“${nombre}” se eliminó del panel y de la tienda.`
+          : `“${nombre}” se eliminó definitivamente.`,
+      );
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-3">
+      <div className="w-full max-w-md rounded-xl bg-white p-4 shadow-xl">
+        <div className="flex items-start gap-2">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-neutral-900">Eliminar definitivamente</h3>
+            <p className="text-[13px] text-neutral-600">
+              Vas a eliminar <span className="font-semibold text-neutral-900">{nombre}</span>
+              {p.sku ? <> (SKU <span className="font-mono">{p.sku}</span>)</> : null}. Se borra la ficha del panel,
+              su fila publicada en la tienda si existe y su agenda. <span className="font-semibold text-red-700">Esta acción no se puede deshacer.</span>
+            </p>
+            <p className="text-[12px] text-neutral-500">Las fotos ya subidas no se borran, porque pueden estar usadas en otras publicaciones.</p>
+          </div>
+        </div>
+
+        {step === 2 && (
+          <div className="mt-3 space-y-1">
+            <label className="text-[12px] font-semibold text-neutral-700">Escribí ELIMINAR para confirmar</label>
+            <input autoFocus value={texto} onChange={(e) => setTexto(e.target.value)}
+              className="w-full rounded-md border border-red-300 px-3 py-2 text-sm uppercase outline-none focus:border-red-500"
+              placeholder="ELIMINAR" />
+          </div>
+        )}
+
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <button onClick={onClose} disabled={busy}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-[#DDE3EA] bg-white px-4 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">
+            Cancelar
+          </button>
+          {step === 1 ? (
+            <button onClick={() => setStep(2)}
+              className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-md bg-red-600 px-4 text-sm font-semibold text-white hover:bg-red-700">
+              <Trash2 className="h-4 w-4" /> Sí, continuar
+            </button>
+          ) : (
+            <button onClick={confirmar} disabled={busy || texto.trim().toUpperCase() !== "ELIMINAR"}
+              className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-md bg-red-600 px-4 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Eliminar definitivamente
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
