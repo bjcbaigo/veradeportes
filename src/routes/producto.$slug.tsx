@@ -23,12 +23,6 @@ import {
   productUrl,
 } from "@/lib/product-url";
 import { waLink } from "@/lib/site";
-import type { Product } from "@/lib/products";
-
-async function loadCatalog() {
-  const rows = await listSheetProducts();
-  return rows.filter((r) => r.activo && r.nombre).map(sheetToProduct);
-}
 
 export const Route = createFileRoute("/producto/$slug")({
   loader: async ({ params, context }) => {
