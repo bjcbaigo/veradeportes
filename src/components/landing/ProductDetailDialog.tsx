@@ -329,6 +329,32 @@ export function ProductDetailDialog({ product, open, onOpenChange }: Props) {
               >
                 Consultar talle / stock
               </a>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <Link
+                  to="/producto/$slug"
+                  params={{ slug: productPath(product).split("/").pop()! }}
+                  onClick={() => onOpenChange(false)}
+                  className="inline-flex min-h-[32px] items-center gap-1 text-xs font-bold text-primary hover:underline"
+                >
+                  <Link2 className="h-3.5 w-3.5" /> Ver ficha completa
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(productUrl(product));
+                    } catch {
+                      /* portapapeles no disponible */
+                    }
+                    setLinkCopied(true);
+                    window.setTimeout(() => setLinkCopied(false), 2000);
+                  }}
+                  className="inline-flex min-h-[32px] items-center gap-1 text-xs font-bold text-muted-foreground transition hover:text-primary"
+                >
+                  {linkCopied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+                  {linkCopied ? "¡Enlace copiado!" : "Copiar enlace"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
