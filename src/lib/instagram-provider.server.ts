@@ -132,15 +132,29 @@ export function requireInstagramConfig(origin?: string | null): InstagramConfig 
 /** Mensajes de Meta sanitizados: sin tokens, sin secretos, acotados. */
 function sanitize(raw: unknown): string {
   let msg = "";
+  let diag: Record<string, unknown> | null = null;
   if (typeof raw === "string") msg = raw;
   else if (raw && typeof raw === "object") {
     const anyRaw = raw as any;
     msg = anyRaw?.error?.message || anyRaw?.error_message || anyRaw?.error_description || JSON.stringify(anyRaw);
+    // Diagnóstico temporal: conservar type/code/error_subcode/fbtrace_id
+    // (nunca tokens ni secretos) para poder ver el motivo real de Meta.
+    const err = anyRaw?.error;
+    if (err && typeof err === "object") {
+      const parts: string[] = [];
+      if (err.type) parts.push(`type=${String(err.type)}`);
+      if (err.code !== undefined && err.code !== null) parts.push(`code=${String(err.code)}`);
+      if (err.error_subcode !== undefined && err.error_subcode !== null)
+        parts.push(`subcode=${String(err.error_subcode)}`);
+      if (err.fbtrace_id) parts.push(`trace=${String(err.fbtrace_id)}`);
+      if (parts.length) diag = { diag: parts.join(", ") };
+    }
   }
   msg = String(msg || "Error desconocido de Instagram");
   const secret = process.env["META_APP_SECRET"];
   if (secret) msg = msg.split(secret).join("***");
   msg = msg.replace(/(access_token=)[^&\s"]+/gi, "$1***").replace(/IG[A-Za-z0-9_-]{20,}/g, "***");
+  if (diag?.diag) msg = `${msg} [${diag.diag}]`;
   return msg.slice(0, 500);
 }
 
