@@ -14,7 +14,7 @@ import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
 import onRunning from "@/assets/brands/on-running.png.asset.json";
 import fila from "@/assets/brands/fila.png.asset.json";
 import skechers from "@/assets/brands/skechers-full.png.asset.json";
-import asicsGelExcite10 from "@/assets/asics-gel-excite10-oferta.png.asset.json";
+import asicsGelExcite10 from "@/assets/asics-gel-excite10-perspectiva.png.asset.json";
 
 const BRAND_LOGOS: [string, string][] = [
   ["nike", nike.url],
@@ -119,12 +119,12 @@ export function PromoCarousel() {
               }}
               className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-secondary text-left shadow-md ring-1 ring-border sm:aspect-[16/8]"
             >
-              <span className="absolute left-2 top-2 z-20 flex h-4 items-center sm:left-3 sm:top-3 sm:h-7">
+              <span className="absolute left-2 top-2 z-20 flex h-5 items-center sm:left-4 sm:top-4 sm:h-7">
                 {brandLogo(offerProduct.brand) ? (
                   <img
                     src={brandLogo(offerProduct.brand)}
                     alt={offerProduct.brand}
-                    className="max-h-4 max-w-[52px] object-contain sm:max-h-7 sm:max-w-[110px]"
+                    className="max-h-5 max-w-[58px] object-contain sm:max-h-7 sm:max-w-[110px]"
                   />
                 ) : (
                   <span className="text-[9px] font-black uppercase text-foreground sm:text-sm">
@@ -133,35 +133,35 @@ export function PromoCarousel() {
                 )}
               </span>
               {discountPct(offerProduct) > 0 && (
-                <span className="absolute right-2 top-2 z-10 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-black text-primary-foreground sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-xs">
+                <span className="absolute right-2 top-2 z-20 rounded-full bg-primary px-2 py-1 text-[9px] font-black text-primary-foreground shadow-sm sm:right-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-xs">
                   -{discountPct(offerProduct)}%
                 </span>
               )}
-              <span className="absolute inset-x-0 top-5 bottom-[44%] overflow-hidden sm:inset-y-0 sm:left-auto sm:right-0 sm:top-0 sm:w-[51%]">
+              <span className="absolute bottom-3 left-0 top-8 w-[53%] overflow-hidden sm:bottom-2 sm:left-1 sm:top-10 sm:w-[50%]">
                 <img
                   src={offerImage}
                   alt={offerProduct.name}
                   width={600}
                   height={600}
                   loading="lazy"
-                  className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-125 object-contain transition-transform duration-500 group-hover:scale-[1.3] sm:scale-110 sm:p-2 sm:group-hover:scale-[1.15]"
+                  className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-110 object-contain transition-transform duration-500 group-hover:scale-[1.16] sm:scale-105 sm:group-hover:scale-110"
                 />
               </span>
-              <span className="absolute inset-x-0 bottom-0 z-10 flex h-[44%] flex-col items-start justify-end gap-0 bg-secondary p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:h-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
-                <span className="line-clamp-2 text-[10px] font-black uppercase leading-tight text-foreground sm:text-xl">
+              <span className="absolute bottom-2 right-2 top-9 z-10 flex w-[49%] flex-col items-start justify-end gap-0 sm:bottom-4 sm:right-4 sm:top-12 sm:w-[48%] sm:justify-center sm:gap-1">
+                <span className="line-clamp-2 text-[11px] font-black uppercase leading-tight text-foreground sm:text-xl">
                   {offerProduct.name.toLowerCase().startsWith(offerProduct.brand.toLowerCase())
                     ? offerProduct.name.slice(offerProduct.brand.length).trim()
                     : offerProduct.name}
                 </span>
                 {offerProduct.priceOld && (
-                  <span className="text-[8px] font-semibold text-muted-foreground sm:text-xs">
+                  <span className="text-[8px] font-semibold leading-tight text-muted-foreground sm:text-xs">
                     Antes <span className="line-through">{offerProduct.priceOld}</span>
                   </span>
                 )}
-                <span className="text-[10px] font-black text-foreground sm:text-lg">
-                  Ahora <span className="text-primary">{offerProduct.price}</span>
+                <span className="text-[10px] font-black leading-tight text-foreground sm:text-lg">
+                  Ahora <span className="block text-primary sm:inline">{offerProduct.price}</span>
                 </span>
-                <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[9px] font-black text-primary-foreground transition group-hover:brightness-110 sm:mt-1.5 sm:px-4 sm:py-1.5 sm:text-xs">
+                <span className="mt-1 inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-primary px-2 py-1 text-[8px] font-black text-primary-foreground transition group-hover:brightness-110 sm:mt-1.5 sm:px-4 sm:py-1.5 sm:text-xs">
                   Ver producto <ArrowRight className="h-3 w-3" />
                 </span>
               </span>
