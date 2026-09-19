@@ -14,7 +14,7 @@ import nbLogo from "@/assets/brands/nb-logo.png.asset.json";
 import onRunning from "@/assets/brands/on-running.png.asset.json";
 import fila from "@/assets/brands/fila.png.asset.json";
 import skechers from "@/assets/brands/skechers-full.png.asset.json";
-import asicsGelExcite10 from "@/assets/p-asics-excite10.png";
+import asicsGelExcite10 from "@/assets/asics-gel-excite10-oferta.png.asset.json";
 
 const BRAND_LOGOS: [string, string][] = [
   ["nike", nike.url],
@@ -65,7 +65,7 @@ export function PromoCarousel() {
     return offers.sort((a, b) => discountPct(b) - discountPct(a))[0] ?? null;
   }, [products]);
   const offerImage = offerProduct?.name.toLowerCase().includes("gel-excite 10")
-    ? asicsGelExcite10
+    ? asicsGelExcite10.url
     : offerProduct?.image;
 
   return (
