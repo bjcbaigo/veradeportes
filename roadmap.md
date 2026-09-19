@@ -6,3 +6,4 @@
 - [x] Cierre visual del local con ubicación y WhatsApp
 - [x] Responsive, navegación, carrito, ficha, WhatsApp y carga de imágenes verificados
 - [x] Cabecera y portada alineadas a la nueva referencia comercial
+- [ ] Ajustar integralmente la composición móvil al modelo comercial adjunto

@@ -18,12 +18,12 @@ export function FeaturedOffers() {
   }
 
   return (
-    <section id="ofertas" className="bg-secondary py-8 sm:py-12">
-      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <div className="mb-5 flex items-end justify-between gap-4">
+    <section id="ofertas" className="bg-background py-4 sm:bg-secondary sm:py-12">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
+        <div className="mb-3 flex items-end justify-between gap-4 sm:mb-5">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Lo más buscado</p>
-            <h2 className="mt-1 text-2xl font-black uppercase text-foreground sm:text-3xl">Productos destacados</h2>
+            <p className="hidden text-xs font-extrabold uppercase tracking-[0.16em] text-primary sm:block">Lo más buscado</p>
+            <h2 className="text-lg font-black text-foreground sm:mt-1 sm:text-3xl sm:uppercase">Productos destacados</h2>
           </div>
           <a
             href="/ofertas"
@@ -38,10 +38,12 @@ export function FeaturedOffers() {
             No hay ofertas activas por el momento.
           </div>
         ) : (
-          <div className="vd-scroll-x -mx-4 px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-            <div className="flex gap-3 pb-2 lg:grid lg:grid-cols-5 lg:gap-4">
+          <div className="-mx-0 overflow-hidden lg:mx-0 lg:overflow-visible lg:px-0">
+            <div className="grid grid-cols-2 gap-2.5 sm:flex sm:gap-3 sm:pb-2 lg:grid lg:grid-cols-5 lg:gap-4">
               {offers.map((product) => (
-                <ProductCard key={product.id} product={product} onSelect={handleSelect} compact />
+                <div key={product.id} className="nth-[n+3]:hidden sm:nth-[n+3]:block">
+                  <ProductCard product={product} onSelect={handleSelect} compact />
+                </div>
               ))}
             </div>
           </div>

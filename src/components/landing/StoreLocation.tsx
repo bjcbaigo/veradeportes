@@ -11,32 +11,32 @@ export function StoreLocation() {
   const src = `https://www.google.com/maps?q=${BASE_QUERY}&z=${z}&output=embed`;
 
   return (
-    <section className="bg-secondary/70 py-6" aria-labelledby="store-location-title">
-      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
+    <section className="bg-secondary/70 py-3 sm:py-6" aria-labelledby="store-location-title">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <div className="flex items-start gap-3 sm:w-72 sm:shrink-0">
+          <div className="flex items-start gap-2 sm:w-72 sm:shrink-0 sm:gap-3">
             <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <MapPin className="h-4 w-4" />
             </span>
             <div>
-              <h2 id="store-location-title" className="text-sm font-black uppercase text-foreground">
+               <h2 id="store-location-title" className="text-[10px] font-black uppercase text-foreground sm:text-sm">
                 Nos encontramos en
               </h2>
-              <p className="mt-0.5 text-xs font-semibold text-muted-foreground">
+               <p className="mt-0.5 text-[10px] font-semibold text-muted-foreground sm:text-xs">
                 Corrientes 1635 · Vera - Santa Fe
               </p>
               <a
                 href={SITE.maps}
                 target="_blank"
                 rel="noopener"
-                className="mt-1.5 inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-ink px-3 text-xs font-bold text-ink-foreground transition hover:bg-ink/90"
+                 className="mt-1 inline-flex h-7 items-center justify-center gap-1.5 text-[10px] font-bold text-foreground transition hover:text-primary sm:mt-1.5 sm:h-8 sm:rounded-lg sm:bg-ink sm:px-3 sm:text-xs sm:text-ink-foreground sm:hover:bg-ink/90"
               >
                 Abrir en Google Maps
                 <ExternalLink className="h-3 w-3" />
               </a>
             </div>
           </div>
-          <div className="relative flex-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_2px_8px_rgba(7,27,59,0.08)]">
+          <div className="relative hidden flex-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_2px_8px_rgba(7,27,59,0.08)] sm:block">
             <iframe
               key={z}
               src={src}

@@ -23,10 +23,10 @@ const BRANDS = [
 
 export function Brands() {
   return (
-    <section id="marcas" className="bg-background py-8 sm:py-12">
-      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
+    <section id="marcas" className="bg-background py-4 sm:py-12">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-center justify-between lg:mb-4">
-          <h2 className="font-display text-xl font-black uppercase tracking-normal sm:text-2xl">
+           <h2 className="font-display text-base font-black tracking-normal sm:text-2xl sm:uppercase">
             Nuestras marcas
           </h2>
           <a
@@ -36,20 +36,20 @@ export function Brands() {
             Ver todas <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
-        <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-          <div className="flex gap-2 pb-2 lg:grid lg:grid-cols-9 lg:gap-3">
+        <div className="-mx-3 overflow-x-auto px-3 sm:-mx-4 sm:px-4 lg:mx-0 lg:overflow-visible lg:px-0">
+          <div className="flex gap-1.5 pb-1 sm:gap-2 sm:pb-2 lg:grid lg:grid-cols-9 lg:gap-3">
             {BRANDS.map((b) => (
               <a
                 key={b.name}
                 href="#productos"
-                className="flex h-16 w-[100px] shrink-0 items-center justify-center rounded-md border border-border bg-card p-3 transition hover:border-primary/60 lg:h-20 lg:w-full lg:p-4"
+                className="flex h-12 w-[70px] shrink-0 items-center justify-center rounded-md border border-border bg-card p-2 transition hover:border-primary/60 sm:h-16 sm:w-[100px] sm:p-3 lg:h-20 lg:w-full lg:p-4"
                 aria-label={`Ver productos ${b.name}`}
               >
                 <img
                   src={b.src}
                   alt={b.name}
                   loading="lazy"
-                  className="max-h-7 max-w-full object-contain lg:max-h-10"
+                  className="max-h-5 max-w-full object-contain sm:max-h-7 lg:max-h-10"
                 />
               </a>
             ))}

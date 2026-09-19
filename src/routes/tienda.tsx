@@ -55,9 +55,9 @@ function StorefrontPage() {
         <Brands />
         <WhatsAppHelp />
         <StoreLocation />
-        <StoreExperience />
+      <div className="hidden sm:block"><StoreExperience /></div>
       </main>
-      <Footer />
+      <div className="hidden sm:block"><Footer /></div>
       <BottomNav active="Inicio" />
       <WhatsAppFab />
     </div>

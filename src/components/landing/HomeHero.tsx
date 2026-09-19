@@ -7,6 +7,16 @@ import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const SLIDES = [
   {
+    image: heroZapatilla.url,
+    eyebrow: "Movimiento",
+    title: "Sin límites",
+    subtitle: "Zapatillas para cada desafío de tu día.",
+    cta: "Ver zapatillas",
+    href: "/tienda#productos",
+    filter: "Zapatillas" as CategoryKey,
+    position: "object-[60%_center] sm:object-center",
+  },
+  {
     image: heroIndumentaria.url,
     eyebrow: "Tu estilo,",
     title: "En movimiento",
@@ -15,16 +25,6 @@ const SLIDES = [
     href: "/tienda#productos",
     filter: "Indumentaria" as CategoryKey,
     position: "object-[58%_center] sm:object-center",
-  },
-  {
-    image: heroZapatilla.url,
-    eyebrow: "Elegí",
-    title: "Tu próximo par",
-    subtitle: "Zapatillas urbanas y running seleccionadas para cada ritmo.",
-    cta: "Ver zapatillas",
-    href: "/tienda#productos",
-    filter: "Zapatillas" as CategoryKey,
-    position: "object-[61%_center] sm:object-center",
   },
   {
     image: interiorLocal.url,
@@ -53,7 +53,7 @@ export function HomeHero() {
 
   return (
     <section aria-label="Novedades de Vera Deportes" className="relative overflow-hidden bg-ink">
-      <div className="relative mx-auto h-[430px] max-w-[1600px] sm:h-[500px] lg:h-[570px]">
+      <div className="relative mx-auto h-[286px] max-w-[1600px] sm:h-[500px] lg:h-[570px]">
         {SLIDES.map((slide, index) => (
           <article
             key={slide.eyebrow}
@@ -70,32 +70,32 @@ export function HomeHero() {
               fetchPriority={index === 0 ? "high" : "auto"}
               className={`h-full w-full object-cover ${slide.position}`}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/45 to-transparent sm:via-ink/25" />
-            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink/65 to-transparent sm:hidden" />
-            <div className="absolute inset-0 flex items-end sm:items-center">
-              <div className="mx-auto w-full max-w-7xl px-5 pb-24 sm:px-8 sm:pb-14 xl:px-12">
-                <div className="max-w-[560px] text-ink-foreground">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-ink-foreground sm:text-base">
+            <div className="absolute inset-0 bg-gradient-to-r from-ink/95 via-ink/45 to-transparent sm:via-ink/25" />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/60 to-transparent sm:hidden" />
+            <div className="absolute inset-0 flex items-center">
+              <div className="mx-auto w-full max-w-7xl px-5 pb-5 sm:px-8 sm:pb-14 xl:px-12">
+                <div className="max-w-[245px] text-ink-foreground sm:max-w-[560px]">
+                  <p className="text-[13px] font-black uppercase text-ink-foreground sm:text-base">
                     {slide.eyebrow}
                   </p>
-                  <h1 className="mt-1 max-w-[580px] font-display text-[34px] font-black uppercase leading-none text-primary sm:text-5xl lg:text-[58px]">
+                  <h1 className="mt-0.5 max-w-[580px] font-display text-[29px] font-black uppercase leading-none text-primary sm:mt-1 sm:text-5xl lg:text-[58px]">
                     {slide.title}
                   </h1>
-                  <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-ink-foreground/95 sm:text-base">
+                  <p className="mt-1 max-w-[205px] text-[12px] font-bold leading-tight text-ink-foreground/95 sm:mt-3 sm:max-w-md sm:text-base sm:font-medium sm:leading-relaxed">
                     {slide.subtitle}
                   </p>
-                  <div className="mt-5 flex flex-wrap gap-3">
+                   <div className="mt-3 flex flex-nowrap gap-2 sm:mt-5 sm:flex-wrap sm:gap-3">
                     <a
                       href={slide.href}
                       onClick={() => emitCategory(slide.filter)}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-extrabold text-primary-foreground shadow-lg transition hover:brightness-105 active:scale-[0.98]"
+                       className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-primary px-3.5 text-[11px] font-extrabold text-primary-foreground shadow-lg transition hover:brightness-105 active:scale-[0.98] sm:h-11 sm:gap-2 sm:px-5 sm:text-sm"
                     >
                       {slide.cta}
                       <ArrowRight className="h-4 w-4" />
                     </a>
                     <a
                       href="/ofertas"
-                      className="inline-flex h-11 items-center justify-center rounded-full border border-ink-foreground/70 bg-ink/25 px-5 text-sm font-extrabold text-ink-foreground backdrop-blur-sm transition hover:bg-ink/55"
+                       className="inline-flex h-9 items-center justify-center rounded-full border border-ink-foreground/70 bg-ink/25 px-3.5 text-[11px] font-extrabold text-ink-foreground backdrop-blur-sm transition hover:bg-ink/55 sm:h-11 sm:px-5 sm:text-sm"
                     >
                       Ver ofertas
                     </a>
@@ -110,7 +110,7 @@ export function HomeHero() {
           type="button"
           onClick={() => move(-1)}
           aria-label="Imagen anterior"
-          className="absolute left-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/45 bg-ink/40 text-ink-foreground backdrop-blur transition hover:bg-ink/70 sm:left-6"
+          className="absolute left-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/45 bg-ink/40 text-ink-foreground backdrop-blur transition hover:bg-ink/70 sm:inline-flex sm:left-6"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -118,12 +118,12 @@ export function HomeHero() {
           type="button"
           onClick={() => move(1)}
           aria-label="Imagen siguiente"
-          className="absolute right-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/45 bg-ink/40 text-ink-foreground backdrop-blur transition hover:bg-ink/70 sm:right-6"
+          className="absolute right-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-ink-foreground/45 bg-ink/40 text-ink-foreground backdrop-blur transition hover:bg-ink/70 sm:inline-flex sm:right-6"
         >
           <ArrowRight className="h-5 w-5" />
         </button>
 
-        <div className="absolute inset-x-0 bottom-10 z-20 mx-auto max-w-7xl px-5 sm:bottom-12 sm:px-8 xl:px-12">
+        <div className="absolute inset-x-0 bottom-3 z-20 mx-auto max-w-7xl px-5 sm:bottom-12 sm:px-8 xl:px-12">
           <div className="hidden items-center gap-8 text-ink-foreground sm:flex">
             <div className="flex items-center gap-2.5"><Truck className="h-5 w-5 shrink-0" /><span className="text-[13px] font-bold leading-[1.15]">Envíos<br /><span className="text-xs font-normal text-ink-foreground/85">a todo el país</span></span></div>
             <div className="flex items-center gap-2.5"><CreditCard className="h-5 w-5 shrink-0" /><span className="text-[13px] font-bold leading-[1.15]">Pagos<br /><span className="text-xs font-normal text-ink-foreground/85">seguros</span></span></div>

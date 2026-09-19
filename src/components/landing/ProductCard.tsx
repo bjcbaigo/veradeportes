@@ -43,7 +43,7 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
   return (
     <article
       className={`group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg focus-within:ring-2 focus-within:ring-primary/40 ${
-        compact ? "w-[154px] shrink-0 sm:w-[184px] lg:w-full" : "w-full"
+        compact ? "w-full sm:w-[184px] sm:shrink-0 lg:w-full" : "w-full"
       }`}
       onClick={() => onSelect(product)}
       role="button"
@@ -121,6 +121,11 @@ export function ProductCard({ product, onSelect, compact = false }: Props) {
             <p className="max-w-full whitespace-nowrap text-[11px] text-muted-foreground line-through">{product.priceOld}</p>
           )}
         </div>
+        {compact && (
+          <span className="mt-2 inline-flex h-8 items-center justify-center rounded-md border border-ink/25 text-[11px] font-bold text-foreground sm:hidden">
+            Ver producto
+          </span>
+        )}
       </div>
     </article>
   );
