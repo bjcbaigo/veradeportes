@@ -1,10 +1,9 @@
-import { Facebook, Instagram, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
+import { Facebook, Instagram, Menu, ShoppingCart, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import logoEmblem from "@/assets/logo-vera-emblema-final.png.asset.json";
 import { useCart } from "@/lib/cart";
 import { requireCustomerAccess } from "@/lib/customer-access";
-import { openSearch } from "@/lib/search";
 import { SITE, waLink } from "@/lib/site";
 
 const NAV = [
