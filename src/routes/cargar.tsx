@@ -420,12 +420,26 @@ function UploadWizard({ pin }: { pin: string }) {
         {step === 2 && (
           <section className="space-y-4">
             <PanelHead
-              title="Talles y sellos"
+              title="Variantes y detalles"
               hint="Todo opcional, pero ayuda a vender mejor en la tienda."
             />
             <ChipPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
             <ChipPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
-            <TallesPicker value={talles} onC={setTalles} />
+            {tipoCfg?.talles === "numericos" && <TallesPicker value={talles} onC={setTalles} />}
+            {tipoCfg?.talles === "letras" && (
+              <ChipPicker
+                label="Talles disponibles"
+                options={[...TALLES_LETRA_OPTIONS, "Talle único"]}
+                value={talles}
+                onC={setTalles}
+              />
+            )}
+            {tipoCfg?.talles === "ninguno" && (
+              <Field label="Variante (opcional)">
+                <input value={variante} onChange={(e) => setVariante(e.target.value)} maxLength={80}
+                  placeholder="Único / Sin talle — o ej: 500ml, Talle 39-42" className={inputCls} />
+              </Field>
+            )}
             <Field label="Comentario para el admin">
               <textarea value={comentario} onChange={(e) => setComentario(e.target.value)} maxLength={500} rows={3}
                 placeholder="Precio sugerido, estado del producto, lo que sepas…"
