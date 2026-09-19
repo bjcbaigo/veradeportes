@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Truck, ShieldCheck, RefreshCcw, Target, ListChecks } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Truck, ShieldCheck, RefreshCcw, Target, ListChecks, Link2, Check } from "lucide-react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import {
   Dialog,
@@ -17,6 +18,7 @@ import {
 } from "@/lib/customer-access";
 import { waLink } from "@/lib/site";
 import { matchesCategory } from "@/lib/category-filter";
+import { productPath, productUrl } from "@/lib/product-url";
 
 const SHOE_SIZES_DEFAULT = ["38", "39", "40", "41", "42", "43", "44"];
 
