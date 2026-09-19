@@ -84,14 +84,6 @@ export function Header() {
             ))}
         </nav>
         <div className="flex items-center justify-end gap-1 md:gap-2">
-          <button
-            type="button"
-            onClick={() => openSearch()}
-            aria-label="Buscar productos"
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10"
-          >
-            <Search className="h-[18px] w-[18px]" strokeWidth={2.2} />
-          </button>
           <a
             href="/registro?intent=cuenta&returnTo=%2Ftienda"
             aria-label="Mi cuenta"
