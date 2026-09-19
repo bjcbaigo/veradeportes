@@ -13,6 +13,11 @@ import {
   IDEAL_PARA_OPTIONS,
   SELLOS_OPTIONS,
   splitTags,
+  PRODUCT_TIPOS,
+  TALLES_LETRA_OPTIONS,
+  TALLE_UNICO,
+  getTipoConfig,
+  type ProductTipo,
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
 
