@@ -48,10 +48,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-1.5 px-3 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 md:px-4 xl:px-6">
+      <div className="mx-auto grid h-[56px] max-w-7xl grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-1 px-3 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 md:px-4 xl:px-6">
         <button
           type="button"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-background text-foreground hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-background text-foreground hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
@@ -63,11 +63,11 @@ export function Header() {
           <img
             src={logoEmblem.url}
             alt=""
-            className="h-9 w-[74px] shrink-0 object-contain md:h-16 md:w-[132px]"
+            className="h-8 w-[66px] shrink-0 object-contain md:h-16 md:w-[132px]"
             width={630}
             height={305}
           />
-          <span className="inline origin-left scale-x-[1.12] whitespace-nowrap font-display text-[16px] font-black leading-none text-foreground md:text-[24px]">
+          <span className="inline origin-left scale-x-[1.12] whitespace-nowrap font-display text-[15px] font-black leading-none text-foreground md:text-[24px]">
             <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>
@@ -88,7 +88,7 @@ export function Header() {
             type="button"
             onClick={() => openSearch()}
             aria-label="Buscar productos"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10"
           >
             <Search className="h-[18px] w-[18px]" strokeWidth={2.2} />
           </button>
@@ -102,7 +102,7 @@ export function Header() {
           <a
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10 md:bg-background md:ring-1 md:ring-border md:hover:bg-secondary"
+            className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10 md:bg-background md:ring-1 md:ring-border md:hover:bg-secondary"
           >
             <ShoppingCart className="h-5 w-5" strokeWidth={2.2} />
             {cartCount > 0 && (
