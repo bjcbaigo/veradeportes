@@ -118,6 +118,9 @@ function UploadWizard({ pin }: { pin: string }) {
   const [optimizing, setOptimizing] = useState(false);
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
+  const [tipo, setTipo] = useState<ProductTipo | "">("");
+  const [subtipo, setSubtipo] = useState("");
+  const [variante, setVariante] = useState("");
   const [categoria, setCategoria] = useState("");
   const [modelo, setModelo] = useState("");
   const [color, setColor] = useState("");
