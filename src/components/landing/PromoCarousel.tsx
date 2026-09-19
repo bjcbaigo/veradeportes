@@ -137,18 +137,18 @@ export function PromoCarousel() {
                   -{discountPct(offerProduct)}%
                 </span>
               )}
-              <span className="absolute bottom-3 left-0 top-8 w-[53%] overflow-hidden sm:bottom-2 sm:left-1 sm:top-10 sm:w-[50%]">
+              <span className="absolute bottom-2 left-0 top-9 w-[50%] overflow-hidden sm:bottom-2 sm:left-1 sm:top-10 sm:w-[50%]">
                 <img
                   src={offerImage}
                   alt={offerProduct.name}
                   width={600}
                   height={600}
                   loading="lazy"
-                  className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-110 object-contain transition-transform duration-500 group-hover:scale-[1.16] sm:scale-105 sm:group-hover:scale-110"
+                  className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-100 object-contain transition-transform duration-500 group-hover:scale-105 sm:scale-105 sm:group-hover:scale-110"
                 />
               </span>
-              <span className="absolute bottom-2 right-2 top-9 z-10 flex w-[49%] flex-col items-start justify-end gap-0 sm:bottom-4 sm:right-4 sm:top-12 sm:w-[48%] sm:justify-center sm:gap-1">
-                <span className="line-clamp-2 text-[11px] font-black uppercase leading-tight text-foreground sm:text-xl">
+              <span className="absolute bottom-2 right-1 top-11 z-10 flex w-[46%] flex-col items-start justify-end gap-0 sm:bottom-4 sm:right-4 sm:top-12 sm:w-[48%] sm:justify-center sm:gap-1">
+                <span className="line-clamp-2 text-[10px] font-black uppercase leading-tight text-foreground sm:text-xl">
                   {offerProduct.name.toLowerCase().startsWith(offerProduct.brand.toLowerCase())
                     ? offerProduct.name.slice(offerProduct.brand.length).trim()
                     : offerProduct.name}
