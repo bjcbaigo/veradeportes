@@ -158,7 +158,18 @@ function sanitize(raw: unknown): string {
   return msg.slice(0, 500);
 }
 
-async function graphJson(url: string, init?: RequestInit): Promise<any> {
+/** Etapas del flujo de publicación, para diagnóstico seguro. */
+export type InstagramStage =
+  | "oauth_token"
+  | "identity"
+  | "create_media"
+  | "container_status"
+  | "media_publish";
+
+/** Marcador fijo de versión del diagnóstico (confirma que corre el código nuevo). */
+const DIAG_TAG = "[IG-DIAG-v2]";
+
+async function graphJson(url: string, init?: RequestInit, stage: InstagramStage = "create_media"): Promise<any> {
   const res = await fetch(url, init);
   let body: any = null;
   try {
@@ -167,7 +178,9 @@ async function graphJson(url: string, init?: RequestInit): Promise<any> {
     body = null;
   }
   if (!res.ok || body?.error) {
-    throw new Error(sanitize(body ?? `HTTP ${res.status}`));
+    // Cuerpo no JSON o sin estructura: igual quedan marker + etapa + HTTP status.
+    const detail = sanitize(body ?? `HTTP ${res.status}`);
+    throw new Error(`${DIAG_TAG}[${stage}][HTTP ${res.status}] ${detail}`.slice(0, 600));
   }
   return body;
 }
