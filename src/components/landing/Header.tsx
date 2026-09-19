@@ -48,10 +48,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background pt-[env(safe-area-inset-top)] text-foreground backdrop-blur">
-      <div className="mx-auto grid h-[78px] max-w-7xl grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-2 px-4 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 xl:px-6">
+      <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-1.5 px-3 md:h-[92px] md:grid-cols-[minmax(310px,1fr)_auto_minmax(180px,1fr)] md:gap-6 md:px-4 xl:px-6">
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-background text-foreground hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary md:hidden"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
           aria-expanded={open}
@@ -59,15 +59,15 @@ export function Header() {
         >
           <Menu className="h-5 w-5" strokeWidth={2.25} />
         </button>
-        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-2.5 md:mx-0 md:justify-self-start md:gap-3">
+        <a href="/tienda" className="mx-auto flex min-w-0 items-center justify-center gap-1.5 md:mx-0 md:justify-self-start md:gap-3">
           <img
             src={logoEmblem.url}
             alt=""
-            className="h-11 w-[90px] shrink-0 object-contain md:h-16 md:w-[132px]"
+            className="h-9 w-[74px] shrink-0 object-contain md:h-16 md:w-[132px]"
             width={630}
             height={305}
           />
-          <span className="hidden origin-left scale-x-[1.12] whitespace-nowrap font-display text-[17px] font-black leading-none text-foreground min-[370px]:inline md:text-[24px]">
+          <span className="inline origin-left scale-x-[1.12] whitespace-nowrap font-display text-[16px] font-black leading-none text-foreground md:text-[24px]">
             <span className="text-primary">VERA</span> <span className="text-foreground">DEPORTES</span>
           </span>
         </a>
@@ -83,12 +83,12 @@ export function Header() {
               </a>
             ))}
         </nav>
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-1 md:gap-2">
           <button
             type="button"
             onClick={() => openSearch()}
             aria-label="Buscar productos"
-            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:inline-flex"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10"
           >
             <Search className="h-[18px] w-[18px]" strokeWidth={2.2} />
           </button>
@@ -102,7 +102,7 @@ export function Header() {
           <a
             href="/carrito"
             aria-label="Carrito"
-            className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground ring-1 ring-border hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:h-10 md:w-10 md:bg-background md:ring-1 md:ring-border md:hover:bg-secondary"
           >
             <ShoppingCart className="h-5 w-5" strokeWidth={2.2} />
             {cartCount > 0 && (

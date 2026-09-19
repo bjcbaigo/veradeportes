@@ -15,13 +15,13 @@ export function HomeSearch() {
   }
 
   return (
-    <section className="relative z-30 -mt-5 bg-transparent pb-1 sm:-mt-7">
-      <div className="mx-auto max-w-6xl px-4 xl:max-w-7xl xl:px-6">
-        <form onSubmit={submitSearch} className="relative rounded-lg bg-background p-2 shadow-xl ring-1 ring-border/70 sm:p-3">
+    <section className="relative z-30 -mt-3 bg-transparent pb-0 sm:-mt-7 sm:pb-1">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
+        <form onSubmit={submitSearch} className="relative rounded-lg bg-background p-2 shadow-lg ring-1 ring-border/70 sm:p-3">
           <label className="sr-only" htmlFor="home-search">
             Buscar productos
           </label>
-          <div className="flex h-12 items-center gap-2 rounded-md bg-secondary px-3 text-foreground ring-1 ring-border/80 focus-within:bg-background focus-within:ring-2 focus-within:ring-primary/20 sm:h-14 sm:px-4">
+          <div className="flex h-11 items-center gap-2 rounded-md bg-secondary px-3 text-foreground ring-1 ring-border/80 focus-within:bg-background focus-within:ring-2 focus-within:ring-primary/20 sm:h-14 sm:px-4">
             <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
             <input
               id="home-search"
