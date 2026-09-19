@@ -9,6 +9,7 @@ import type { Product } from "@/lib/products";
 
 const CHIPS: CategoryKey[] = [
   "Todos",
+  "Nuevos",
   "Zapatillas",
   "Indumentaria",
   "Accesorios",

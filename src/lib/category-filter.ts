@@ -1,7 +1,7 @@
 export const CATEGORY_EVENT = "vera:select-category";
 
 export type CategoryKey =
-  "Todos" | "Zapatillas" | "Indumentaria" | "Accesorios" | "Ninos" | "Ofertas";
+  "Todos" | "Nuevos" | "Zapatillas" | "Indumentaria" | "Accesorios" | "Ninos" | "Ofertas";
 
 export function emitCategory(cat: CategoryKey) {
   if (typeof window === "undefined") return;

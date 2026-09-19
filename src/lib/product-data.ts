@@ -82,7 +82,15 @@ export function useProductsData() {
   return { products, isLoading, isError };
 }
 
+export function isNewProduct(product: Product) {
+  return (product.seals ?? []).some((s) => {
+    const v = s.toLowerCase();
+    return v === "nuevo" || v === "nuevos" || v.startsWith("nuevo");
+  });
+}
+
 export function filterProducts(products: Product[], cat: CategoryKey) {
   if (cat === "Ofertas") return products.filter(isOfferProduct);
+  if (cat === "Nuevos") return products.filter(isNewProduct);
   return products.filter((p) => matchesCategory(p.category, p.name, p.badge, cat));
 }
