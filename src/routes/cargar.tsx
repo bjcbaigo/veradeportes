@@ -221,9 +221,9 @@ function UploadWizard({ pin }: { pin: string }) {
           : comBase;
         await submit({ data: {
           pin, usuario: usuario.trim(),
-          marca: marca.trim(), categoria: categoria.trim(),
+          marca: marca.trim(), categoria: categoriaFinal,
           modelo: modelo.trim(), color: color.trim(),
-          idealPara: idealPara.trim(), sellos: sellos.trim(), talles: talles.trim(),
+          idealPara: idealPara.trim(), sellos: sellos.trim(), talles: tallesFinal,
           comentario: com,
           filename: it.file.name,
           mime: "image/jpeg", dataBase64: b64,
