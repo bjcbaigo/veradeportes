@@ -140,9 +140,28 @@ function UploadWizard({ pin }: { pin: string }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  const tipoCfg = tipo ? getTipoConfig(tipo) : null;
+  // Categoría efectiva: subtipo elegido, o texto libre en "Otros", o el tipo.
+  const categoriaFinal = (tipo === "Otros" || !tipo ? categoria.trim() : subtipo || tipo).trim();
+  // Variante/talles finales, siempre como string separado por "|".
+  const tallesFinal =
+    tipoCfg?.talles === "ninguno"
+      ? (variante.trim() || TALLE_UNICO)
+      : talles.trim();
+
+  function pickTipo(next: ProductTipo) {
+    if (next === tipo) return;
+    setTipo(next);
+    // Limpiar datos incompatibles con el nuevo tipo.
+    setSubtipo("");
+    setTalles("");
+    setVariante("");
+    setCategoria("");
+  }
+
   const canNext =
     step === 0 ? items.length > 0 && !optimizing
-    : step === 1 ? usuario.trim() !== ""
+    : step === 1 ? usuario.trim() !== "" && tipo !== ""
     : true;
 
   async function onPick(files: FileList | null) {
