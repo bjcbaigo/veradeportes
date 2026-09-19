@@ -1,7 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ProductDetailDialog } from "@/components/landing/ProductDetailDialog";
-import { isOfferProduct, useProductsData } from "@/lib/product-data";
+import { isNewProduct, isOfferProduct, useProductsData } from "@/lib/product-data";
+import { emitCategory } from "@/lib/category-filter";
 import { getActivePromotions } from "@/lib/promotions";
 import type { Product } from "@/lib/products";
 import nike from "@/assets/brands/nike.png.asset.json";
@@ -52,6 +53,12 @@ export function PromoCarousel() {
   const editorial = promotions.find((p) => p.id === "nueva-coleccion") ?? promotions[0];
   const fallback = promotions.find((p) => p.id !== editorial?.id);
 
+  const newProducts = useMemo(
+    () => products.filter((p) => isNewProduct(p) && p.image),
+    [products],
+  );
+  const newHero = newProducts[0] ?? null;
+
   const offerProduct = useMemo(() => {
     const offers = products.filter((p) => isOfferProduct(p) && p.image);
     return offers.sort((a, b) => discountPct(b) - discountPct(a))[0] ?? null;
@@ -61,19 +68,24 @@ export function PromoCarousel() {
     <section id="promos" className="bg-background py-2 sm:py-8">
       <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
         <div className="grid grid-cols-2 gap-2 sm:gap-4">
-          {/* Tarjeta editorial: colección */}
+          {/* Tarjeta editorial: nuevos ingresos reales del panel */}
           {editorial && (
-            <a
-              href={editorial.href}
-              className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-ink shadow-md sm:aspect-[16/8]"
+            <button
+              type="button"
+              onClick={() => emitCategory(newProducts.length > 0 ? "Nuevos" : "Todos")}
+              className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-ink text-left shadow-md sm:aspect-[16/8]"
             >
               <img
-                src={editorial.image}
+                src={newHero?.image || editorial.image}
                 alt=""
                 width={800}
                 height={700}
                 loading="eager"
-                className="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
+                className={
+                  newHero?.image
+                    ? "absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                    : "absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
+                }
               />
               <span className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/30 to-transparent" />
               <span className="absolute right-2 top-2 rounded-full bg-background px-2 py-1 text-[8px] font-black uppercase tracking-wide text-foreground sm:right-3 sm:top-3 sm:px-3 sm:py-1.5 sm:text-[11px]">
@@ -81,16 +93,16 @@ export function PromoCarousel() {
               </span>
               <span className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 p-2.5 sm:gap-1.5 sm:p-5">
                 <span className="font-display text-sm font-black uppercase leading-none text-ink-foreground sm:text-3xl">
-                  {editorial.title}
+                  {newHero ? newHero.brand : editorial.title}
                 </span>
-                <span className="text-[9px] font-semibold text-ink-foreground/85 sm:text-sm">
-                  {editorial.subtitle}
+                <span className="line-clamp-1 text-[9px] font-semibold text-ink-foreground/85 sm:text-sm">
+                  {newHero ? newHero.name : editorial.subtitle}
                 </span>
                 <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-background px-2.5 py-1 text-[9px] font-black text-foreground transition group-hover:bg-primary group-hover:text-primary-foreground sm:mt-2 sm:px-4 sm:py-1.5 sm:text-xs">
-                  {editorial.ctaText} <ArrowRight className="h-3 w-3" />
+                  {newHero ? "Ver lo nuevo" : editorial.ctaText} <ArrowRight className="h-3 w-3" />
                 </span>
               </span>
-            </a>
+            </button>
           )}
 
           {/* Tarjeta producto en oferta con precio real */}
