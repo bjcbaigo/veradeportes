@@ -407,6 +407,92 @@ export const updateProductoEstado = createServerFn({ method: "POST" })
 /* ============ Product Studio — edición completa del registro existente ============
    Escribe B:AD de la fila indicada (nunca append). A (ID) no se toca:
    1 Carga_ID = 1 registro administrativo activo. */
+/* ============ Eliminación definitiva (solo fichas ARCHIVADAS / DESCARTADO) ============
+   No borra archivos de Drive/Storage: las imágenes pueden estar compartidas.
+   Vacía la fila de PRODUCTOS_ADMIN (no elimina la fila física para no correr
+   los rowIndex de las demás fichas), la fila publicada en Productos si existe,
+   la agenda del producto y el borrador social asociado. */
+async function batchClear(ranges: string[]) {
+  if (ranges.length === 0) return;
+  const { lovableKey, sheetsKey, sheetId } = env();
+  const res = await fetchWithRetry(`${GATEWAY}/spreadsheets/${sheetId}/values:batchClear`, {
+    method: "POST",
+    headers: headers(lovableKey, sheetsKey),
+    body: JSON.stringify({ ranges }),
+  });
+  if (!res.ok && res.status !== 400 && res.status !== 404) {
+    throw new Error(`Sheets batchClear [${res.status}]: ${await res.text()}`);
+  }
+  invalidateReadCache();
+}
+
+const DeleteProductoInput = z.object({
+  rowIndex: z.number().int().min(2).max(2000),
+  id: z.string().min(1).max(120),
+  confirm: z.literal("ELIMINAR"),
+});
+
+export const deleteProductoDefinitivo = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => DeleteProductoInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as any);
+
+    // 1. Verificación server-side: la fila existe, coincide el ID y está ARCHIVADA.
+    invalidateReadCache("PRODUCTOS_ADMIN");
+    const rows = await readRange("PRODUCTOS_ADMIN!A2:AD2000");
+    const row = rows[data.rowIndex - 2];
+    if (!row || (row[0] ?? "").trim() === "") throw new Error("La ficha ya no existe.");
+    if ((row[0] ?? "").trim() !== data.id.trim()) {
+      throw new Error("La ficha cambió de posición. Refrescá el panel e intentá de nuevo.");
+    }
+    if ((row[13] ?? "").toUpperCase() !== "DESCARTADO") {
+      throw new Error("Solo se pueden eliminar fichas archivadas.");
+    }
+
+    const marca = (row[3] ?? "").trim();
+    const modelo = (row[4] ?? "").trim();
+    const sku = (row[20] ?? "").trim().toLowerCase();
+    const nombre = `${marca} ${modelo}`.trim().toLowerCase();
+
+    // 2. Fila publicada en la Sheet pública (Productos): coincidencia por SKU o nombre.
+    const pubRanges: string[] = [];
+    const pub = await readRange("Productos!A1:Q1000");
+    for (let i = 1; i < pub.length; i++) {
+      const r = pub[i] ?? [];
+      const rSku = (r[9] ?? "").trim().toLowerCase();
+      const rNombre = (r[1] ?? "").trim().toLowerCase();
+      const match = sku ? rSku === sku : rNombre !== "" && rNombre === nombre;
+      if (match) pubRanges.push(`Productos!A${i + 1}:Q${i + 1}`);
+    }
+
+    // 3. Agenda del producto (evita registros huérfanos).
+    const agendaRanges: string[] = [];
+    const agenda = await readRange("CALENDARIO_PUBLICACIONES!A2:F500");
+    agenda.forEach((r, i) => {
+      if ((r[1] ?? "").trim() === data.id.trim()) {
+        agendaRanges.push(`CALENDARIO_PUBLICACIONES!A${i + 2}:F${i + 2}`);
+      }
+    });
+
+    await batchClear([
+      `PRODUCTOS_ADMIN!A${data.rowIndex}:AD${data.rowIndex}`,
+      ...pubRanges,
+      ...agendaRanges,
+    ]);
+
+    // 4. Borradores de publicación social (no toca posts ya publicados en Instagram).
+    const { error: socialErr } = await context.supabase
+      .from("social_publications")
+      .delete()
+      .eq("source_ref", data.id);
+    if (socialErr) {
+      return { ok: true, publicadas: pubRanges.length, agenda: agendaRanges.length, warning: socialErr.message };
+    }
+
+    return { ok: true, publicadas: pubRanges.length, agenda: agendaRanges.length };
+  });
+
 const ProductoUpdateInput = z.object({
   rowIndex: z.number().int().min(2).max(2000),
   url_imagen: z.string().max(500),
