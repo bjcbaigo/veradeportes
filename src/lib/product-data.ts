@@ -83,5 +83,6 @@ export function useProductsData() {
 }
 
 export function filterProducts(products: Product[], cat: CategoryKey) {
+  if (cat === "Ofertas") return products.filter(isOfferProduct);
   return products.filter((p) => matchesCategory(p.category, p.name, p.badge, cat));
 }
