@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw, Sparkles, Check } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle, Edit3, Settings, Image as ImageIcon, Calendar, LogOut, Globe, ShoppingBag, Star, Camera, ExternalLink, Copy, Share2, Users, Layers, AlertTriangle, Archive, RotateCcw, Sparkles, Check, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +10,7 @@ import {
   initAdminSheets, listCargas, updateCargaEstado,
   aprobarYCrearProducto, listProductosAdmin, updateProductoEstado, updateProductoAdmin,
   agendarPublicacion, listAgenda, publicarEnLanding, resetAllSheets,
-  getSheetUrl,
+  getSheetUrl, deleteProductoDefinitivo,
   type Carga, type Producto,
 } from "@/lib/admin-cargas.functions";
 
