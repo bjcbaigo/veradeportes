@@ -10,11 +10,11 @@ export function Footer() {
           <img
             src={footerLogo.url}
             alt="Vera Deportes"
-            className="h-auto w-full max-w-[485px] object-contain object-left"
-            width={485}
-            height={146}
+            className="h-auto w-full max-w-[250px] object-contain object-left"
+            width={250}
+            height={167}
           />
-          <p className="mt-1 text-xs text-ink-foreground/65 sm:ml-[145px]">Movimiento que te acompaña.</p>
+          <p className="mt-1 text-xs text-ink-foreground/65">Movimiento que te acompaña.</p>
         </div>
         <div className="flex flex-col gap-4 sm:items-end">
           <a href={SITE.maps} target="_blank" rel="noopener" className="flex items-center gap-2 text-sm text-ink-foreground/80 hover:text-primary">
