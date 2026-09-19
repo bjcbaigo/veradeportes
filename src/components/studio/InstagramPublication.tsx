@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   AlertTriangle,
   CheckCircle2,
+  Copy,
   ExternalLink,
   Instagram,
   Loader2,
@@ -27,6 +28,7 @@ import {
   startInstagramConnect,
 } from "@/lib/social-connections.functions";
 import { INSTAGRAM_PROFESSIONAL_NOTICE } from "@/lib/social-publisher";
+import { productUrl } from "@/lib/product-url";
 
 /**
  * Publicación Instagram — ETAPA 2: conexión y publicación reales.
@@ -262,6 +264,30 @@ export function InstagramPublication({
         <span className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${ESTADO_STYLE[estado] ?? "bg-neutral-200 text-neutral-600"}`}>
           {estado.replace(/_/g, " ")}
         </span>
+      </div>
+
+      {/* Enlace público del producto: los captions orgánicos de Instagram NO son
+          clickeables; el enlace se copia para bio, historias, WhatsApp o Ads. */}
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+        <p className="min-w-0 break-all text-[11px] text-neutral-500">
+          {productUrl({ brand: producto.marca, name: producto.modelo, sku: producto.sku, id: producto.source_ref })}
+        </p>
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(
+                productUrl({ brand: producto.marca, name: producto.modelo, sku: producto.sku, id: producto.source_ref }),
+              );
+              toast.success("Enlace del producto copiado.");
+            } catch {
+              toast.error("No se pudo copiar el enlace.");
+            }
+          }}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-neutral-300 px-2.5 py-1.5 text-[12px] font-semibold text-neutral-700 hover:bg-neutral-100"
+        >
+          <Copy className="h-3.5 w-3.5" /> Copiar enlace del producto
+        </button>
       </div>
 
       <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">

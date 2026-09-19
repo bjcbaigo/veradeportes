@@ -28,6 +28,7 @@ import {
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
 import { evaluateReadiness, type ReadinessResult } from "@/lib/product-readiness";
+import { productPath, productUrl } from "@/lib/product-url";
 import { AiContentStudio } from "@/components/studio/AiContentStudio";
 import { ImageWorkbench } from "@/components/studio/ImageWorkbench";
 import { InstagramPublication } from "@/components/studio/InstagramPublication";
@@ -1068,6 +1069,45 @@ function LinkFuente({ url }: { url: string }) {
   );
 }
 
+/** Enlace público estable del producto (misma URL que la ruta /producto/<slug>). */
+function EnlaceProducto({ marca, modelo, sku, id }: { marca: string; modelo: string; sku: string; id: string }) {
+  const url = productUrl({ brand: marca, name: modelo, sku, id });
+  const path = productPath({ brand: marca, name: modelo, sku, id });
+  return (
+    <div className="col-span-full rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+      <p className="text-xs font-semibold text-neutral-700">Enlace del producto</p>
+      <p className="mt-1 break-all text-[11px] text-neutral-500">{url}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(url);
+              toast.success("Enlace copiado.");
+            } catch {
+              toast.error("No se pudo copiar el enlace.");
+            }
+          }}
+          className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-100"
+        >
+          <Copy className="h-3.5 w-3.5" /> Copiar enlace
+        </button>
+        <a
+          href={path}
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-100"
+        >
+          <ExternalLink className="h-3.5 w-3.5" /> Abrir ficha
+        </a>
+      </div>
+      <p className="mt-2 text-[10px] text-neutral-400">
+        La ficha pública existe cuando el producto está activo en la planilla de la tienda.
+      </p>
+    </div>
+  );
+}
+
 function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: () => void }) {
   const qc = useQueryClient();
   const update = useServerFn(updateProductoAdmin);
@@ -1305,6 +1345,7 @@ function StudioEditor({ producto: p, onClose }: { producto: Producto; onClose: (
             <Inp label="Slug" v={v.slug} onC={x => setV(s => ({ ...s, slug: x }))} />
             <Inp label="SEO Título" v={v.seo_titulo} onC={x => setV(s => ({ ...s, seo_titulo: x }))} />
             <TA label="SEO Descripción" v={v.seo_descripcion} onC={x => setV(s => ({ ...s, seo_descripcion: x }))} span rows={2} />
+            <EnlaceProducto marca={v.marca} modelo={v.modelo} sku={v.sku} id={p.id} />
             <Sel label="Estado publicación" v={v.estado} onC={x => setV(s => ({ ...s, estado: x as any }))} options={["APROBADO","PUBLICADO","DESCARTADO"]} />
           </EditorSection>
         </div>

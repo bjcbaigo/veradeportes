@@ -1,9 +1,13 @@
-# Roadmap — Rediseño Home Desktop y Mobile
+# Roadmap
 
-- [x] Portada rotativa con tres imágenes aprobadas y controles manuales/automáticos
-- [x] Buscador debajo de portada y categorías visuales adaptables
-- [x] Bloques comerciales, productos, beneficios y marcas jerarquizados
-- [x] Cierre visual del local con ubicación y WhatsApp
-- [x] Responsive, navegación, carrito, ficha, WhatsApp y carga de imágenes verificados
-- [x] Cabecera y portada alineadas a la nueva referencia comercial
-- [x] Ajustar integralmente la composición móvil al modelo comercial adjunto
+## Completado
+- [x] URL individual por producto: `/producto/<marca-modelo>--<id-estable>` (`src/lib/product-url.ts`, `src/routes/producto.$slug.tsx`).
+- [x] Ficha pública completa: galería, precio/oferta, talles, sellos, WhatsApp, compartir/copiar, metas OG + canonical, 404 amigable.
+- [x] Integración catálogo: "Ver ficha completa" + "Copiar enlace" en ProductDetailDialog; sitemap dinámico con fichas.
+- [x] Product Studio: sección "Enlace del producto" (copiar/abrir) en ficha admin.
+- [x] Instagram: botón "Copiar enlace del producto" en módulo de publicación (captions orgánicos no clickeables).
+- [x] Typecheck OK; smoke /, /tienda, /ofertas, /cargar, /admin-cargas, /sitemap.xml OK; deep link + refresh + móvil verificados.
+
+## Abierto
+- [ ] Publicar (Publish del editor) para que producción reciba esta feature + el diagnóstico Instagram [IG-DIAG-v2] (commit b59ecf2). Producción hoy sirve build viejo (coming soon).
+- [ ] Tras publicar: reintentar publicación Instagram y leer el error detallado por etapa.

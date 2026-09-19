@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { listSheetProducts } from "@/lib/sheet-products.functions";
+import { productSlug } from "@/lib/product-url";
+import { sheetToProduct } from "@/lib/product-data";
 
 const BASE_URL = "https://veradeportes.com";
 
@@ -17,6 +20,22 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/registro", changefreq: "weekly", priority: "0.8" },
         ];
+
+        // Fichas públicas de producto (best-effort: si falla el catálogo,
+        // el sitemap estático igual se sirve).
+        try {
+          const rows = await listSheetProducts();
+          for (const r of rows) {
+            if (!r.activo || !r.nombre) continue;
+            entries.push({
+              path: `/producto/${productSlug(sheetToProduct(r))}`,
+              changefreq: "weekly",
+              priority: "0.6",
+            });
+          }
+        } catch {
+          // sin catálogo disponible: solo rutas estáticas
+        }
 
         const urls = entries.map((e) =>
           [
