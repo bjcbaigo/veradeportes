@@ -206,6 +206,7 @@ function UploadWizard({ pin }: { pin: string }) {
   async function send() {
     if (items.length === 0) { toast.error("Elegí al menos una imagen"); goTo(0); return; }
     if (!usuario.trim()) { toast.error("Decinos tu nombre o alias"); goTo(1); return; }
+    if (!tipo) { toast.error("Elegí el tipo de producto"); goTo(1); return; }
 
     setBusy(true);
     setProgress({ done: 0, total: items.length });
