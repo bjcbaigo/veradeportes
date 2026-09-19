@@ -131,7 +131,9 @@ export function PromoCarousel() {
               />
               <span className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0 p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
                 <span className="line-clamp-2 text-[10px] font-black uppercase leading-tight text-foreground sm:text-xl">
-                  {offerProduct.name}
+                  {offerProduct.name.toLowerCase().startsWith(offerProduct.brand.toLowerCase())
+                    ? offerProduct.name.slice(offerProduct.brand.length).trim()
+                    : offerProduct.name}
                 </span>
                 {offerProduct.priceOld && (
                   <span className="text-[8px] font-semibold text-muted-foreground sm:text-xs">
