@@ -6,15 +6,15 @@ export function Footer() {
   return (
     <footer className="border-t border-ink/70 bg-ink pb-28 pt-9 text-ink-foreground md:pb-9">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end xl:max-w-7xl xl:px-6">
-        <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-8">
           <img
             src={footerLogo.url}
             alt="Vera Deportes"
-            className="h-auto w-full max-w-[485px] object-contain object-left"
-            width={485}
-            height={146}
+            className="h-20 w-[225px] shrink-0 object-contain object-left"
+            width={225}
+            height={80}
           />
-          <p className="mt-1 text-xs text-ink-foreground/65 sm:ml-[145px]">Movimiento que te acompaña.</p>
+          <p className="pb-1 text-xs text-ink-foreground/65">Movimiento que te acompaña.</p>
         </div>
         <div className="flex flex-col gap-4 sm:items-end">
           <a href={SITE.maps} target="_blank" rel="noopener" className="flex items-center gap-2 text-sm text-ink-foreground/80 hover:text-primary">
