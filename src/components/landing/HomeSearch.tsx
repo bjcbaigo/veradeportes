@@ -15,7 +15,7 @@ export function HomeSearch() {
   }
 
   return (
-    <section className="relative z-30 -mt-3 bg-transparent pb-0 sm:-mt-7 sm:pb-1">
+    <section className="relative z-30 -mt-2 bg-transparent pb-0 sm:-mt-7 sm:pb-1">
       <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
         <form onSubmit={submitSearch} className="relative rounded-lg bg-background p-2 shadow-lg ring-1 ring-border/70 sm:p-3">
           <label className="sr-only" htmlFor="home-search">
