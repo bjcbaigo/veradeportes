@@ -53,7 +53,7 @@ export function PromoCarousel() {
   const fallback = promotions.find((p) => p.id !== editorial?.id);
 
   const offerProduct = useMemo(() => {
-    const offers = products.filter((p) => isOfferProduct(p) && discountPct(p) > 0 && p.image);
+    const offers = products.filter((p) => isOfferProduct(p) && p.image);
     return offers.sort((a, b) => discountPct(b) - discountPct(a))[0] ?? null;
   }, [products]);
 
