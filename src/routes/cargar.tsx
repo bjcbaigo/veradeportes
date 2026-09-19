@@ -13,6 +13,11 @@ import {
   IDEAL_PARA_OPTIONS,
   SELLOS_OPTIONS,
   splitTags,
+  PRODUCT_TIPOS,
+  TALLES_LETRA_OPTIONS,
+  TALLE_UNICO,
+  getTipoConfig,
+  type ProductTipo,
 } from "@/lib/product-taxonomy";
 import { TallesPicker } from "@/components/TallesPicker";
 
@@ -113,6 +118,9 @@ function UploadWizard({ pin }: { pin: string }) {
   const [optimizing, setOptimizing] = useState(false);
   const [usuario, setUsuario] = useState(() => localStorage.getItem("vera_uploader") ?? "");
   const [marca, setMarca] = useState("");
+  const [tipo, setTipo] = useState<ProductTipo | "">("");
+  const [subtipo, setSubtipo] = useState("");
+  const [variante, setVariante] = useState("");
   const [categoria, setCategoria] = useState("");
   const [modelo, setModelo] = useState("");
   const [color, setColor] = useState("");
@@ -132,9 +140,28 @@ function UploadWizard({ pin }: { pin: string }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  const tipoCfg = tipo ? getTipoConfig(tipo) : null;
+  // Categoría efectiva: subtipo elegido, o texto libre en "Otros", o el tipo.
+  const categoriaFinal = (tipo === "Otros" || !tipo ? categoria.trim() : subtipo || tipo).trim();
+  // Variante/talles finales, siempre como string separado por "|".
+  const tallesFinal =
+    tipoCfg?.talles === "ninguno"
+      ? (variante.trim() || TALLE_UNICO)
+      : talles.trim();
+
+  function pickTipo(next: ProductTipo) {
+    if (next === tipo) return;
+    setTipo(next);
+    // Limpiar datos incompatibles con el nuevo tipo.
+    setSubtipo("");
+    setTalles("");
+    setVariante("");
+    setCategoria("");
+  }
+
   const canNext =
     step === 0 ? items.length > 0 && !optimizing
-    : step === 1 ? usuario.trim() !== ""
+    : step === 1 ? usuario.trim() !== "" && tipo !== ""
     : true;
 
   async function onPick(files: FileList | null) {
@@ -179,6 +206,7 @@ function UploadWizard({ pin }: { pin: string }) {
   async function send() {
     if (items.length === 0) { toast.error("Elegí al menos una imagen"); goTo(0); return; }
     if (!usuario.trim()) { toast.error("Decinos tu nombre o alias"); goTo(1); return; }
+    if (!tipo) { toast.error("Elegí el tipo de producto"); goTo(1); return; }
 
     setBusy(true);
     setProgress({ done: 0, total: items.length });
@@ -194,9 +222,9 @@ function UploadWizard({ pin }: { pin: string }) {
           : comBase;
         await submit({ data: {
           pin, usuario: usuario.trim(),
-          marca: marca.trim(), categoria: categoria.trim(),
+          marca: marca.trim(), categoria: categoriaFinal,
           modelo: modelo.trim(), color: color.trim(),
-          idealPara: idealPara.trim(), sellos: sellos.trim(), talles: talles.trim(),
+          idealPara: idealPara.trim(), sellos: sellos.trim(), talles: tallesFinal,
           comentario: com,
           filename: it.file.name,
           mime: "image/jpeg", dataBase64: b64,
@@ -208,6 +236,7 @@ function UploadWizard({ pin }: { pin: string }) {
       items.forEach((it) => URL.revokeObjectURL(it.previewUrl));
       setItems([]); setMarca(""); setCategoria(""); setComentario("");
       setModelo(""); setColor(""); setIdealPara(""); setSellos(""); setTalles("");
+      setTipo(""); setSubtipo(""); setVariante("");
       setOk(enviadas);
       toast.success(enviadas === 1 ? "¡Foto enviada!" : `¡${enviadas} fotos enviadas!`);
     } catch (err) {
@@ -314,6 +343,60 @@ function UploadWizard({ pin }: { pin: string }) {
               title="Datos básicos"
               hint="Solo tu nombre es obligatorio; lo demás, si lo sabés."
             />
+            <div>
+              <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-600">
+                ¿Qué tipo de producto estás cargando? <span className="text-primary">*</span>
+              </span>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {PRODUCT_TIPOS.map((t) => {
+                  const on = tipo === t.id;
+                  return (
+                    <button key={t.id} type="button" onClick={() => pickTipo(t.id)}
+                      className={`rounded-xl border-2 px-3 py-4 text-left transition ${
+                        on
+                          ? "border-primary bg-primary/5"
+                          : "border-neutral-200 bg-white hover:bg-neutral-50"
+                      }`}>
+                      <span className={`block text-sm font-bold ${on ? "text-primary" : "text-vd-navy"}`}>
+                        {t.label}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] text-neutral-500">{t.hint}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {tipoCfg && tipoCfg.subtipos.length > 0 && (
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-600">
+                  Subtipo
+                </span>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {tipoCfg.subtipos.map((s) => {
+                    const on = subtipo === s;
+                    return (
+                      <button key={s} type="button" onClick={() => setSubtipo(on ? "" : s)}
+                        className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+                        }`}>
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {tipo === "Otros" && (
+              <Field label="Categoría / tipo (escribilo)">
+                <input value={categoria} onChange={(e) => setCategoria(e.target.value)} maxLength={80}
+                  placeholder="Ej: Pelota de fútbol" className={inputCls} />
+              </Field>
+            )}
+
             <Field label="Tu nombre o alias" required>
               <input value={usuario} onChange={(e) => setUsuario(e.target.value)} maxLength={80}
                 className={inputCls} />
@@ -322,10 +405,6 @@ function UploadWizard({ pin }: { pin: string }) {
               <Field label="Marca">
                 <input value={marca} onChange={(e) => setMarca(e.target.value)} maxLength={80}
                   placeholder="Ej: Nike" className={inputCls} />
-              </Field>
-              <Field label="Categoría">
-                <input value={categoria} onChange={(e) => setCategoria(e.target.value)} maxLength={80}
-                  placeholder="Ej: Zapatillas" className={inputCls} />
               </Field>
               <Field label="Modelo">
                 <input value={modelo} onChange={(e) => setModelo(e.target.value)} maxLength={120}
@@ -342,12 +421,26 @@ function UploadWizard({ pin }: { pin: string }) {
         {step === 2 && (
           <section className="space-y-4">
             <PanelHead
-              title="Talles y sellos"
+              title="Variantes y detalles"
               hint="Todo opcional, pero ayuda a vender mejor en la tienda."
             />
             <ChipPicker label="Ideal para" options={IDEAL_PARA_OPTIONS} value={idealPara} onC={setIdealPara} />
             <ChipPicker label="Sellos" options={SELLOS_OPTIONS} value={sellos} onC={setSellos} />
-            <TallesPicker value={talles} onC={setTalles} />
+            {tipoCfg?.talles === "numericos" && <TallesPicker value={talles} onC={setTalles} />}
+            {tipoCfg?.talles === "letras" && (
+              <ChipPicker
+                label="Talles disponibles"
+                options={[...TALLES_LETRA_OPTIONS, "Talle único"]}
+                value={talles}
+                onC={setTalles}
+              />
+            )}
+            {tipoCfg?.talles === "ninguno" && (
+              <Field label="Variante (opcional)">
+                <input value={variante} onChange={(e) => setVariante(e.target.value)} maxLength={80}
+                  placeholder="Único / Sin talle — o ej: 500ml, Talle 39-42" className={inputCls} />
+              </Field>
+            )}
             <Field label="Comentario para el admin">
               <textarea value={comentario} onChange={(e) => setComentario(e.target.value)} maxLength={500} rows={3}
                 placeholder="Precio sugerido, estado del producto, lo que sepas…"
@@ -371,12 +464,17 @@ function UploadWizard({ pin }: { pin: string }) {
                 </div>
               </SummaryRow>
               <SummaryRow label="Cargado por" value={usuario || "—"} onEdit={() => goTo(1)} />
+              <SummaryRow label="Tipo de producto" value={tipo || "—"} onEdit={() => goTo(1)} />
+              <SummaryRow label="Subtipo / categoría" value={categoriaFinal || "—"} onEdit={() => goTo(1)} />
               <SummaryRow label="Producto"
                 value={[marca, modelo].filter(Boolean).join(" ") || "—"}
-                sub={[categoria, color].filter(Boolean).join(" · ")} onEdit={() => goTo(1)} />
+                sub={color || undefined} onEdit={() => goTo(1)} />
               <SummaryRow label="Ideal para" value={splitTags(idealPara).join(", ") || "—"} onEdit={() => goTo(2)} />
               <SummaryRow label="Sellos" value={splitTags(sellos).join(", ") || "—"} onEdit={() => goTo(2)} />
-              <SummaryRow label="Talles" value={splitTags(talles).join(", ") || "Sin marcar"} onEdit={() => goTo(2)} />
+              <SummaryRow
+                label={tipoCfg?.talles === "ninguno" ? "Variante" : "Talles"}
+                value={splitTags(tallesFinal).join(", ") || "Sin marcar"}
+                onEdit={() => goTo(2)} />
               {comentario.trim() && (
                 <SummaryRow label="Comentario" value={comentario.trim()} onEdit={() => goTo(2)} />
               )}
@@ -407,8 +505,10 @@ function UploadWizard({ pin }: { pin: string }) {
           </button>
         )}
       </div>
-      {step === 1 && !usuario.trim() && (
-        <p className="mt-2 text-center text-xs text-neutral-500">Completá tu nombre para continuar.</p>
+      {step === 1 && !canNext && (
+        <p className="mt-2 text-center text-xs text-neutral-500">
+          Elegí el tipo de producto y completá tu nombre para continuar.
+        </p>
       )}
     </div>
   );

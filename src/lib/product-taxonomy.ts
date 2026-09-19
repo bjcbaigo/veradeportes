@@ -98,3 +98,64 @@ export function observacionEsCritica(obs?: string): boolean {
   const up = (obs || "").toUpperCase();
   return OBS_CRITICAS.some((k) => up.includes(k));
 }
+
+// --- Tipo de producto (flujo /cargar) ---
+// Aditivo y retrocompatible: la categoría enviada a CARGAS_USUARIOS sigue
+// siendo un texto simple (subtipo elegido o tipo), y los talles siguen
+// viajando como string separado por "|".
+export type ProductTipo = "Indumentaria" | "Calzado" | "Accesorios" | "Otros";
+
+export const TALLES_LETRA_OPTIONS = ["XS", "S", "M", "L", "XL", "XXL"] as const;
+export const TALLE_UNICO = "Único";
+
+export const PRODUCT_TIPOS: {
+  id: ProductTipo;
+  label: string;
+  hint: string;
+  subtipos: string[];
+  talles: "numericos" | "letras" | "ninguno";
+}[] = [
+  {
+    id: "Indumentaria",
+    label: "Indumentaria",
+    hint: "Remeras, buzos, shorts",
+    subtipos: ["Remera", "Short", "Buzo", "Calza", "Campera", "Pantalón", "Top", "Otro"],
+    talles: "letras",
+  },
+  {
+    id: "Calzado",
+    label: "Calzado",
+    hint: "Zapatillas, botines",
+    subtipos: ["Zapatillas", "Botines", "Ojotas", "Otro"],
+    talles: "numericos",
+  },
+  {
+    id: "Accesorios",
+    label: "Accesorios",
+    hint: "Mochilas, gorras, medias",
+    subtipos: ["Mochila", "Gorra", "Botella", "Medias", "Bolso", "Otro"],
+    talles: "ninguno",
+  },
+  {
+    id: "Otros",
+    label: "Otros",
+    hint: "Cualquier otro producto",
+    subtipos: [],
+    talles: "ninguno",
+  },
+];
+
+export function getTipoConfig(tipo: ProductTipo) {
+  return PRODUCT_TIPOS.find((t) => t.id === tipo) ?? PRODUCT_TIPOS[3];
+}
+
+// Deduce el tipo a partir de una categoría ya cargada (retrocompatibilidad).
+export function detectTipoFromCategoria(categoria?: string): ProductTipo | "" {
+  const c = (categoria || "").trim().toLowerCase();
+  if (!c) return "";
+  for (const t of PRODUCT_TIPOS) {
+    if (t.id.toLowerCase() === c) return t.id;
+    if (t.subtipos.some((s) => s.toLowerCase() === c)) return t.id;
+  }
+  return "";
+}
