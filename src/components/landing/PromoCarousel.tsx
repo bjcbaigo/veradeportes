@@ -115,7 +115,7 @@ export function PromoCarousel() {
               }}
               className="group relative aspect-[8/7] min-w-0 overflow-hidden rounded-lg bg-secondary text-left shadow-md ring-1 ring-border sm:aspect-[16/8]"
             >
-              <span className="absolute left-2 top-2 flex h-4 items-center sm:left-3 sm:top-3 sm:h-7">
+              <span className="absolute left-2 top-2 z-20 flex h-4 items-center sm:left-3 sm:top-3 sm:h-7">
                 {brandLogo(offerProduct.brand) ? (
                   <img
                     src={brandLogo(offerProduct.brand)}
@@ -133,15 +133,17 @@ export function PromoCarousel() {
                   -{discountPct(offerProduct)}%
                 </span>
               )}
-              <img
-                src={offerProduct.image}
-                alt={offerProduct.name}
-                width={600}
-                height={600}
-                loading="lazy"
-                className="absolute bottom-[38%] left-1/2 h-[52%] w-[78%] -translate-x-1/2 object-contain transition-transform duration-500 group-hover:scale-105 sm:bottom-auto sm:left-auto sm:right-2 sm:top-1/2 sm:h-[86%] sm:w-[46%] sm:-translate-x-0 sm:-translate-y-1/2"
-              />
-              <span className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0 p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
+              <span className="absolute inset-x-1 top-7 bottom-[47%] overflow-hidden sm:inset-y-2 sm:left-auto sm:right-2 sm:top-2 sm:w-[46%]">
+                <img
+                  src={offerProduct.image}
+                  alt={offerProduct.name}
+                  width={600}
+                  height={600}
+                  loading="lazy"
+                  className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                />
+              </span>
+              <span className="absolute inset-x-0 bottom-0 z-10 flex h-[47%] flex-col items-start justify-end gap-0 bg-secondary p-2.5 sm:inset-y-0 sm:left-0 sm:right-auto sm:h-auto sm:w-[52%] sm:justify-center sm:gap-1 sm:p-5">
                 <span className="line-clamp-2 text-[10px] font-black uppercase leading-tight text-foreground sm:text-xl">
                   {offerProduct.name.toLowerCase().startsWith(offerProduct.brand.toLowerCase())
                     ? offerProduct.name.slice(offerProduct.brand.length).trim()

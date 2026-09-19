@@ -12,7 +12,7 @@ const CATS: {
   position?: string;
 }[] = [
   { label: "Zapatillas", filter: "Zapatillas", image: zapatillas, position: "object-center" },
-  { label: "Indumentaria", filter: "Indumentaria", image: indumentaria.url, position: "object-[58%_center]" },
+  { label: "Indumentaria", filter: "Indumentaria", image: indumentaria.url, position: "object-center" },
   { label: "Ofertas", filter: "Ofertas", image: ofertas },
   { label: "Accesorios", filter: "Accesorios", image: accesorios, position: "object-center" },
 ];
