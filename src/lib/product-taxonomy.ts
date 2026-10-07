@@ -119,7 +119,7 @@ export const PRODUCT_TIPOS: {
     id: "Indumentaria",
     label: "Indumentaria",
     hint: "Remeras, buzos, shorts",
-    subtipos: ["Remera", "Short", "Buzo", "Calza", "Campera", "Pantalón", "Top", "Otro"],
+    subtipos: ["Remera", "Musculosa", "Short", "Pollera", "Buzo", "Calza", "Campera", "Pantalón", "Top", "Otro"],
     talles: "letras",
   },
   {
