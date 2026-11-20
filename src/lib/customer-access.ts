@@ -60,12 +60,15 @@ export function customerGateUrl(intent: string, returnTo?: string) {
   return `/registro?${params.toString()}`;
 }
 
+const OPEN_INTENTS = new Set(["whatsapp", "checkout"]);
+
 export function requireCustomerAccess(
   event: React.MouseEvent<HTMLElement>,
   intent: string,
   returnTo?: string,
 ) {
-  if (isCustomerRegistered()) return true;
+  // Consultas por WhatsApp y pedidos nunca exigen registro (registro voluntario).
+  if (OPEN_INTENTS.has(intent) || isCustomerRegistered()) return true;
   event.preventDefault();
   window.location.href = customerGateUrl(intent, returnTo);
   return false;
