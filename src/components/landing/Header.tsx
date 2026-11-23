@@ -1,5 +1,6 @@
 import { Facebook, Instagram, Menu, ShoppingCart, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { HeaderSearch } from "@/components/landing/HeaderSearch";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import logoEmblem from "@/assets/logo-vera-emblema-final.png.asset.json";
 import { useCart } from "@/lib/cart";
@@ -83,6 +84,7 @@ export function Header() {
             ))}
         </nav>
         <div className="flex items-center justify-end gap-1 md:gap-2">
+          <HeaderSearch className="hidden w-full max-w-[220px] lg:block" />
           <a
             href="/registro?intent=cuenta&returnTo=%2Ftienda"
             aria-label="Mi cuenta"
@@ -103,6 +105,10 @@ export function Header() {
             )}
           </a>
         </div>
+      </div>
+
+      <div className="px-3 pb-2 lg:hidden">
+        <HeaderSearch />
       </div>
 
       {open && (

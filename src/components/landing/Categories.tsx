@@ -28,14 +28,14 @@ export function Categories() {
           </div>
         </div>
         <div>
-           <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-2 sm:gap-3 md:grid-cols-4 lg:gap-4">
+           <div className="-mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:mx-0 sm:grid sm:overflow-visible sm:px-0 sm:pb-0 sm:grid-cols-2 sm:gap-3 md:grid-cols-4 lg:gap-4">
             {CATS.map((c) => {
               return (
                 <button
                   key={c.label}
                   type="button"
                   onClick={() => emitCategory(c.filter)}
-                  className="group relative aspect-[3/4] min-w-0 overflow-hidden rounded-md bg-ink text-left shadow-md ring-1 ring-ink/10 transition hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/60 sm:aspect-[4/3] lg:aspect-[7/5]"
+                  className="group relative aspect-[4/3] w-[42%] shrink-0 snap-start sm:w-auto sm:shrink min-w-0 overflow-hidden rounded-md bg-ink text-left shadow-md ring-1 ring-ink/10 transition hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/60 sm:aspect-[4/3] lg:aspect-[7/5]"
                 >
                   <img
                     src={c.image}

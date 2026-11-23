@@ -2,13 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BottomNav } from "@/components/landing/BottomNav";
 import { Brands } from "@/components/landing/Brands";
 import { Categories } from "@/components/landing/Categories";
-import { CommercialBenefits } from "@/components/landing/CommercialBenefits";
 import { FeaturedOffers } from "@/components/landing/FeaturedOffers";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { NewsCarousel } from "@/components/landing/NewsCarousel";
 import { HomeHero } from "@/components/landing/HomeHero";
-import { HomeSearch } from "@/components/landing/HomeSearch";
+import { TrustStrip } from "@/components/landing/TrustStrip";
+import { WeeklyDealsBanner } from "@/components/landing/WeeklyDealsBanner";
 import { Products } from "@/components/landing/Products";
 import { PromoCarousel } from "@/components/landing/PromoCarousel";
 import { StoreLocation } from "@/components/landing/StoreLocation";
@@ -47,15 +47,15 @@ function StorefrontPage() {
       <Header />
       <HomeHero />
       <div className="bg-ink px-3 pb-3 pt-2 md:hidden"><NewsCarousel /></div>
-      <HomeSearch />
       <main>
         <Categories />
         <PromoCarousel />
+        <WeeklyDealsBanner />
         <FeaturedOffers />
         <Products />
-        <CommercialBenefits />
         <Brands />
         <WhatsAppHelp />
+        <TrustStrip />
         <StoreLocation />
       <div className="hidden sm:block"><StoreExperience /></div>
       </main>

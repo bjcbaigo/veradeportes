@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { ProductDetailDialog } from "@/components/landing/ProductDetailDialog";
 import { ProductCard } from "@/components/landing/ProductCard";
-import { useProductsData } from "@/lib/product-data";
+import { filterProducts, useProductsData } from "@/lib/product-data";
 import type { Product } from "@/lib/products";
 
 export function FeaturedOffers() {
@@ -10,7 +10,11 @@ export function FeaturedOffers() {
   const [selected, setSelected] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
   // Solo los marcados como "Destacado" en el panel (columna H de la planilla).
-  const offers = products.filter((p) => p.badge === "Destacado").slice(0, 5);
+  const [tab, setTab] = useState<"vendidos" | "nuevos">("vendidos");
+  const offers = (tab === "vendidos"
+    ? products.filter((p) => p.badge === "Destacado")
+    : filterProducts(products, "Nuevos")
+  ).slice(0, 5);
 
   function handleSelect(product: Product) {
     setSelected(product);
@@ -22,8 +26,21 @@ export function FeaturedOffers() {
       <div className="mx-auto max-w-6xl px-3 sm:px-4 xl:max-w-7xl xl:px-6">
         <div className="mb-3 flex items-end justify-between gap-4 sm:mb-5">
           <div>
-            <p className="hidden text-xs font-extrabold uppercase tracking-[0.16em] text-primary sm:block">Lo más buscado</p>
-            <h2 className="text-lg font-black text-foreground sm:mt-1 sm:text-3xl sm:uppercase">Productos destacados</h2>
+            <h2 className="sr-only">Más vendidos y nuevos ingresos</h2>
+            <div role="tablist" className="inline-flex rounded-full bg-secondary p-1 ring-1 ring-border sm:bg-background">
+              {([["vendidos", "Más vendidos"], ["nuevos", "Nuevos ingresos"]] as const).map(([k, l]) => (
+                <button
+                  key={k}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === k}
+                  onClick={() => setTab(k)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-black uppercase transition sm:px-5 sm:text-sm ${tab === k ? "bg-primary text-primary-foreground" : "text-foreground hover:text-primary"}`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
           </div>
           <a
             href="/ofertas"
@@ -35,7 +52,7 @@ export function FeaturedOffers() {
 
         {offers.length === 0 ? (
           <div className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs text-muted-foreground">
-            No hay ofertas activas por el momento.
+            {tab === "nuevos" ? "Pronto vas a ver los nuevos ingresos acá." : "No hay productos destacados por el momento."}
           </div>
         ) : (
           <div className="-mx-0 overflow-hidden lg:mx-0 lg:overflow-visible lg:px-0">

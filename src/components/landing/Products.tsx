@@ -72,6 +72,8 @@ export function Products({ limit }: { limit?: number }) {
       focusSearch();
     };
     window.addEventListener(PRODUCT_SEARCH_EVENT, handler);
+    const initialQ = new URLSearchParams(window.location.search).get("q");
+    if (initialQ) setQuery(initialQ);
     return () => window.removeEventListener(PRODUCT_SEARCH_EVENT, handler);
   }, []);
   useEffect(() => {
