@@ -6,6 +6,7 @@ import { CommercialBenefits } from "@/components/landing/CommercialBenefits";
 import { FeaturedOffers } from "@/components/landing/FeaturedOffers";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
+import { NewsCarousel } from "@/components/landing/NewsCarousel";
 import { HomeHero } from "@/components/landing/HomeHero";
 import { HomeSearch } from "@/components/landing/HomeSearch";
 import { Products } from "@/components/landing/Products";
@@ -45,6 +46,7 @@ function StorefrontPage() {
     >
       <Header />
       <HomeHero />
+      <div className="bg-ink px-3 pb-3 pt-2 md:hidden"><NewsCarousel /></div>
       <HomeSearch />
       <main>
         <Categories />

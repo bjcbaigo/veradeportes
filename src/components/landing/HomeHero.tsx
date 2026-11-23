@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import heroIndumentaria from "@/assets/home/hero-indumentaria.png.asset.json";
 import heroZapatilla from "@/assets/home/hero-zapatilla.png.asset.json";
 import interiorLocal from "@/assets/home/interior-vera-deportes.png.asset.json";
+import { NewsCarousel } from "@/components/landing/NewsCarousel";
 import { emitCategory, type CategoryKey } from "@/lib/category-filter";
 
 const SLIDES = [
@@ -105,6 +106,10 @@ export function HomeHero() {
             </div>
           </article>
         ))}
+
+        <div className="absolute right-4 top-4 z-30 hidden w-[min(46vw,620px)] md:block lg:right-8 lg:top-6">
+          <NewsCarousel />
+        </div>
 
         <button
           type="button"
